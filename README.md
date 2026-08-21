@@ -48,7 +48,7 @@ record of human coauthorship of the mathematics.
 A layered formalization of covering-landing and the Bright–Loughran
 geometry around the conjecture lives below. Programme notes (same
 directory as this file):
-`erdos-straus-programme.md` (v0.23 zip front door; geometry is theory-building, not QED),
+`erdos-straus-programme.md` (v0.23 programme brief; geometry is theory-building, not QED),
 `erdos-straus-gs-reformulation.md` (analytic-lane dictionary: G–S /
 Heath-Brown; no new theorems),
 `erdos-straus-novel-structures-plan.md` (research record, §4v joint-lane freeze),
@@ -87,8 +87,8 @@ the k-budget, above Vaughan; Lemma SM; second-moment check through
 \(A=2000\)),
 `erdos-straus-loughran-orbit.md` (geometric questions: the class
 statement, what is not a proof path),
-`erdos-straus-prior-archive.md` (prior `erdosstrauss` repo as library,
-not a Track-1 merge),
+`erdos-straus-prior-archive.md` (prior Track-1 archive as library,
+not a merge),
 `erdos-straus-bradford-lemma3.md` (Bradford 2026 is not QED; Lemma 3
 forbids finite-parameter Type I/II catalogues),
 `erdos-straus-leochlon.md` (Type-II dictionary into `ES.IsES`),
@@ -111,7 +111,7 @@ Wirsing asymptotic).
 
 **Layer B (Mathlib):** `ErdosStrausQR.lean`, `ErdosStrausBLRoute.lean`,
 `Leochlon.lean` (Type-II dictionary; not a covering merge), `Stormer.lean`
-(consecutive smooth numbers; library only)
+(consecutive smooth numbers; Apache 2.0, Mathlib PR #42040; library only)
 — build via `lake build` against the pinned Mathlib; discharge the Layer-A
 reciprocity interface and develop the BL route.
 
@@ -120,9 +120,9 @@ Layer A isolates quadratic reciprocity as the named field
 The elementary spine can be checked with no extra infrastructure before
 deciding whether to trust the larger build.
 
-`ErdosStraus-core.lean` is a frozen snapshot of an earlier covering file, not
-a Lake root; `ErdosStraus-mathlib-project.lean` is a duplicate of
-`ErdosStraus.lean` kept for the old zip layout.
+`archive/ErdosStraus-core.lean` is a frozen snapshot of an earlier covering
+file, not a Lake root; `archive/ErdosStraus-mathlib-project.lean` is a
+duplicate of `ErdosStraus.lean`. See `archive/README.md`.
 
 ## Build
 
@@ -142,7 +142,8 @@ Requires Lean ≥ 4.33.0.  No Mathlib, no `lake`.
 
 ### Layer B
 
-Pinned toolchain: `leanprover/lean4:v4.34.0-rc1` (`lean-toolchain`).
+Pinned toolchain: `leanprover/lean4:v4.34.0-rc1` (`lean-toolchain`; a
+release candidate, not a moving nightly).
 Mathlib is a git dependency of
 [mathlib4](https://github.com/leanprover-community/mathlib4) at
 `1a0ef26d9624d64a1ad11853d17c30b8c32f2a10` (`lakefile.toml`,
@@ -161,6 +162,8 @@ lake build
 If Lake warns that the manifest is out of date, run `lake update mathlib`
 once, then `lake exe cache get` and `lake build` again, and commit the
 updated `lake-manifest.json`.
+
+GitHub Actions (`.github/workflows/ci.yml`) runs the same Layer B build.
 
 ## Audit (Layer A axioms)
 
@@ -259,7 +262,7 @@ source comments.  Proved, not the conjecture:
 - Mitankin–Uhlemann semi-integral Hasse as a \(\mathbb{Z}\)-point of \(C_+\) (C3_1)
 - Vieta dynamics / Bourgain–Gamburd–Sarnak on ES surfaces (`NoVieta.lean`: no second root)
 - Bradford 2026 as a proof; Bounded-A / L8–L9 covering from the prior
-  `erdosstrauss` archive as a merge. Those artifacts live here as
+  Track-1 archive as a merge. Those artifacts live here as
   library/docs (`erdos-straus-prior-archive.md`). Do not densify covering.
 
 ## Bibliography
@@ -285,7 +288,7 @@ existence of a positive-octant point.  Narrative annotations live in
 - M. Bello-Hernández, M. Benito, E. Fernández, *A divisor parametrization for the Erdős–Straus conjecture*, arXiv:[2606.10922](https://arxiv.org/abs/2606.10922).
 - M. Bello Hernández, M. Benito, E. Fernández, *On the equation \(4/p=1/n+1/m+1/k\)*, arXiv:[1010.2035](https://arxiv.org/abs/1010.2035) (Lemma 3: finite-parameter Type I/II catalogues miss an AP).
 - K. Bradford, *An elementary proof of the Erdős–Straus conjecture*, arXiv:[2602.11774](https://arxiv.org/abs/2602.11774) (not a proof; `erdos-straus-bradford-lemma3.md`).
-- C. Størmer, *Quelques théorèmes sur l’équation de Pell \(x^2-Dy^2=\pm 1\) et leurs applications*, Videnskabsselskabets Skrifter I Math.-Nat. Kl. **2** (1897) (consecutive smooth numbers; `Stormer.lean`, library only).
+- C. Størmer, *Quelques théorèmes sur l’équation de Pell \(x^2-Dy^2=\pm 1\) et leurs applications*, Videnskabsselskabets Skrifter I Math.-Nat. Kl. **2** (1897) (consecutive smooth numbers; `Stormer.lean`, Apache 2.0, Mathlib PR #42040, library only).
 
 ### Bright–Loughran geometry (Route 2)
 
@@ -358,5 +361,10 @@ Copyright (c) 2026 Riley Betts Ltd. This repository is released under the
 MIT License; see `LICENSE`. Lean, Python, and the programme notes carry
 the same notice in their file headers.
 
+`Stormer.lean` is adapted from Mathlib PR #42040 and remains under the
+Apache License 2.0, Copyright Alexander Benjamin Worth Burns and Ravi
+Bajaj; see `LICENSE-APACHE`. It is library only, not a proof of the
+conjecture.
+
 Contributions: `CONTRIBUTING.md`. Pins live in `lean-toolchain`,
-`lakefile.toml`, and `lake-manifest.json`.
+`lakefile.toml`, `lake-manifest.json`, and `requirements.txt`.

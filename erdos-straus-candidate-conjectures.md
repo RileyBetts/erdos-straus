@@ -866,7 +866,7 @@ question. Do not densify covering. Then C2 + the G–S memo as a dictionary
 in the Granville–Soundararajan / Lamzouri / Heath-Brown dialect, on the joint
 lower-tail that \(S\) is. Geometry (C3/C11/S1_1) in the Bright–Loughran
 literature as **foundations and effectivity**, not as QED — briefing
-`erdos-straus-loughran-orbit.md`, zip front door `erdos-straus-programme.md`.
+`erdos-straus-loughran-orbit.md`, programme brief `erdos-straus-programme.md`.
 **Theory to write:** whether \(c'\) stays below \(\kappa\) uniformly in
 \(A\), and whether \(\mathrm{cond}\to 1\) makes extra covering mass
 fictitious at QED-scale \(A\); C6 as growing-moment flatness of \(S\)

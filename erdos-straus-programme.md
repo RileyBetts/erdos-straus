@@ -1,10 +1,10 @@
 <!-- Copyright (c) 2026 Riley Betts Ltd. SPDX-License-Identifier: MIT -->
 # Programme brief — Erdős–Straus archive v0.23
 
-**21 August 2026.** This file is the front door of the zip. It is not a
-theorem. **No proof of the Erdős–Straus conjecture is claimed or
-achieved.** The archive is public so that the mathematical community can
-use the record.
+**21 August 2026.** This file is the programme brief for the git
+repository. It is not a theorem. **No proof of the Erdős–Straus
+conjecture is claimed or achieved.** The archive is kept so that the
+mathematical community can use the record.
 
 **Martyn Riley, of Riley Betts Ltd**, facilitates the automation and the
 high-level strategy (novel routes, recorded negative results, documentation
@@ -168,7 +168,7 @@ in \(A\)), not a further fibration
 and not a pair asymptotic. The analytic worklist for T(A) is
 `erdos-straus-sieve-desk.md`; do not densify covering.
 
-This brief is the programme archive front door. Keep
+This brief is the programme front door. Keep
 the geometric lane (`erdos-straus-loughran-orbit.md`) separate from the
 analytic covering / DFI lane.
 
@@ -292,7 +292,7 @@ counterexample in Schinzel’s family, would settle the question.
   orbifolds does not move a mixed-sign ES point into \(C_+\`.
 - Densify the analytic covering, produce an explicit \(X_0\) from an
   ineffective Hasse principle, or formalize Theorem 1.8 in Lean.
-- Merge Bounded-A / L8–L9 covering from the prior `erdosstrauss`
+- Merge Bounded-A / L8–L9 covering from the prior Track-1
   archive, or treat Bradford 2026 as QED. Selected artifacts from that
   tree are library/docs only (`erdos-straus-prior-archive.md`).
 
@@ -316,7 +316,7 @@ repository can absorb an explicit \(X_0\); it cannot absorb
 
 ---
 
-## How to read the zip
+## How to read this repository
 
 Start here, then:
 

@@ -251,7 +251,7 @@ Two facts, not one:
 Pair ratios \(\rho_{ab}/(\rho_a\rho_b)=1.000\) out to \(A=120\) remain a
 **lemma**, not the theorem (`c4_two_shift_probe.py`).
 
-**The two partials of \(\log S\), fitted from the zip JSONs**
+**The two partials of \(\log S\), fitted from the JSON dumps**
 (`c4_surface_fit.py`). The x-slope deficit at \(A=80\) is \(13.2\%\) of
 \(\beta_{\prod\rho}\) (\(\kappa_{\mathrm{eff}}\approx 0.121\)). The
 A-curvature at \(x=10^9\) is \(c'=0.104\) on \(A\ge 40\)

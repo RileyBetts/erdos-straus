@@ -1,16 +1,17 @@
 /-
-Copyright (c) 2026 Riley Betts Ltd. All rights reserved.
-Released under MIT license as described in the file LICENSE.
-SPDX-License-Identifier: MIT
+Copyright (c) 2026 Alexander Benjamin Worth Burns. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE-APACHE.
+Authors: Alexander Benjamin Worth Burns, Ravi Bajaj
+SPDX-License-Identifier: Apache-2.0
 -/
 
 /-
   Library only: Størmer's theorem on consecutive smooth numbers,
-  adapted to a non-`module` lake root (L8a-tiny
-  `ConsecutiveSevenSmoothFiniteness`). Not a Track-1 merge, not
-  Bounded-A, and not a proof of Erdős–Straus. Consecutive-smooth
-  finiteness is not on the T(A) / geometry QED path.
-  See `erdos-straus-prior-archive.md`.
+  adapted from Mathlib PR #42040 (`Mathlib.NumberTheory.Stormer`) to a
+  non-`module` lake root. That PR is public Apache 2.0; this copy keeps
+  those notices. Not a Track-1 merge, not Bounded-A, and not a proof of
+  Erdős–Straus. Consecutive-smooth finiteness is not on the T(A) /
+  geometry QED path. See `erdos-straus-prior-archive.md`.
 -/
 import Mathlib.NumberTheory.Pell
 import Mathlib.NumberTheory.SmoothNumbers

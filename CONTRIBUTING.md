@@ -14,9 +14,10 @@ Reproducible builds are part of the archive.
 
 | Pin | File | Policy |
 |---|---|---|
-| Lean toolchain | `lean-toolchain` | `leanprover/lean4:v4.34.0-rc1` |
+| Lean toolchain | `lean-toolchain` | `leanprover/lean4:v4.34.0-rc1` (release candidate; documented, not a moving `nightly`) |
 | Mathlib revision | `lakefile.toml` `rev` | SHA, not a moving branch |
 | Transitive Lake lock | `lake-manifest.json` | **commit it** with any pin change |
+| Python numerics | `requirements.txt` | numpy pin for the JSON dumps |
 
 Do not leave `lake-manifest.json` as uncommitted local churn. If you bump
 Mathlib, bump `lakefile.toml` and regenerate the lock in the same commit:
@@ -29,6 +30,9 @@ lake build
 
 Lake will warn if the lock is out of date. Do not ignore that on a PR.
 
+CI (`.github/workflows/ci.yml`) runs `lake exe cache get` and `lake build`
+on the pinned toolchain.
+
 ## Build
 
 ```bash
@@ -38,6 +42,12 @@ lake build
 
 Layer A (no Mathlib) can be checked with `lean` on the files listed in
 `README.md`. Layer B needs the pinned Mathlib olean cache.
+
+Numeric scripts:
+
+```bash
+python3 -m pip install -r requirements.txt
+```
 
 ## Scope
 
@@ -49,5 +59,7 @@ Programme notes in this directory are the source of those freezes.
 
 ## License
 
-MIT. Copyright Riley Betts Ltd 2026. By opening a pull request you offer
-your contribution under the same license.
+MIT, Copyright Riley Betts Ltd 2026, except `Stormer.lean` (Apache 2.0;
+`LICENSE-APACHE`; Mathlib PR #42040). By opening a pull request you offer
+your contribution under MIT, unless you are editing `Stormer.lean`, in
+which case Apache 2.0 applies to that file.

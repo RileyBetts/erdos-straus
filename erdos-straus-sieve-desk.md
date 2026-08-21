@@ -12,8 +12,8 @@ This note is the analytic question list. It is not a theorem, not a
 request to prove the Erdős–Straus conjecture, and not a request
 to densify covering or to discharge `AnalyticSurvivorBound`. The
 geometric questions are in `erdos-straus-loughran-orbit.md`. Do not mix
-the two lanes. Artifacts from the prior `erdosstrauss` tree are
-library/docs, not a Track-1 merge (`erdos-straus-prior-archive.md`).
+the two lanes. Artifacts from the prior Track-1 archive are
+library/docs, not a Bounded-A merge (`erdos-straus-prior-archive.md`).
 
 ---
 

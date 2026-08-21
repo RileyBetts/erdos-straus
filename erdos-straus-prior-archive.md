@@ -1,9 +1,9 @@
 <!-- Copyright (c) 2026 Riley Betts Ltd. SPDX-License-Identifier: MIT -->
 # Prior archive, as library — not a Track-1 merge
 
-**21 August 2026.** Sibling repository: `erdosstrauss`
-(`github.com/RileyBetts/erdosstrauss`). This file records what was
-brought here as **library / documentation**, and what was left behind.
+**21 August 2026.** Sibling work: a Track-1 Bounded-A / L8–L9 covering
+archive (not this repository). This file records what was brought here as
+**library / documentation**, and what was left behind.
 
 **No proof of Erdős–Straus is claimed.** This is not a merge of Bounded-A,
 L8/L9 covering shards, Paley–Zygmund-as-QED, or gateway densification.
@@ -28,7 +28,7 @@ covering densification. Extra slices do not empty a QED-scale box.
 
 | Artifact | Here | Role |
 |---|---|---|
-| Størmer on consecutive smooth numbers | `Stormer.lean` | Library theorem. Not on the T(A) / geometry path. |
+| Størmer on consecutive smooth numbers (Apache 2.0; Mathlib PR #42040) | `Stormer.lean` | Library theorem. Not on the T(A) / geometry path. |
 | Bello–Hernández Lemma 3 / Theorem 8, and Bradford 2026 as a covering claim | `erdos-straus-bradford-lemma3.md` | Documentation of a finite-parameter no-go, and why Bradford 2026 is not QED. |
 | Leochlon Type-II identity \((4b-1)(4c-1)=4p\delta+1\) | `erdos-straus-leochlon.md`, `Leochlon.lean` | Dictionary into `ES.IsES`. Not a gateway/FCT merge. |
 

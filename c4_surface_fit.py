@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Copyright (c) 2026 Riley Betts Ltd
 # SPDX-License-Identifier: MIT
-"""Fit the 2D surface of Ĉ(A,x) from zip JSONs, and test certificate counts.
+"""Fit the 2D surface of Ĉ(A,x) from the JSON dumps, and test certificate counts.
 
 Urgent question (v0.10 referee): the x-slope deficit (~14% of β) and the
 A-curvature (c′≈0.104≈75% of κ) are different partials of log S. The

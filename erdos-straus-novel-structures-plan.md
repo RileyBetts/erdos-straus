@@ -1515,8 +1515,8 @@ done (`c4_certificates.py`): converse is an \(\omega\)-gap; shared
 the archive and records the T(3) completion step; statement
 `erdos-straus-T-3.md`. Geometry keeps the Bright–Loughran questions as
 class-theory, not as QED. Do not densify covering. Artifacts from the
-prior `erdosstrauss` tree (`Stormer.lean`, Bradford/Lemma 3 notes,
-leochlon dictionary) are library/docs, not a Track-1 merge
+prior Track-1 archive (`Stormer.lean`, Bradford/Lemma 3 notes,
+leochlon dictionary) are library/docs, not a Bounded-A merge
 (`erdos-straus-prior-archive.md`).
 
 ---

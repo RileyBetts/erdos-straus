@@ -8,8 +8,8 @@ kernel (`ConicFiber.lean`, `TwistDescent.lean`, `ErdosStrausBLRoute.lean`).
 
 This note is the geometric worklist. It is not a theorem, not a request to
 prove the Erdős–Straus conjecture, and not a claim that TUB-EP has
-independent life until a class larger than `{U_n}` is exhibited. The v0.23
-zip front door is `erdos-straus-programme.md` (the same five questions, short). The
+independent life until a class larger than `{U_n}` is exhibited. The
+programme brief is `erdos-straus-programme.md` (the same five questions, short). The
 \(r_\chi\to\) Kloosterman range no-go at the T(3) stall is the analytic
 worklist, not this note. The Zheng T(2) look is analytic as well.
 

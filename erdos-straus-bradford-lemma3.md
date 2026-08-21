@@ -1,8 +1,8 @@
 <!-- Copyright (c) 2026 Riley Betts Ltd. SPDX-License-Identifier: MIT -->
 # Bradford 2026, and Bello–Hernández Lemma 3 / Theorem 8
 
-**Library documentation, 21 August 2026.** Brought from the prior
-`erdosstrauss` archive as notes, not as a Track-1 merge.
+**Library documentation, 21 August 2026.** Brought from a prior Track-1
+archive as notes, not as a merge.
 Companion: `erdos-straus-prior-archive.md`. Not Lean. Not QED.
 Do not densify covering.
 
