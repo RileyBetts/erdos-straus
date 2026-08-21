@@ -1,0 +1,13 @@
+.lake/
+.oleans/
+*.olean
+*.ilean
+*.c.hash
+*.zip
+__pycache__/
+.python-version
+.env
+.env.*
+.DS_Store
+*~
+*.swp

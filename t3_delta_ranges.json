@@ -1,0 +1,341 @@
+{
+  "lemmas": {
+    "farey_k_incompatibility": "If M+N=1 and Q_D \u2265 1/2, (m,\u03bd)-bilinear vs Farey and k-complete cannot both hold.",
+    "k_absent_past_x": "If Q_D \u2265 1 then K=0; there is no AP index to complete.",
+    "stall_lemma_is_bv_wall": "M+N=1, Q=1/2 forbids bilinear for additive characters (Phase 1). That is Q_D=1/2, not (0,1/2,1/2) and not (1/2)^3."
+  },
+  "cells": {
+    "bv_wall": {
+      "name": "BV wall \u03b4\u21920+",
+      "alpha": [
+        "1/6",
+        "1/6",
+        "1/6"
+      ],
+      "Q_D": "1/2",
+      "Q_D_float": 0.5,
+      "K": "1/2",
+      "K_float": 0.5,
+      "additive_characters_bilinear": false,
+      "note": "product just past x^{1/2}; named T(3) stall of Phase 1",
+      "farey_scan": [
+        {
+          "Q_delta": "1/2",
+          "Q_delta_float": 0.5,
+          "bilinear_mn": false,
+          "k_complete": true,
+          "k_absent": false,
+          "both_bilinear_and_k_complete": false,
+          "I": null,
+          "J": null,
+          "I_float": null,
+          "weil_spot": false
+        },
+        {
+          "Q_delta": "11/20",
+          "Q_delta_float": 0.55,
+          "bilinear_mn": true,
+          "k_complete": false,
+          "k_absent": false,
+          "both_bilinear_and_k_complete": false,
+          "I": "1/20",
+          "J": "1/20",
+          "I_float": 0.05,
+          "weil_spot": false
+        },
+        {
+          "Q_delta": "2/3",
+          "Q_delta_float": 0.6666666666666666,
+          "bilinear_mn": true,
+          "k_complete": false,
+          "k_absent": false,
+          "both_bilinear_and_k_complete": false,
+          "I": "1/6",
+          "J": "1/6",
+          "I_float": 0.16666666666666666,
+          "weil_spot": false
+        },
+        {
+          "Q_delta": "1",
+          "Q_delta_float": 1.0,
+          "bilinear_mn": true,
+          "k_complete": false,
+          "k_absent": false,
+          "both_bilinear_and_k_complete": false,
+          "I": "1/2",
+          "J": "1/2",
+          "I_float": 0.5,
+          "weil_spot": true
+        },
+        {
+          "Q_delta": "5/6",
+          "Q_delta_float": 0.8333333333333334,
+          "bilinear_mn": true,
+          "k_complete": false,
+          "k_absent": false,
+          "both_bilinear_and_k_complete": false,
+          "I": "1/3",
+          "J": "1/3",
+          "I_float": 0.3333333333333333,
+          "weil_spot": false
+        },
+        {
+          "Q_delta": "3/2",
+          "Q_delta_float": 1.5,
+          "bilinear_mn": true,
+          "k_complete": false,
+          "k_absent": false,
+          "both_bilinear_and_k_complete": false,
+          "I": "1",
+          "J": "1",
+          "I_float": 1.0,
+          "weil_spot": false
+        }
+      ]
+    },
+    "uneven_two_sqrt": {
+      "name": "(0, 1/2, 1/2)",
+      "alpha": [
+        "0",
+        "1/2",
+        "1/2"
+      ],
+      "Q_D": "1",
+      "Q_D_float": 1.0,
+      "K": "0",
+      "K_float": 0.0,
+      "additive_characters_bilinear": true,
+      "note": "A2.3 leftover Type I, remaining pair at \u221ax",
+      "farey_scan": [
+        {
+          "Q_delta": "1/2",
+          "Q_delta_float": 0.5,
+          "bilinear_mn": false,
+          "k_complete": false,
+          "k_absent": true,
+          "both_bilinear_and_k_complete": false,
+          "I": null,
+          "J": null,
+          "I_float": null,
+          "weil_spot": false
+        },
+        {
+          "Q_delta": "11/20",
+          "Q_delta_float": 0.55,
+          "bilinear_mn": true,
+          "k_complete": false,
+          "k_absent": true,
+          "both_bilinear_and_k_complete": false,
+          "I": "1/20",
+          "J": "1/20",
+          "I_float": 0.05,
+          "weil_spot": false
+        },
+        {
+          "Q_delta": "2/3",
+          "Q_delta_float": 0.6666666666666666,
+          "bilinear_mn": true,
+          "k_complete": false,
+          "k_absent": true,
+          "both_bilinear_and_k_complete": false,
+          "I": "1/6",
+          "J": "1/6",
+          "I_float": 0.16666666666666666,
+          "weil_spot": false
+        },
+        {
+          "Q_delta": "1",
+          "Q_delta_float": 1.0,
+          "bilinear_mn": true,
+          "k_complete": false,
+          "k_absent": true,
+          "both_bilinear_and_k_complete": false,
+          "I": "1/2",
+          "J": "1/2",
+          "I_float": 0.5,
+          "weil_spot": true
+        },
+        {
+          "Q_delta": "5/6",
+          "Q_delta_float": 0.8333333333333334,
+          "bilinear_mn": true,
+          "k_complete": false,
+          "k_absent": true,
+          "both_bilinear_and_k_complete": false,
+          "I": "1/3",
+          "J": "1/3",
+          "I_float": 0.3333333333333333,
+          "weil_spot": false
+        },
+        {
+          "Q_delta": "3/2",
+          "Q_delta_float": 1.5,
+          "bilinear_mn": true,
+          "k_complete": false,
+          "k_absent": true,
+          "both_bilinear_and_k_complete": false,
+          "I": "1",
+          "J": "1",
+          "I_float": 1.0,
+          "weil_spot": false
+        }
+      ]
+    },
+    "symmetric": {
+      "name": "(1/2)^3",
+      "alpha": [
+        "1/2",
+        "1/2",
+        "1/2"
+      ],
+      "Q_D": "3/2",
+      "Q_D_float": 1.5,
+      "K": "0",
+      "K_float": 0.0,
+      "additive_characters_bilinear": true,
+      "note": "three-way balanced switch, D ~ x^{3/2}",
+      "farey_scan": [
+        {
+          "Q_delta": "1/2",
+          "Q_delta_float": 0.5,
+          "bilinear_mn": false,
+          "k_complete": false,
+          "k_absent": true,
+          "both_bilinear_and_k_complete": false,
+          "I": null,
+          "J": null,
+          "I_float": null,
+          "weil_spot": false
+        },
+        {
+          "Q_delta": "11/20",
+          "Q_delta_float": 0.55,
+          "bilinear_mn": true,
+          "k_complete": false,
+          "k_absent": true,
+          "both_bilinear_and_k_complete": false,
+          "I": "1/20",
+          "J": "1/20",
+          "I_float": 0.05,
+          "weil_spot": false
+        },
+        {
+          "Q_delta": "2/3",
+          "Q_delta_float": 0.6666666666666666,
+          "bilinear_mn": true,
+          "k_complete": false,
+          "k_absent": true,
+          "both_bilinear_and_k_complete": false,
+          "I": "1/6",
+          "J": "1/6",
+          "I_float": 0.16666666666666666,
+          "weil_spot": false
+        },
+        {
+          "Q_delta": "1",
+          "Q_delta_float": 1.0,
+          "bilinear_mn": true,
+          "k_complete": false,
+          "k_absent": true,
+          "both_bilinear_and_k_complete": false,
+          "I": "1/2",
+          "J": "1/2",
+          "I_float": 0.5,
+          "weil_spot": true
+        },
+        {
+          "Q_delta": "5/6",
+          "Q_delta_float": 0.8333333333333334,
+          "bilinear_mn": true,
+          "k_complete": false,
+          "k_absent": true,
+          "both_bilinear_and_k_complete": false,
+          "I": "1/3",
+          "J": "1/3",
+          "I_float": 0.3333333333333333,
+          "weil_spot": false
+        },
+        {
+          "Q_delta": "3/2",
+          "Q_delta_float": 1.5,
+          "bilinear_mn": true,
+          "k_complete": false,
+          "k_absent": true,
+          "both_bilinear_and_k_complete": false,
+          "I": "1",
+          "J": "1",
+          "I_float": 1.0,
+          "weil_spot": false
+        }
+      ]
+    }
+  },
+  "two_d_farey_note": "Heath-Brown\u2013Pierce 2D Kloosterman is a minor-arc L^2 bound for two quadratic forms in k\u22655 variables. The T(3) pair of linear relations is 2-dimensional, but Type II bilinear for the prime lives on a third \u03b4 (Q3). Q1,Q2 do not replace Q3.",
+  "two_d_farey_sample": [
+    {
+      "Q1": "0",
+      "Q2": "0",
+      "combined_for_n1": "0",
+      "n1_incomplete": false,
+      "opens_mn_bilinear": false
+    },
+    {
+      "Q1": "0",
+      "Q2": "1/12",
+      "combined_for_n1": "1/12",
+      "n1_incomplete": false,
+      "opens_mn_bilinear": false
+    },
+    {
+      "Q1": "0",
+      "Q2": "1/6",
+      "combined_for_n1": "1/6",
+      "n1_incomplete": false,
+      "opens_mn_bilinear": false
+    },
+    {
+      "Q1": "0",
+      "Q2": "1/4",
+      "combined_for_n1": "1/4",
+      "n1_incomplete": false,
+      "opens_mn_bilinear": false
+    },
+    {
+      "Q1": "0",
+      "Q2": "1/3",
+      "combined_for_n1": "1/3",
+      "n1_incomplete": false,
+      "opens_mn_bilinear": false
+    },
+    {
+      "Q1": "0",
+      "Q2": "5/12",
+      "combined_for_n1": "5/12",
+      "n1_incomplete": false,
+      "opens_mn_bilinear": false
+    },
+    {
+      "Q1": "0",
+      "Q2": "1/2",
+      "combined_for_n1": "1/2",
+      "n1_incomplete": false,
+      "opens_mn_bilinear": false
+    },
+    {
+      "Q1": "1/12",
+      "Q2": "0",
+      "combined_for_n1": "1/12",
+      "n1_incomplete": false,
+      "opens_mn_bilinear": false
+    }
+  ],
+  "bettin_chandee": "Trilinear Kloosterman fractions B(M,N,A) add an averaging variable a\u2208A to DFI, not three independent residue moduli.",
+  "verdict": {
+    "avoids_uneven_cell_identity": true,
+    "avoids_bv_wall_identity": false,
+    "reaches_D_up_to_x": false,
+    "reaches_D_up_to_x_3_2": false,
+    "t3_progress": false,
+    "note": "At (0,1/2,1/2) and (1/2)^3 the k-sum is absent, so the stall identity M+N=1, Q=1/2 does not apply to the Farey modulus. Additive characters already give Q_D \u2265 1 > 1/2, so bilinear exists. Opening Farey Q_\u03b4 > 1/2 still has short duals until Q_\u03b4 ~ 1 (Weil). No bound is claimed for D up to x or x^{3/2}. At the BV wall the extra Q_\u03b4 cannot both open bilinear and complete k; the degeneracy reappears as that incompatibility."
+  }
+}

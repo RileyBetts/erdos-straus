@@ -1,0 +1,27 @@
+# Copyright (c) 2026 Riley Betts Ltd
+# SPDX-License-Identifier: MIT
+
+name = "ErdosStraus"
+version = "0.9.0"
+defaultTargets = ["ErdosStraus"]
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4.git"
+rev = "1a0ef26d9624d64a1ad11853d17c30b8c32f2a10"
+
+[[lean_lib]]
+name = "ErdosStraus"
+roots = [
+  "ErdosStraus",
+  "BrightLoughran",
+  "ConicFiber",
+  "TwistDescent",
+  "SchinzelSep",
+  "SchinzelDecide",
+  "NoVieta",
+  "ErdosStrausQR",
+  "ErdosStrausBLRoute",
+  "Leochlon",
+  "Stormer",
+]

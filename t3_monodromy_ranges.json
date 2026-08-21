@@ -1,0 +1,93 @@
+{
+  "lemmas": {
+    "prime_after_switch": "After switching d_a \u2264 \u221ax, any prime D divides some d_a, hence D \u2264 \u221ax = the BV ceiling.",
+    "not_a_sheaf_on_product": "\u03c72(d2)\u03c73(d3)K(\u00b7; lcm(d2,d3)) is not the trace function of an \u2113-adic sheaf on a product variety over a fixed F_q: the modulus depends on the point.",
+    "so4_not_gallant": "Twisted multiplicativity for two distinct prime moduli gives Kl \u2297 Kl with monodromy SL_2 \u00d7 SL_2 \u2192 SO_4, which FKMS \u00a71.3 carves out as not gallant (sulfatic / oxozonic is a rank-4 sheaf on one F_q, not S(\u00b7;pq)).",
+    "chi_not_gallant": "\u03c72, \u03c73 have fixed conductor, rank-1 Kummer, abelian monodromy: not gallant. Absorbable as \u03b1,\u03b2 only when q is fixed and they are coefficients, which they are not when d2, d3 vary the modulus."
+  },
+  "cells": {
+    "bv_wall": {
+      "Q_D": "1/2",
+      "Q_D_float": 0.5,
+      "prime_possible_after_switch": true,
+      "typical_omega": 1,
+      "kl2_gallant_on_F_q": true,
+      "so4_shape_if_two_primes": false,
+      "thm13": {
+        "mn_le_4q": false,
+        "mn_ge_q34": true,
+        "m_le_q": true,
+        "thm13_optimistic": false
+      },
+      "thm14": {
+        "mn_le_4q": false,
+        "mn_ge_q12": true,
+        "J_le_4q": true,
+        "J_pos": true,
+        "thm14_mn_window": false
+      },
+      "note": "D prime ~ \u221ax is allowed; MN=x > 4q"
+    },
+    "uneven": {
+      "Q_D": "1",
+      "Q_D_float": 1.0,
+      "prime_possible_after_switch": false,
+      "typical_omega": 2,
+      "kl2_gallant_on_F_q": false,
+      "so4_shape_if_two_primes": true,
+      "thm13": {
+        "mn_le_4q": true,
+        "mn_ge_q34": true,
+        "m_le_q": true,
+        "thm13_optimistic": true
+      },
+      "thm14": {
+        "mn_le_4q": true,
+        "mn_ge_q12": true,
+        "J_le_4q": true,
+        "J_pos": true,
+        "thm14_mn_window": true
+      },
+      "note": "D ~ d2 d3 with both ~ \u221ax: semiprime, not prime"
+    },
+    "symmetric": {
+      "Q_D": "3/2",
+      "Q_D_float": 1.5,
+      "prime_possible_after_switch": false,
+      "typical_omega": 3,
+      "kl2_gallant_on_F_q": false,
+      "so4_shape_if_two_primes": false,
+      "thm13": {
+        "mn_le_4q": true,
+        "mn_ge_q34": false,
+        "m_le_q": true,
+        "thm13_optimistic": false
+      },
+      "thm14": {
+        "mn_le_4q": true,
+        "mn_ge_q12": true,
+        "J_le_4q": true,
+        "J_pos": true,
+        "thm14_mn_window": true
+      },
+      "note": "three \u221ax factors; Q_D = 3/2 > 4/3 so Thm 1.3 MN \u2265 q^{3/4} fails even if prime"
+    }
+  },
+  "family_tree": "Kowalski\u2013Michel\u2013Sawin, Ann. of Math. 186 (2017) (Kloosterman/hypergeometric bilinear) \u2192 FKMS arXiv:2511.09459 (gallant). Adjacent to Blomer\u2013Pascadi already in T-3 Phase 3.",
+  "fkm_2014": "Fouvry\u2013Kowalski\u2013Michel, Duke 163 (2014) wraps \u03a3_p K(p) for K a trace function modulo a fixed q. The prime is the argument, not the modulus. Not a wrapper for averaging over D.",
+  "verdict": {
+    "gkr_applies_to_joint_crt": false,
+    "gallant": false,
+    "reaches_D_past_sqrt_x": false,
+    "reaches_D_up_to_x": false,
+    "reaches_D_up_to_x_3_2": false,
+    "t3_progress": false,
+    "fails": [
+      "wrong category (varying modulus, not a sheaf on A^1_{F_q})",
+      "after switch, prime q cannot exceed BV",
+      "composite D has reducible monodromy (not gallant; \u03c9=2 is SO_4)",
+      "\u03c72, \u03c73 abelian rank 1",
+      "even optimistic prime-q Type II lengths miss Thm 1.3 at Q_D=1/2 (too long) and Q_D=3/2 (MN < q^{3/4})"
+    ]
+  }
+}

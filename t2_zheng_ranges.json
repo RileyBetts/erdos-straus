@@ -1,0 +1,149 @@
+{
+  "grid_points": 32761,
+  "fractions": {
+    "bv": 0.502762,
+    "th11": 0.494277,
+    "th11_past_bv": 0.015323,
+    "uncovered": 0.481914
+  },
+  "switched_plane_area": "1/4",
+  "endpoint_L": {
+    "theta": "7/36",
+    "L": "11/36",
+    "L_minus_theta": "4/36=1/9"
+  },
+  "cell_sqrt_x": {
+    "alpha": "1/2",
+    "beta": "1/2",
+    "bv": false,
+    "th11": false,
+    "th12_note": "q-support \u2264 x^{2/23}; does not reach \u221ax"
+  },
+  "cell_x_quarter": {
+    "alpha": "1/4",
+    "beta": "1/4",
+    "bv": true,
+    "th11": false
+  },
+  "th12": {
+    "theta_max": "2/23",
+    "theta_max_float": 0.08695652173913043,
+    "max_L": "3/5",
+    "max_L_float": 0.6,
+    "at_theta": "0",
+    "at_nu": "1/5",
+    "covers_sqrt_cell": false
+  },
+  "dies_if": "symmetric cell d1 \u2248 d2 \u2248 \u221ax is in neither Theorem 1.1 nor 1.2; d1 \u2248 d2 \u2248 x^{1/4} is ordinary BV (product x^{1/2}). Zheng does not cover the two-modulus switching ceiling.",
+  "trivial_uncovered": "Uncovered harmonic mass is a positive fraction of \u222b_{ [0,1/2]^2 } d\u03b1 d\u03b2. Pointwise trivial bound \u226a x^{\u03b1+\u03b2} + x^{1-\u03b1-\u03b2} per dyadic cell; at \u03b1=\u03b2=1/2 this is \u226a x, which swamps S(2,x) \u224d (log x)^{-1}.",
+  "reroute": {
+    "note": "Plan '91% of witnesses at a,m \u2264 log\u00b2 p' is covering-cell mass, not r_\u03c7 divisor mass. Polylog Type I is the \u03b1=0 face. The cell (0, 1/2, 1/2) is the uneven T(3) stall.",
+    "plane_type_i_slabs": {
+      "polylog_face": {
+        "eps": "0",
+        "type_i_times_zheng": 0.011019,
+        "type_i_times_pair_bv": 0.011019,
+        "union_bv_zheng_typei": 0.518086,
+        "cell_sqrt_covered": false
+      },
+      "theta_1_78": {
+        "eps": "1/78",
+        "type_i_times_zheng": 0.054486,
+        "type_i_times_pair_bv": 0.053875,
+        "union_bv_zheng_typei": 0.518086,
+        "cell_sqrt_covered": false
+      },
+      "theta_1_40": {
+        "eps": "1/40",
+        "type_i_times_zheng": 0.107445,
+        "type_i_times_pair_bv": 0.104698,
+        "union_bv_zheng_typei": 0.518086,
+        "cell_sqrt_covered": false
+      },
+      "theta_7_36": {
+        "eps": "7/36",
+        "type_i_times_zheng": 0.494277,
+        "type_i_times_pair_bv": 0.478954,
+        "union_bv_zheng_typei": 0.518086,
+        "cell_sqrt_covered": false
+      }
+    },
+    "native_unswitched": {
+      "grid": 8281,
+      "zheng_box_frac_of_unit_square": 0.127038,
+      "of_which_long_leg_past_sqrt": 0.000725,
+      "long_leg_max": "7/13",
+      "pairing_remark": "A long leg in (1/2, 7/13] pairs to a switched divisor in [6/13, 1/2]; with a polylog short leg that cell is BV after pairing."
+    },
+    "cube_t3_uneven": {
+      "polylog_face": {
+        "three_bv": 0.180424,
+        "zheng_slab": 0.038399,
+        "pair_bv_slab": 0.039465,
+        "any": 0.181016
+      },
+      "theta_1_78": {
+        "three_bv": 0.180424,
+        "zheng_slab": 0.038399,
+        "pair_bv_slab": 0.039465,
+        "any": 0.181016
+      },
+      "theta_1_40": {
+        "three_bv": 0.180424,
+        "zheng_slab": 0.072533,
+        "pair_bv_slab": 0.074843,
+        "any": 0.183563
+      },
+      "theta_7_36": {
+        "three_bv": 0.180424,
+        "zheng_slab": 0.306497,
+        "pair_bv_slab": 0.324561,
+        "any": 0.331372
+      }
+    },
+    "stall_cells": {
+      "polylog_face": {
+        "sym_half_half_half": false,
+        "type_i_two_sqrt": false,
+        "type_i_two_sqrt_flags": {
+          "three_bv": false,
+          "zheng_slab": false,
+          "pair_bv_slab": false,
+          "any": false
+        }
+      },
+      "theta_1_78": {
+        "sym_half_half_half": false,
+        "type_i_two_sqrt": false,
+        "type_i_two_sqrt_flags": {
+          "three_bv": false,
+          "zheng_slab": false,
+          "pair_bv_slab": false,
+          "any": false
+        }
+      },
+      "theta_1_40": {
+        "sym_half_half_half": false,
+        "type_i_two_sqrt": false,
+        "type_i_two_sqrt_flags": {
+          "three_bv": false,
+          "zheng_slab": false,
+          "pair_bv_slab": false,
+          "any": false
+        }
+      },
+      "theta_7_36": {
+        "sym_half_half_half": false,
+        "type_i_two_sqrt": false,
+        "type_i_two_sqrt_flags": {
+          "three_bv": false,
+          "zheng_slab": false,
+          "pair_bv_slab": false,
+          "any": false
+        }
+      }
+    },
+    "cube_points": 50653
+  },
+  "dies_if_uneven": "Leaving one kernel Type I / polylog converts T(3) to T(2) on the remaining pair. The cell (0, 1/2, 1/2) is still uncovered: the pair is the T(2) switching ceiling. Symmetric (1/2,1/2,1/2) remains uncovered. Not T(3) progress."
+}
