@@ -128,7 +128,7 @@ def main(Zmax: int = 50_000, Amax: int = 80, scan_path: str | None = None) -> di
                 f"{rec['Pi_gen'][str(Zmax)]:7.4f}  {rec['n_gen'][zsqrt]:5d}"
             )
 
-    for A in (40, 80):
+    for A in sorted({x for x in (40, 80, Amax) if 1 <= x <= Amax}):
         empP = math.prod(rows[a - 1]["ratio_emp"] for a in range(1, A + 1))
         piP = math.prod(rows[a - 1]["Pi_gen"][zsqrt] for a in range(1, A + 1))
         print(

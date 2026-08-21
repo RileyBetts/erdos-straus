@@ -177,9 +177,9 @@ def main(Xmax: int = 100_000_000, Amax: int = 80) -> dict:
     xs = [x for x in xs if x <= Xmax]
 
     phi = [0.0] + [1.0 / euler_phi(4 * a) for a in range(1, Amax + 1)]
-    beta_th = {A: sum(phi[1 : A + 1]) for A in (40, 80, Amax)}
+    beta_th = {A: sum(phi[1 : A + 1]) for A in sorted({40, 80, Amax}) if A <= Amax}
 
-    As = [40, 80]
+    As = sorted({A for A in (40, 80, Amax) if 1 <= A <= Amax})
     scan = {A: [] for A in As}
     by_x: list[dict] = []
 
