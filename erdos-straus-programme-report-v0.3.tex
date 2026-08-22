@@ -168,8 +168,10 @@ contains is:
         Bright--Loughran Brauer--Manin theory for the associated affine cubic surfaces, and
         (iv) verifies the conjecture unconditionally for every $n<100{,}000$ inside the kernel;
   \item a sequence of \textbf{analytic partial theorems and precisely stated negative results}
-        on a covering-density reformulation of the conjecture (\Cref{sec:route1}), including an
-        unconditional record improving on Vaughan's 1970 exceptional-set bound, together with
+        on a covering-density reformulation of the conjecture (\Cref{sec:route1}), including a
+        later-withdrawn covering-box claim that would have improved on Vaughan's 1970
+        exceptional-set bound (Vaughan remains the published comparison; see the dated notice
+        above and \Cref{subsec:epower}), together with
         several careful ``look and reject'' investigations of recent analytic number theory
         (Zheng's simultaneous-progressions theorem, Heath-Brown's $\delta$-method,
         Fouvry--Kowalski--Michel--Sawin monodromy independence, and a Maynard-type near-BV slab)
@@ -251,8 +253,10 @@ acceptance specification \texttt{erdos-\allowbreak straus-\allowbreak conjecture
         method is shown to respect, and to enumerate the input classes that are \emph{not}
         capped by that ceiling;
   \item to produce, along the way, genuine unconditional mathematics that stands on its own
-        merit regardless of whether the summit is reached — in particular a new exceptional-set
-        bound for the full covering problem, stronger than the 1970 record;
+        merit regardless of whether the summit is reached — in particular the \(d=1\) floor
+        E\_lane, below Vaughan (1970). The covering-box power saving that would have improved
+        on that record is \WITHDRAWN{} (\Cref{subsec:epower}); Vaughan remains the published
+        comparison;
   \item to formulate an \textbf{acceptance specification} (eight requirements, R1--R8,
         \Cref{sec:spec}) that any candidate ``load-bearing'' conjecture $C$ must satisfy to
         count as a genuine reduction of ES, and to test a wide slate of candidate conjectures
@@ -1087,9 +1091,11 @@ Tenenbaum/Henriot machinery (\S4g--\S4h, ``door (b)''; this is the analysis form
 \Cref{subsec:henriot-lean}) discovers that the original barrier arithmetic \emph{conflated total
 sifted mass with sieve dimension}. Corrected, the achievable cap is not
 $\exp(-c(\log x)^{2/3})$ but a genuine \emph{power saving} $x^{-c\kappa}$, i.e.\ an
-unconditional exceptional-set bound $O(x^{1-c})$ \textbf{strictly stronger than Vaughan}. This
+exceptional-set bound $O(x^{1-c})$ that would be \textbf{strictly stronger than Vaughan} if
+the transfer could be made. This
 correction — explicitly flagged as such in the document, with the original \S4f retained
-unedited as a record — is the origin of the E\_power theorem (\Cref{subsec:epower}).
+unedited as a record — is the origin of the later-withdrawn E\_power claim
+(\Cref{subsec:epower}). Do not read the corrected cap as a compiled improvement on Vaughan.
 
 \paragraph{The k-budget invariant, in final form (\S4k--\S4l).}
 The corrected barrier is then re-derived a \emph{third} independent way, via a
@@ -2282,8 +2288,9 @@ throughout this report.
 
 In summary: the archive contains no proof of the Erd\H{o}s--Straus conjecture and does not claim
 one. It contains a substantial, carefully audited Lean~4 formalisation of the classical
-reduction and of a non-trivial slice of the Bright--Loughran geometric theory; a new
-unconditional exceptional-set bound stronger than the 55-year-old published record; a precisely
+reduction and of a non-trivial slice of the Bright--Loughran geometric theory; a recorded
+negative at the covering box (Theorem~\ref{thm:epower} is \WITHDRAWN{}; Vaughan (1970) remains
+the published comparison); a precisely
 argued (if not fully proved) explanation of the structural obstruction the conjecture presents to
 every method tried; and four honestly negative results checking specific, currently published
 2025--26 analytic number theory against that obstruction. Considered as a piece of research
