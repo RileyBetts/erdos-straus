@@ -7,8 +7,8 @@ Working note for the first paper. Companion to candidates C4_1, plan §4v,
 This file **does not prove** the
 Erdős–Straus conjecture and does not claim T(A) as a two-sided
 theorem. T(A)\(^+\) (fixed \(A\)) is claimed; E_lane is claimed as the
-\(d=1\) floor. E_power (`erdos-straus-E-power.md`) is the covering-box
-\(x^{1-\delta}\) count, not this note. The \(\Gamma\)-inflation is \(o(\log^2 A)\) as a
+\(d=1\) floor. E_power (`erdos-straus-E-power.md`) is a recorded
+negative for the covering-box \(x^{1-\delta}\) count, not this note. The \(\Gamma\)-inflation is \(o(\log^2 A)\) as a
 theorem; expected \(B(A)=O(\log A)\) by typical \(M(q,a)\).
 
 T(A) is **constant-tracking**: write \(C(A)\) as an explicit sequence in
@@ -600,9 +600,8 @@ Vaughan (a weaker exceptional-set estimate), because the \(d=1\) lane
 carries only \(\log A\) mass where the full covering box carries
 \(\log^2 A\). E_lane is the provable floor, with effective constants,
 and is publishable as such. The full-box record is E_power
-(`erdos-straus-E-power.md`), claimed there: covering-congruence
-survivors among all integers, \(S_A\ll x^{1-\delta}\). Not this
-theorem.
+(`erdos-straus-E-power.md`): one-stage and two-stage hub density
+withdrawn; recorded negative through \(A=32\). Not this theorem.
 
 ---
 
@@ -622,8 +621,8 @@ object, not to the covering product.
 
 - It does not prove T(A) as a two-sided bracket, H_ES, or occupancy of \(C_+\).
 - It does not claim Vaughan's bound, nor E_power. E_lane is the \(d=1\)
-  floor, below Vaughan. The covering-box \(x^{1-\delta}\) is
-  `erdos-straus-E-power.md`.
+  floor, below Vaughan. The covering-box \(x^{1-\delta}\) attempt is
+  a recorded negative in `erdos-straus-E-power.md`.
 - It does not prove a limit theorem for \(B(A)\) as \(A\to\infty\).
   The expected size is \(O(\log A)\) (Norton; Granville–Soundararajan
   typical \(L(1,\chi)\)).
@@ -647,9 +646,12 @@ expansion, compared to \(\hat C(A,x)\) at \(A\le 10\)–\(20\).
 
 **Next, in order.**
 
-1. **E_power claimed** (`erdos-straus-E-power.md`). Covering-box
-   \(S_A\ll x^{1-\delta}\); Lemma SM is proved and checked through
-   \(A=2000\). Gate A still forbids compiling that write-up as QED. E_lane
+1. **E_power recorded negative** (`erdos-straus-E-power.md`,
+   `erdos-straus-E-power-decision.md`). One-stage
+   \(S_A\ll x^{1-\delta}\) withdrawn. Two-stage hub density failed
+   the revival table through \(A=32\). Combinatorial core in
+   `EPower.lean`. Lemma SM is a surrogate, checked through \(A=2000\).
+   Gate A still forbids compiling a power-saving count as QED. E_lane
    remains the \(d=1\) floor.
 2. **T(3) lower bound**, three-step plan with named risk
    (`erdos-straus-T-3.md`): (a) Iwaniec per slice; (b) Brüdern–Fouvry;

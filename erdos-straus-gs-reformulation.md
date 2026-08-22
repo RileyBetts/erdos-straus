@@ -181,8 +181,8 @@ characters. Do not mix the geometric questions into either.
 
 - It does not prove H_ES, E_partial, or a large-deviation tail.
   E_partial as a Gate A write-up is `erdos-straus-E-partial.md`
-  (Layer 1 = T(A) on paper; Layer 0 is E_power,
-  `erdos-straus-E-power.md`, not `AnalyticSurvivorBound`).
+  (Layer 1 = T(A) on paper; Layer 0 is E_power, a recorded
+  negative, `erdos-straus-E-power.md`, not `AnalyticSurvivorBound`).
 - It does not license a direct assault on the full level statement
   (k-budget invariant; the marginal constant \(\kappa c^2>1\)).
 - It does not replace T(A). If \(C(A)\) is super-critical in \(\log^2 A\)

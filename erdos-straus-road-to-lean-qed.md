@@ -123,15 +123,17 @@ Before the QED estimate, complete the partial result rigorously:
 
     #S_A(x, 2x)  ≪  x^{1−δ}   for explicit δ > 0,
 
-via Suen/Janson inequalities, organised truncated inclusion–exclusion
-(raw truncation diverges at \(\mu\approx 2.2\) — plan §4n), dependency graphs, CRT
-structure, and the fresh-mass estimates. **Claimed:** `erdos-straus-E-power.md`
-(21 Aug 2026). This does not prove ES, but it
-(i) validates the covering mechanism at power-saving strength, (ii) benchmarks stronger methods, and
-(iii) is independently publishable — an improvement on Vaughan
-(1970), the programme's first record. **Review gate A: this
-written theorem passes external sieve-theoretic review before any formalisation of
-the analytic layer begins.** Do not compile it as `AnalyticSurvivorBound`.
+via a two-stage covering argument (hub exponential + residual fibre
+bound) and a separate density-to-count transfer. The 21 August
+one-stage claim is **withdrawn** (`erdos-straus-E-power.md`,
+22 Aug 2026): primorial conditioning does not preserve
+\(\sum 1/q\), and \(O(M_T)\) is not a discrepancy bound. The
+two-stage replacement failed the revival table through \(A=32\)
+(`erdos-straus-E-power-decision.md`). Combinatorial core in
+`EPower.lean`. That does not prove ES and is not an improvement
+on Vaughan (1970). **Review gate A: do not treat the withdrawn
+write-up as a theorem.** Do not compile a power-saving count as
+`AnalyticSurvivorBound`.
 
 ## 7. The ES Renewal Lemma — the sharpest known target
 
@@ -228,15 +230,16 @@ theorem's axiom audit is published alongside it, whichever lane is used.
 - **Step 2** — *Statement-first discipline:* write the weakest Lean theorem
   whose conclusion eliminates all large survivors — **before proving it** —
   so the analysis cannot drift toward unnecessarily general results.
-- **Step 3** — Complete the power-saving theorem (§6). **Done as E_power**
-  (`erdos-straus-E-power.md`, 21 Aug 2026). Write-up also:
-  `erdos-straus-E-partial.md`.
-  Gate A **does not pass** E_power into Lean: it is a power-saving
-  count, not `AnalyticSurvivorBound`. Dummy covering
+- **Step 3** — Complete the power-saving theorem (§6). **Recorded
+  negative at the measured hubs.** The 21 August one-stage write-up
+  is withdrawn (`erdos-straus-E-power.md`, 22 Aug 2026). The
+  two-stage replacement failed through \(A=32\)
+  (`erdos-straus-E-power-decision.md`). Combinatorial core in
+  `EPower.lean`. Write-up also: `erdos-straus-E-partial.md`.
+  Gate A **does not pass** a power-saving count into Lean: it is not
+  `AnalyticSurvivorBound`. Dummy covering
   (\(\mathrm{cond}\equiv 1\)) stops a retuned QED schedule. Do not
   compile Layer 0 as progress toward `erdos_straus_of_interface`.
-  External sieve-theoretic review of the write-up is the remaining
-  Gate A action.
 - **Step 4** — State the ES Renewal Lemma precisely, quantified only over the
   actual ES shells, with §5 cited in its documentation.
 - **Step 5** — Develop the spectral projection analytically: define P_A, R_A;

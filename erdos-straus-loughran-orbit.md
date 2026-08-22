@@ -276,8 +276,8 @@ does not explain dummy covering. The analytic worklist
 (`erdos-straus-sieve-desk.md`) is a question list, not the next
 compute step. E_partial is written
 (`erdos-straus-E-partial.md`, `erdos-straus-E-power.md`): Gate A vehicle
-and the \(x^{1-\delta}\) covering-box paper, not QED. Do not densify
-covering.
+and a recorded negative for the \(x^{1-\delta}\) covering-box attempt,
+not QED. Do not densify covering.
 C2's cross-moduli probe did not fire (covering symbols independent;
 extra shrinkage has the wrong sign for \(\hat C>1\)). Dictionary:
 `erdos-straus-gs-reformulation.md` (attached to \(S\); if cond sticks at

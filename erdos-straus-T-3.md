@@ -472,11 +472,12 @@ defect.
 - It does not densify covering, assault H_ES, or run \(x=10^{10}\).
 
 **Next, in order.** T(A)\(^+\) and E_lane are written
-(`erdos-straus-T-A.md`); E_power is written (`erdos-straus-E-power.md`):
+(`erdos-straus-T-A.md`); E_power is a recorded negative
+(`erdos-straus-E-power.md`, `erdos-straus-E-power-decision.md`):
 the \(\Gamma\)-inflation
 is \(\exp(o(\log^2 A))\); expected \(B(A)=O(\log A)\); E_lane is the
-\(d=1\) floor, below Vaughan; E_power is the covering-box count, above
-Vaughan. The T(3) lower bound follows the three-step plan above. The
+\(d=1\) floor, below Vaughan; E_power is not a covering-box count
+above Vaughan. The T(3) lower bound follows the three-step plan above. The
 \(r_\chi\to\) Kloosterman look is a range no-go at the stall; the sharp
 remaining question is still the joint well-factorable CRT residue, in
 the same frontier bucket as roadmap §9's Brauer-\(\alpha\) fusion.

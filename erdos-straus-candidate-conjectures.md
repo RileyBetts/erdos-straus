@@ -202,9 +202,10 @@ Kloosterman look is a range no-go at the stall. T(A)\(^+\)
 uniform Selberg: \(\Gamma(\beta+1)e^{\gamma\beta}=\exp(o(\log^2 A))\)
 as a theorem; expected \(B(A)=O(\log A)\) (`c4_sieve_constant.py`).
 **E_lane claimed:** \(x\exp(-c'\sqrt{\log x}\,\log\log x)\) as the
-\(d=1\) floor, below Vaughan. **E_power claimed:**
-\(S_A\ll x^{1-\delta}\) as the covering-box count, above Vaughan
-(`erdos-straus-E-power.md`).
+\(d=1\) floor, below Vaughan. **E_power:** one-stage
+\(S_A\ll x^{1-\delta}\) withdrawn; two-stage hub density is a
+recorded negative through \(A=32\)
+(`erdos-straus-E-power.md`, `erdos-straus-E-power-decision.md`).
 
 **Why this, not pairs.** Pair ratios \(\rho_{ab}/(\rho_a\rho_b)\) stay
 \(1.000\) out to \(A=120\) (`c4_two_shift_probe.py`,
@@ -851,8 +852,9 @@ Certificate checks done (`c4_certificates.py`): converse is an
 bound is a three-step plan (stall at \(q>x^{1/2}\)); T(A)\(^+\) tracks
 \(C_{\mathrm{sieve}}(A)\) (`c4_sieve_constant.py`); **E_lane** is the
 \(d=1\) floor from T(A)\(^+\) plus the dimension-uniform fundamental
-lemma. **E_power** is the covering-box \(x^{1-\delta}\)
-(`erdos-straus-E-power.md`). Measurement has saturated: evaluate certificate Euler
+   lemma. **E_power** is a recorded negative for the covering-box
+\(x^{1-\delta}\) (`erdos-straus-E-power.md`,
+`erdos-straus-E-power-decision.md`). Measurement has saturated: evaluate certificate Euler
 products, not \(x=10^{10}\).
 **Do not:** further C7 identity search; any Selmer/descent on any
 fibration of this family; orbifold repackagings; a direct assault on
@@ -860,8 +862,8 @@ H_ES; \(x=10^{10}\).
 
 **Open questions, by literature:** T(A) working note
 `erdos-straus-T-A.md`. The analytic worklist
-(`erdos-straus-sieve-desk.md`) names T(A)\(^+\), E_lane, and E_power as
-theorems already in the archive and the T(3) completion step as the remaining
+(`erdos-straus-sieve-desk.md`) names T(A)\(^+\), E_lane as
+written claims, E_power as a recorded negative, and the T(3) completion step as the remaining
 question. Do not densify covering. Then C2 + the G–S memo as a dictionary
 in the Granville–Soundararajan / Lamzouri / Heath-Brown dialect, on the joint
 lower-tail that \(S\) is. Geometry (C3/C11/S1_1) in the Bright–Loughran

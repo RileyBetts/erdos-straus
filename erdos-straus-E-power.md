@@ -1,11 +1,24 @@
 <!-- Copyright (c) 2026 Riley Betts Ltd. SPDX-License-Identifier: MIT -->
-# E_power — the \(x^{1-\delta}\) covering-box bound (claimed)
+# E_power — recorded negative at a two-stage hub
 
-**Riley Betts Erdős–Straus programme, 21 August 2026.**
+**Riley Betts Erdős–Straus programme, 22 August 2026.**
 Roadmap §6; plan §§4e, 4h, 4k. Companion to `erdos-straus-E-partial.md`
-(Gate A), `ErdosStraus.lean` (`Covering`, `covering_sound`). This file
+(Gate A), `erdos-straus-E-power-decision.md`, `EPower.lean`,
+`e_power_fibre_moments.py`. This file
 **does not prove** the Erdős–Straus conjecture, does not empty the box,
 and does not discharge `AnalyticSurvivorBound`.
+
+> **Status (22 Aug 2026).** The 21 August one-stage write-up is
+> **withdrawn as a theorem**. The 22 August replacement target —
+> inhabit H1/H2 at the prime-power hub and obtain
+> `FiniteProductDensityBound` — is **withdrawn**. Growing \(T\) does
+> not make \(-\log P/k^2\) and Titu\(/k^2\) both two-log. Revival
+> attempt 1 (largest-prime residual) failed both revival numbers
+> through \(A=32\). This is a **recorded negative** for two-stage
+> density at a smooth/cofactor hub on the measured range
+> (`erdos-straus-E-power-decision.md`). The combinatorial core in
+> `EPower.lean` stands. Do not inhabit H1/H2. Do not start a second
+> split without a written reason both numbers would pass.
 
 E_lane (`erdos-straus-T-A.md`) is the \(d=1\) ClassRough floor, below
 Vaughan. This note is the **full covering box**: integers in \([x,2x]\)
@@ -19,11 +32,12 @@ phenomenon and does not apply to this object.
 
 ## Object
 
-Lean `ES.Covering`: a cell \((a,c,d)\) covers \(n\) when
-\(q=4acd-1\) divides \(cn+a\). The level-\(A\) system takes
-\(1\le a,c\le A\) and \(1\le d\le 5\). `Survivor A n` means no such
-cell covers \(n\). `covering_sound` converts a hit into a witness, so
-every \(n\) for which \(4/n\) is not a sum of three unit fractions
+Lean `ES.Covering` / `ES.EPower.Covering`: a cell \((a,c,d)\) covers \(n\)
+when \(q=4acd-1\) divides \(cn+a\). Always \(\gcd(c,q)=1\), so this is
+a single residue class \(n\equiv r\pmod q\). The level-\(A\) system
+takes \(1\le a,c\le A\) and \(1\le d\le 5\). `Survivor A n` means no
+such cell covers \(n\). `covering_sound` converts a hit into a witness,
+so every \(n\) for which \(4/n\) is not a sum of three unit fractions
 is a survivor of every covering box. Write
 \[
 S_A(x,2x)
@@ -33,9 +47,9 @@ S_A(x,2x)
 The exceptional set of Erdős–Straus in the same interval is
 \(\subseteq S_A(x,2x)\).
 
-Naive cell mass:
+Raw cell mass (duplicates included):
 \[
-\mu(A)
+\mu_{\mathrm{raw}}(A)
 \;=\;
 \sum_{\substack{1\le a,c\le A\\1\le d\le 5}}\frac1{4acd-1}
 \;\sim\;
@@ -43,72 +57,342 @@ Naive cell mass:
 \qquad
 H_5=\frac{137}{60}.
 \]
-The events are dependent (small-prime hub). Raw Bonferroni on the cell
-indicators diverges in practice at mean activation \(\mu\approx 2.2\)
-(plan §4n, the same oscillation that kills spectral truncation). The
-organization that replaces it is hub conditioning plus Suen/Janson.
+Distinct cells can define the same congruence event. All later
+quantities use the **deduplicated** family of pairs \((q,r)\). Write
+\(\mu(A)\) for the mass of that family. The events remain dependent
+(small-prime hub). Raw Bonferroni on the cell indicators diverges in
+practice at mean activation \(\mu\approx 2.2\) (plan §4n).
 
 ---
 
-## Why this sits below the k-budget
+## Why the 21 August argument is not correct as stated
 
-QED wants sifted mass \(>\log x\). Interval-intrinsic methods capture
-mass \(\le C\log(\mathrm{level})\le C\log x\) (plan §4l). Power saving
-wants mass \(\delta\log x\) with an explicit \(\delta<C\), so it does
-not touch the ceiling and does not need dispersion, DFI, or H_ES.
-That is why roadmap §6 is the first genuine theorem of the covering
-count, and why Gate A records *this* paper against the Halberstam–Richert /
-*Opera de Cribro* lineage before any analytic Lean.
+Lemma CDL claimed that after conditioning on all primes \(p\le T\), the
+remaining events live on the product space of coordinates \(n\bmod p\)
+for \(p>T\), and that Suen applies with the **unconditional** mass
+\(\sum 1/q\) and the surrogate pair mass \(\sum_{\ell>T}\mu_\ell^2\).
+Lemma Transfer then took the hub to be the primorial
+\(M_T=\prod_{p\le T}p\) and the interval discrepancy to be \(O(M_T)\).
 
-The §4h correction is the dimension count: \(\sum_{p\le z}\rho(p)\log p/p
-\sim c\log^2 z\), hence sieve dimension \(\asymp\log z\), not the number
-of cells. Brun/FL at distribution level \(x^{1/2}\) forces
-\(\log z\lesssim\sqrt{\log x}\). At that cap, captured mass is
-\(\asymp\log x\) with a small implicit constant — a power of \(x\), not
-Vaughan's \(\exp(-c(\log x)^{2/3})\).
+Three errors.
 
----
-
-## Lemma CDL (hub + Suen; claimed)
-
-Suen, Random Structures Algorithms **1** (1990); Janson, ibid. (1990).
-After conditioning on all primes \(p\le T\), the remaining covering
-events live on the product space of coordinates \(n\bmod p\) for
-\(p>T\). On that space
+**1. Conditional mass is not \(\sum 1/q\).** Split each modulus as
+\(q_i=s_i\ell_i\) with \(s_i\) the complete \(T\)-smooth prime-power
+part and \(\ell_i\) supported on primes \(>T\). After conditioning on
+a compatible hub residue \(\rho\bmod H\),
 \[
-u
-\;\le\;
-\exp\bigl(-\mu+\Delta e^{2\delta}\bigr),
+P(E_i\mid\rho)
+\;=\;
+\frac1{\ell_i}
 \]
-with \(\mu\) the total remaining mass, \(\Delta\) the mass on dependent
-pairs (events sharing a large-prime coordinate), and \(\delta\) the
-maximum neighbour mass.
+if the event survives, and \(0\) if it is incompatible. Hub-forced
+events (\(\ell_i=1\)) cover the whole fibre. The unconditional sum
+\(\sum 1/q_i\) is the wrong input to Suen on the fibre.
 
-### Lemma SM (second moments; proved)
+**2. The hub is not the primorial.** Covering moduli may contain
+\(p^2,p^3,\ldots\). The exact finite modulus that absorbs every
+small-prime condition is
+\[
+H
+\;=\;
+\operatorname{lcm}_i(s_i),
+\]
+not \(\prod_{p\le T}p\).
+
+**3. Periodicity modulo \(H\) does not give discrepancy \(O(H)\).**
+Residual events still impose congruences modulo the large parts
+\(\ell_i\). The passage from product-space density to
+\(\#\{n\in[x,2x]\}\) is a separate analytic theorem. It must not be
+hidden inside the probabilistic bound.
+
+Lemma SM below remains a written estimate for the **surrogate**
+\(\sum_{\ell>T}\mu_\ell^2\) on the raw cell family. It is not Suen's
+\(\Delta\), and it does not repair (1)–(3).
+
+The numerical tables in the withdrawn write-up, and the scripts
+`e_power_suen_moments.py` / `e_power_suen_moments_large.py`, are
+kept as measurements of that surrogate. They are not evidence that
+one-stage CDL holds.
+
+---
+
+## Two-stage identity
+
+Deduplicate first: replace the cell family by the `Finset` of distinct
+pairs \((q,r)\). The union of covered integers is unchanged
+(`ES.EPower.Covering.covered_iff_mem_events`).
+
+Work fibre by fibre modulo \(H\). For each \(\rho\bmod H\), every event
+is exactly one of:
+
+| Class | Condition | Conditional probability |
+| --- | --- | --- |
+| Incompatible | small-prime condition disagrees with \(\rho\) | \(0\) |
+| Hub-forced | compatible and \(\ell_i=1\) | the fibre is covered |
+| Residual | compatible and \(\ell_i>1\) | \(1/\ell_i\) |
+
+Write “hub survives” for the fibres with no hub-forced event. On a
+surviving fibre \(\rho\), let \(I_\rho\) be the residual family and
+\[
+\mu_\rho
+\;=\;
+\sum_{i\in I_\rho}\frac1{\ell_i},
+\qquad
+\Delta_\rho
+\;=\;
+\sum_{\substack{i<j\\ i\sim j}} P_\rho(E_i\cap E_j),
+\qquad
+\delta_\rho
+\;=\;
+\max_i\sum_{j\sim i}P_\rho(E_j).
+\]
+For congruence events, \(P_\rho(E_i\cap E_j)=1/\operatorname{lcm}(\ell_i,\ell_j)\)
+if the residual residues agree modulo \(\gcd(\ell_i,\ell_j)\), and \(0\)
+otherwise. The dependency graph \(i\sim j\) joins events that share a
+large-prime coordinate. Independent pairs
+(\(\gcd(\ell_i,\ell_j)=1\)) are not summands of \(\Delta_\rho\).
+
+The finite product-space identity is
+\[
+P(\text{uncovered})
+\;=\;
+P(\text{hub survives})
+\cdot
+\mathbb{E}\bigl[
+P(\text{large-prime events survive}\mid\rho)
+\bigm|
+\rho\text{ survives the hub}
+\bigr].
+\]
+Two exponential gains, then a product.
+
+### H1 — Hub exponential bound
+
+For some absolute \(\gamma_H>0\),
+\[
+P(\text{hub survives})
+\;\le\;
+e^{-\gamma_H\mu(A)}.
+\]
+The coefficient need not be close to \(1\). Any fixed positive value
+is potentially enough.
+
+### H2 — Residual fibre bound
+
+For all surviving fibres, or all except an exponentially negligible
+collection of bad fibres,
+\[
+-\mu_\rho+\Delta_\rho\, e^{2\delta_\rho}
+\;\le\;
+-\gamma_L\mu(A)
+\]
+for some absolute \(\gamma_L>0\). A finite Suen (or a specialised
+correlation inequality for these congruence cylinders) then gives
+\[
+P_\rho(\text{large-prime survivor})
+\;\le\;
+e^{-\gamma_L\mu(A)}.
+\]
+
+Combining H1 and H2:
+\[
+P(\text{uncovered})
+\;\le\;
+e^{-(\gamma_H+\gamma_L)\mu(A)}.
+\]
+There is no need to prove \(\gamma_H+\gamma_L=1-o(1)\). A fixed
+positive coefficient is enough for a power saving.
+
+---
+
+## Withdrawn Lean target: finite density
+
+The first kernel-checked target was **not** \(S_A(x,2x)\ll x^{1-\delta}\).
+It was a finite product-space theorem
+\[
+u(A)
+\;\le\;
+\exp\bigl(-\gamma(\log A)^2\bigr)
+\]
+for some explicit \(\gamma>0\), independently of interval transfer.
+That target is **withdrawn** after the revival table failed
+(`erdos-straus-E-power-decision.md`). If a later split compiled it,
+the remaining gap would still be a separate analytic bridge. Do not
+inhabit H1/H2 at the hubs already measured.
+
+Covering-mass growth is a separate theorem: after deduplication,
+\[
+\mu(A)
+\;\ge\;
+\kappa(\log A)^2
+\]
+for some fixed \(\kappa>0\) and all sufficiently large \(A\). The
+constant \(\kappa\) must be recomputed from distinct events, not from
+the raw cell count.
+
+Once \(u(A)\le e^{-\gamma\mu(A)}\) and \(\mu(A)\ge\kappa(\log A)^2\)
+are proved, the algebra is elementary. Set
+\(A=\exp(c\sqrt{\log x})\). Then \((\log A)^2=c^2\log x\), so
+\[
+u(A)
+\;\le\;
+x^{-\gamma\kappa c^2}.
+\]
+Write \(\delta=\gamma\kappa c^2>0\). The density contribution is
+\(x\,u(A)\le x^{1-\delta}\). That algebra lives in
+`EPower/Asymptotics/DensityBound.lean`. It does not contain the
+transfer.
+
+---
+
+## Density-to-count transfer (separate)
+
+The remaining major issue is the passage from product-space covering
+density to the number of actual integers in \([x,2x]\).
+
+```lean
+structure DensityCountTransfer : Prop where
+  transfer : ...
+```
+
+The withdrawn claim that the discrepancy is \(O(H)\) must not be used
+unless it is independently proved. Residual moduli beyond the hub
+mean that periodicity modulo \(H\) alone does not give that bound.
+This is the principal analytic-number-theory bridge after the finite
+probability theorem.
+
+`EPower.lean` now inhabits named interfaces with the **combinatorial
+cores** listed below, not with the analytic H1/H2/transfer theorems.
+`e_power_core_holds` is that core. It is not \(S_A\ll x^{1-\delta}\).
+
+---
+
+## Kernel-checked core (22 August 2026)
+
+Layer A, `lean EPower.lean`, no `sorry`. What compiles:
+
+| Interface | What is proved | What is not proved |
+| --- | --- | --- |
+| Dedup | `events = eraseDups cellEvents`; union of covered integers is unchanged | — |
+| Hub split | `smoothPart * largePart = q`; large part is \(T\)-rough; **`gcd(s,ℓ)=1`** (`gcd_smooth_large`); `smoothPart q ∣ H` (`hubOf_dvd`) | — |
+| Fibre law | On a compatible fibre, the event hits exactly one of \(\ell\) residues (`fibre_hit_count`). Hub-forced (\(\ell=1\)) covers the whole fibre | — |
+| Fibre quantities | Exact `μ_ρ`, `Δ_ρ`, `δ_ρ`. Pair mass is `1/lcm` or `0` for every pair (`pair_hit_count`, `pair_hit_compatible`), including `gcd>1`. Janson `Δ` is `deltaHit` (dependent pairs only). Two-event Titu: `janson_mass_two`. Sequential Janson I: `hit_among_independent`, `janson_hit_lower`, `janson_step` | Exponential \(P\le\exp(-\sum p/(1+\delta))\) and Harris/FKG. `FibreSuenHypothesis` |
+| Residual reduction | On a hub-surviving fibre, `avoids` equals residual-event `avoids` (`avoids_eq_residual`). Periodic fibres: `fibreUncovered_periodic`, `uncovered_periodic_mul`. Unique residual class on a coprime fibre (`fibre_congruence_count`) | — |
+| Finite Suen / H2 | One-modulus avoid; CRT; empty-graph product `∏(q_i−1)` (`independent_avoid_prod`, `avoid_coprime_extension`). Surviving fibre with pairwise-coprime residuals: `fibreUncovered = evMissProd` (`fibre_independent_count`). Dependent sequential step: `γ ≥ p − Δ_{\mathrm{nbr}}/\|U\|` (`janson_hit_lower`), not `γ ≥ p/(1+δ)` | `P_ρ ≤ 2^{-γ k²}` (`FibreSuenHypothesis`). Coprime packing cannot supply two-log mass |
+| Mass growth | Termwise \(1/q\ge 1/(4acd)\); `c=d=1` slice has distinct moduli (`slice_q_nodup`). `eventMass` is harmonic \(\sum 1/q\) | Deduplicated \(\mu(A)\ge k^2/\kappa\) (`DedupTwoLogMass`, harmonic, not event count). Raw \(H_5/4\,H_A^2\) factorisation |
+| Two-stage identity | Exact product-space count: uncovered on \(\mathbb{Z}/HL\) equals the sum of fibre counts (`two_stage_count`). Hub-forced fibres contribute \(0\) (`two_stage_survivors`) | — |
+| Finite density assembly | H1\(\times\)H2 combination: `finite_density_combine` and `finite_product_density_of`. Integer form of \(u(A)\le 2^{-\gamma k^2}\) on \(\mathbb{Z}/H\times\mathbb{Z}/L\) | `HubExponentialHypothesis`, `FibreSuenHypothesis`, `FiniteProductDensityBound` themselves |
+| Transfer | Residue class: \(\le L/M+1\). Union of \(\lvert R\rvert\) classes: \(\le \lvert R\rvert(L/M+1)\). If \(\lvert R\rvert\le M\), \(\le L+M\) (`transfer_at_period`) | `PeriodSmallEnough`: a period \(M=o(x^{1-\delta})\). Transfer is **after** finite density |
+
+`e_power_core_holds` is the combinatorial core. `FiniteProductDensityBound` follows from H1 and H2 by `finite_product_density_of` and is **not** inhabited. The revival table withdrew inhabiting those hypotheses at the measured hubs. Transfer is not an input. Finite density \(u(A)\le\exp(-\gamma(\log A)^2)\) and \(S_A\ll x^{1-\delta}\) remain open. Do not read `ExceptionalPowerSaving` as those statements.
+
+---
+
+## Lean layout
+
+```
+EPower/Covering/{Cell,Event,Dedup}.lean
+EPower/Hub/{SmoothPart,PrimePowerHub,Fibre,ConditionalEvent}.lean
+EPower/Probability/{DependencyGraph,PairMass,FiniteSuen,FibreSuen}.lean
+EPower/Asymptotics/{CoveringMass,HubBound,FibreBound,DensityBound,Transfer}.lean
+EPower.lean
+```
+
+`EPower.lean` now holds the Layer A cores above. The split below is
+the intended later layout, not the present file. Conceptually:
+
+```lean
+theorem e_power_of
+    (hMass     : MassGrowth)
+    (hHub      : HubExponentialBound)
+    (hFibre    : FibreExponentialBound)
+    (hTransfer : DensityCountTransfer) :
+    ExceptionalPowerSaving := ...
+```
+
+Do not start by formalising the most general Suen inequality. Prove a
+finite version on these product spaces, or a specialised correlation
+inequality for congruence cylinders. Do not assume Suen is the
+shortest formal route.
+
+---
+
+## Computation as conjecture generation
+
+`e_power_fibre_moments.py` computes, for increasing \((A,T)\):
+
+- the deduplicated family;
+- the prime-power hub \(H=\operatorname{lcm}_i(s_i)\);
+- a Monte Carlo (or exact, when \(H\) is small) estimate of
+  \(P(\text{hub survives})\);
+- the distributions of \(\mu_\rho\), \(\Delta_\rho\), \(\delta_\rho\),
+  and \(-\mu_\rho+\Delta_\rho e^{2\delta_\rho}\);
+- the worst fibres, not only means.
+
+The purpose is to identify plausible uniform inequalities such as
+\[
+P(\text{hub survives})
+\;\le\;
+e^{-\gamma_H\mu(A)},
+\qquad
+\Delta_\rho\, e^{2\delta_\rho}
+\;\le\;
+(1-\theta)\mu_\rho
+\]
+with explicit constants. Those become candidate lemmas. They are not
+proofs.
+
+The older scripts `e_power_suen_moments.py` and
+`e_power_suen_moments_large.py` remain the surrogate-mass check for
+Lemma SM. They do not compute fibre quantities.
+
+**First fibre scan** (`e_power_fibre_moments.py`, 200 product-space
+samples; `e_power_fibre_moments_A8.json`). Deduplication is visible
+already at these widths (180 cells → 170 events at \(A=6\); 320 → 300
+at \(A=8\)). Estimated hub-survival coefficients
+\(\hat\gamma_H=-\log P(\mathrm{hub})/\mu\) sit near \(0.10\)–\(0.19\).
+The fibre Suen exponent \(-\mu_\rho+\Delta_\rho e^{2\delta_\rho}\) has
+negative mean at \(T=5\), but a positive tail (and a positive mean at
+\(A=8\), \(T=3\)). That is consistent with H1/H2 as a split, and with
+the need for a large enough hub; it is not a uniform H2 check.
+
+| \(A\) | \(T\) | events | \(\mu\) | \(P(\mathrm{hub})\) | \(\hat\gamma_H\) | mean Suen exp. |
+|------:|------:|-------:|--------:|--------------------:|-----------------:|---------------:|
+| 6 | 3 | 170 | 3.38 | 0.68 | 0.11 | \(-0.43\) |
+| 6 | 5 | 170 | 3.38 | 0.54 | 0.19 | \(-1.85\) |
+| 8 | 3 | 300 | 4.04 | 0.67 | 0.10 | \(+2.19\) |
+| 8 | 5 | 300 | 4.04 | 0.53 | 0.16 | \(-1.47\) |
+
+---
+
+## Lemma SM (surrogate second moments; proved on paper)
 
 Let \(Q(A)\) be the moduli \(q=4acd-1\) of the Lean cells
-\(1\le a,c\le A\), \(1\le d\le 5\). Write \(\mu(A)=\sum 1/q\) and
+\(1\le a,c\le A\), \(1\le d\le 5\). Write \(\mu_{\mathrm{raw}}(A)=\sum 1/q\) and
 \(\mu_\ell(A)=\sum_{\ell\mid q}1/q\). Let
-\(\Delta(A,T)=\sum_{\ell>T}\mu_\ell^2\) (an upper bound for Suen's
-pair-mass) and
-\(\delta_{\mathrm{ub}}(A,T)=\max_q\sum_{\ell\mid q,\,\ell>T}\mu_\ell\)
-(an upper bound for Suen's neighbour mass). There is an absolute
-effective \(C\) such that for all \(A\ge 3\) and \(3\le T\le 20A^2\),
+\(\Delta_{\mathrm{surr}}(A,T)=\sum_{\ell>T}\mu_\ell^2\) (an upper bound
+candidate for a *different* pair-mass) and
+\(\delta_{\mathrm{ub}}(A,T)=\max_q\sum_{\ell\mid q,\,\ell>T}\mu_\ell\).
+There is an absolute effective \(C\) such that for all \(A\ge 3\) and
+\(3\le T\le 20A^2\),
 \[
-\Delta(A,T)
+\Delta_{\mathrm{surr}}(A,T)
 \;\le\;
-C\Bigl(\frac{\mu(A)^2}{T}+\frac{(\log 2A)^2}{\sqrt T}+\log\log(2A^2+3)-\log\log T+1\Bigr),
+C\Bigl(\frac{\mu_{\mathrm{raw}}(A)^2}{T}+\frac{(\log 2A)^2}{\sqrt T}+\log\log(2A^2+3)-\log\log T+1\Bigr),
 \]
 \[
 \delta_{\mathrm{ub}}(A,T)
 \;\le\;
-C\mu(A)\Bigl(\frac{\log 2A}{T\log T}+\frac{1}{\sqrt T\log 2A}\Bigr).
+C\mu_{\mathrm{raw}}(A)\Bigl(\frac{\log 2A}{T\log T}+\frac{1}{\sqrt T\log 2A}\Bigr).
 \]
-On the E_power schedule \(T=\mu/\eta\) with fixed \(\eta\in(0,1/4]\)
-one has \(\mu\asymp(\log A)^2\), hence \(T\asymp(\log A)^2\), and both
-remainders are \(o(\mu^2/T)\) and \(O(\mu/T)\) respectively. In
-particular \(\Delta e^{2\delta_{\mathrm{ub}}}=O(\eta\mu)\), which is
-the input CDL needs.
+On the schedule \(T=\mu_{\mathrm{raw}}/\eta\) with fixed
+\(\eta\in(0,1/4]\) one has \(\mu_{\mathrm{raw}}\asymp(\log A)^2\),
+hence \(T\asymp(\log A)^2\), and both remainders are
+\(o(\mu_{\mathrm{raw}}^2/T)\) and \(O(\mu_{\mathrm{raw}}/T)\).
+
+**This does not imply Suen's inequality on the fibres.** It may be a
+useful comparison bound if a separate argument relates
+\(\Delta_{\mathrm{surr}}\) to \(\Delta_\rho\).
 
 **Proof.** (i) *Divisors in an arithmetic progression.* For \(x\ge 1\),
 \(q\ge 1\), \(a\in\mathbb{Z}\),
@@ -158,8 +442,8 @@ by (ii).
 \]
 The first sum is \(\ll 1/T\), the second \(\ll T^{-1/2}\), and the third
 is \(\ll\log\log(2A^2)-\log\log T+1\) by Mertens. Since
-\(\mu(A)\asymp(\log A)^2\) (double harmonic of \(1/(ac)\), \(d\le 5\)),
-the leading term is \(\ll\mu^2/T\).
+\(\mu_{\mathrm{raw}}(A)\asymp(\log A)^2\), the leading term is
+\(\ll\mu_{\mathrm{raw}}^2/T\).
 
 (v) *Neighbour mass.* For a fixed cell of modulus \(q\le 20A^2\),
 \[
@@ -170,202 +454,132 @@ the leading term is \(\ll\mu^2/T\).
 \]
 The first inner sum is \(\le\omega_{>T}(q)/T\le(\log q)/(T\log T)\). The
 second is \(\le\omega(q)\,T^{-1/2}\le(\log q)\,T^{-1/2}/\log 2\).
-Multiplying by \((\log 2A)^2\asymp\mu\) gives the stated bound on
-\(\delta_{\mathrm{ub}}\).
+Multiplying by \((\log 2A)^2\asymp\mu_{\mathrm{raw}}\) gives the stated
+bound on \(\delta_{\mathrm{ub}}\).
 
-On \(T=\mu/\eta\asymp(\log A)^2\) the remainders of (iv) are
-\(o(\mu^2/T)\) and \(\delta_{\mathrm{ub}}=O(\mu/T)\), so
-\(\Delta e^{2\delta_{\mathrm{ub}}}=O(\eta\mu)\). \(\square\)
+On \(T=\mu_{\mathrm{raw}}/\eta\asymp(\log A)^2\) the remainders of (iv)
+are \(o(\mu_{\mathrm{raw}}^2/T)\) and
+\(\delta_{\mathrm{ub}}=O(\mu_{\mathrm{raw}}/T)\). \(\square\)
 
-Lemma SM is the written estimate that §4e treated as a measurement.
-CDL now takes it as input: \(T=\mu/\eta\) with a fixed small
-\(\eta\in(0,1/4]\), hence \(\Delta e^{2\delta}=O(\eta\mu)\), and the
-conditioned uncovered density satisfies
-\[
-u(A)
-\;\le\;
-\exp\bigl(-(1-O(\eta))\,\mu(A)\bigr)
-\;=\;
-\exp\bigl(-(1-O(\eta))\,\kappa_{\mathrm{cov}}\log^2 A\bigr).
-\]
-Fixed \(A\) is the density theorem of plan §4e. Growing \(A\) uses the
-same inequality with the \(T\)-schedule of the next lemma. Prime-\(m\)
-cells (plan §4d, \(\kappa^*\approx 0.29\)) are the singleton-support
-case and are included; composite cells are what the hub is for.
-
-This is the organization that raw truncation does not supply. Bonferroni
-at \(\mu\approx 2.2\) oscillates; Suen does not.
-
-**Second-moment check (\(A=24\to 240\); `e_power_suen_moments.py`).**
-The §4e gates were at \(A=24\)–\(48\). The Lean covering cells
-(\(q=4acd-1\), E_power's object) were run at
-\(A\in\{24,48,80,120,160,200,240\}\) and \(T\in\{13,23,37,53,97\}\).
-Write \(R_\Delta=T\sum_{\ell>T}\mu_\ell^2/\mu^2\) and
-\(R_\delta=T\,\delta_{\mathrm{ub}}/\mu\).
-
-Lean family, \(R_\Delta\) at fixed \(T\):
-
-| \(A\) | \(T=13\) | \(T=23\) | \(T=37\) | \(T=53\) | \(T=97\) |
-|------:|---------:|---------:|---------:|---------:|---------:|
-| 24 | 0.244 | 0.225 | 0.238 | 0.198 | 0.149 |
-| 48 | 0.229 | 0.204 | 0.213 | 0.188 | 0.160 |
-| 80 | 0.222 | 0.197 | 0.205 | 0.177 | 0.156 |
-| 120 | 0.219 | 0.195 | 0.203 | 0.177 | 0.156 |
-| 200 | 0.216 | 0.192 | 0.199 | 0.174 | 0.153 |
-| 240 | 0.215 | 0.190 | 0.198 | 0.173 | 0.153 |
-
-OLS of \(R_\Delta\) against \(\log A\) has slope \(-0.012\) to
-\(-0.016\) at \(T\le 53\), and \(+0.00004\) (flat) at \(T=97\). The
-shape \(\Delta\ll\mu^2/T\) **persists and does not grow with \(A\)**
-on this range. Implied constant \(R_\Delta\approx 0.15\)–\(0.25\).
-
-At **fixed** \(T=13\), the neighbour ratio \(R_\delta\) climbs
-\(1.56\to 2.54\) and the Suen loss \(\Delta e^{2\delta}/\mu\) explodes
-(\(1.2\to 1400\)). That is why Lemma Transfer takes \(T=\mu/\eta\), not
-a fixed hub. Along the schedule \(T/\mu\approx 4.5\)–\(5\):
-
-| \(A\) | \(T\) | \(T/\mu\) | \(R_\Delta\) | \(R_\delta\) | \(\Delta/\mu\) | loss/\(\mu\) |
-|------:|------:|----------:|-------------:|-------------:|---------------:|-------------:|
-| 24 | 37 | 4.40 | 0.238 | 1.80 | 0.054 | 0.122 |
-| 48 | 53 | 4.56 | 0.188 | 2.23 | 0.041 | 0.110 |
-| 80 | 53 | 3.69 | 0.177 | 2.09 | 0.048 | 0.149 |
-| 200 | 97 | 4.85 | 0.153 | 1.97 | 0.031 | 0.071 |
-| 240 | 97 | 4.57 | 0.153 | 1.94 | 0.034 | 0.078 |
-
-On that slice \(R_\delta\) is flat, the Suen loss stays \(<0.15\,\mu\),
-and \(R_\Delta\) has already fallen to \(0.15\). This is the small-\(c\)
-window of E_power. The \(A=48\) extrapolation does not fail at the
-first decade of growth.
-
-The plan-\((a,d,m)\) family (large primes of \(m\)) has much smaller
-\(R_\Delta\) and does not reproduce the cited \(0.141\to 0.057\)
-\(T\)-scaling under this \(\Delta=\sum\mu_\ell^2\) normalisation; E_power
-uses the Lean cells, where \(R_\Delta\sim 0.22\) at \(A=48\), \(T=13\)
-is the same order as that citation.
-
-**Extended check (\(A=400\to 2000\); `e_power_suen_moments_large.py`).**
-Lemma SM is the bound for every \(A\); the scan is the implied
-constant, not existence. Lean cells only, two-pass, same mass \(1/q\).
-\(A\in\{400,800,1200,1600,2000\}\), \(T\in\{13,37,97,199,409\}\).
-
-Lean family, \(R_\Delta\) at fixed \(T\):
-
-| \(A\) | \(\mu\) | \(T=13\) | \(T=37\) | \(T=97\) | \(T=199\) | \(T=409\) |
-|------:|--------:|---------:|---------:|---------:|----------:|----------:|
-| 400 | 24.92 | 0.212 | 0.196 | 0.153 | 0.131 | 0.121 |
-| 800 | 30.39 | 0.211 | 0.195 | 0.154 | 0.130 | 0.119 |
-| 1200 | 33.84 | 0.210 | 0.195 | 0.155 | 0.130 | 0.119 |
-| 1600 | 36.41 | 0.209 | 0.195 | 0.156 | 0.130 | 0.119 |
-| 2000 | 38.46 | 0.209 | 0.195 | 0.157 | 0.131 | 0.119 |
-
-At \(T=13\) and \(T=199,409\), \(R_\Delta\) is flat or still falling.
-At \(T=97\) it drifts \(0.153\to 0.157\) because that hub is leaving
-the schedule (\(T/\mu: 3.89\to 2.52\)). Implied constant
-\(R_\Delta\approx 0.12\)–\(0.21\), the same range as \(A\le 240\).
-
-Along \(T/\mu\approx 5\):
-
-| \(A\) | \(T\) | \(T/\mu\) | \(R_\Delta\) | \(R_\delta\) | \(\Delta/\mu\) | loss/\(\mu\) |
-|------:|------:|----------:|-------------:|-------------:|---------------:|-------------:|
-| 400 | 97 | 3.89 | 0.153 | 2.44 | 0.039 | 0.138 |
-| 800 | 199 | 6.55 | 0.130 | 2.53 | 0.020 | 0.043 |
-| 1200 | 199 | 5.88 | 0.130 | 3.29 | 0.022 | 0.068 |
-| 1600 | 199 | 5.47 | 0.130 | 3.21 | 0.024 | 0.077 |
-| 2000 | 199 | 5.17 | 0.131 | 3.16 | 0.025 | 0.086 |
-
-On that slice \(R_\Delta\) has settled at \(0.13\), \(R_\delta\) is
-\(O(1)\) (\(2.4\)–\(3.3\)), and the Suen loss stays \(<0.15\,\mu\).
-Fixed \(T=13\) remains the trap (loss \(6\cdot 10^3\to 1.5\cdot 10^7\)).
-The shape of Lemma SM holds through \(A=2000\). It is not a check at
-\(A=10^4\); past this range the lemma, not the table, is the bound.
+**Surrogate check (\(A=24\to 2000\)).** The tables of the withdrawn
+note are unchanged as measurements of \(\Delta_{\mathrm{surr}}\)
+(`e_power_suen_moments.py`, `e_power_suen_moments_large.py`). Along
+\(T/\mu_{\mathrm{raw}}\approx 5\), the ratio
+\(R_\Delta=T\Delta_{\mathrm{surr}}/\mu_{\mathrm{raw}}^2\) settles near
+\(0.13\) and the *surrogate* loss stays \(<0.15\,\mu_{\mathrm{raw}}\).
+That is not a fibre Suen check.
 
 ---
 
-## Lemma Transfer (count at small \(c\); claimed)
+## Withdrawn claim (21 August)
 
-Take \(A=\exp(c\sqrt{\log x})\) and \(\alpha=\kappa_{\mathrm{cov}}c^2\),
-so \(\mu(A)\sim\alpha\log x\). Hub modulus
-\(M_T=\prod_{p\le T}p=\exp(\theta(T))\) with \(T=\mu/\eta\) has
+The statement
 \[
-M_T
-\;=\;
-x^{\alpha/\eta+o(1)}.
+S_A(x,2x)\ll x^{1-\delta}
+\qquad\text{via one-stage hub-conditioned Suen plus }O(M_T)
 \]
-Choose \(\eta=1/4\) and \(c>0\) small enough that \(\alpha/\eta<1/2\)
-and the Suen loss \(O(\eta)\) leaves a positive net exponent. Then:
+is **not a theorem of this note**. It remains a target of the
+two-stage programme plus transfer. Vaughan, Mathematika **17** (1970),
+193–198, is still the published comparison point
+(\(\ll x\exp(-c(\log x)^{2/3})\)). A compiled power of \(x\) would sit
+strictly above that bound and still below the k-budget. It is not
+available today.
 
-- the main term, summed over residues \(\rho\bmod M_T\), is
-  \(\ll x\cdot\exp(-(1-O(\eta))\mu)=x^{1-(1-O(\eta))\alpha}\);
-- the discrepancy is \(O(M_T)=O(x^{\alpha/\eta})\), strictly smaller
-  than the main term.
-
-The same small-\(c\) constraint is the §4h fundamental-lemma cap
-\((\log z)^2\lesssim\log x\) with \(z\) the largest covering modulus
-retained (\(z\asymp A^2\), \(\log z\asymp 2c\sqrt{\log x}\)). Both
-constraints are satisfied for an effective interval of \(c\).
+**Gate A.** Roadmap §6 is a paper in the sieve literature if and when
+the finite density theorem and the transfer are proved. Gate A does
+**not** pass `AnalyticSurvivorBound` into Lean. Formalising a
+power-saving count under that name would encode a result that does
+not empty the box.
 
 ---
 
-## Theorem E_power (claimed)
+## Current reading of the evidence
 
-There exist effective constants \(c,\delta,X_0>0\) such that for all
-\(x\ge X_0\) and \(A=\exp(c\sqrt{\log x})\),
-\[
-S_A(x,2x)
-\;\ll\;
-x^{1-\delta}.
-\]
-The implied constant is effective. Consequently the number of
-\(n\in[x,2x]\) for which \(4/n\) is not a sum of three unit fractions
-is \(\ll x^{1-\delta}\).
+The original written proof is not correct as stated, particularly in
+its treatment of conditioning.
 
-Proof: Lemma CDL at this \(A(x)\) with the \(T\)-schedule of Lemma
-Transfer; exceptions \(\subseteq\) survivors. Explicitly,
-\(\delta=(1-O(\eta))\kappa_{\mathrm{cov}}c^2\) for the admissible
-\((c,\eta)\) above. A numerical \(\delta\) is not the content; positivity
-and effectivity are.
+Unconditional deduplicated mass still looks two-log: \(\mu(A)/(\log A)^2\)
+falls toward \(H_5/4\) through \(A=256\), and about 95% of cells survive
+`eraseDups`. `DedupTwoLogMass` is now the harmonic statement
+\(\mu(2^k)\ge k^2/\kappa\), still uninhabited. The old event-count form
+was vacuous (\(\lvert\mathrm{events}\rvert\sim A^2\gg k^2\)).
 
-**Honest comparison.** Vaughan, Mathematika **17** (1970), 193–198:
-exceptions among all \(n\le x\) are \(\ll x\exp(-c(\log x)^{2/3})\).
-E_power is a power of \(x\), strictly stronger. The objects match
-(all \(n\), not only hard primes). E_lane remains the \(d=1\)
-ClassRough floor, weaker than Vaughan, because that lane carries only
-\(\log A\) mass. This theorem is the full-box record; that one is the
-aligned-prime floor. Both are claimed; they are not the same bound.
+On surviving fibres the usable Janson mass is not two-log. At \(T=3\),
+the worst-fibre Titu ratio \(\mu_\rho^2/(\mu_\rho+2\Delta_\rho)\) tracks
+\(1.17\ln A\) from \(A=16\) to \(A=32\), while \(k^2=(\log_2 A)^2\) is
+already larger at \(A=8\) and pulling away. Pair tax \(\Delta_\rho/\mu_\rho\)
+is rising. Hub survival at \(T=3\) is exactly \(2/3\) on every enumerated
+\(H=3^k\), so H1 as \(P\le 2^{-\gamma k^2}\) fails for fixed \(T\).
 
-**Gate A.** Roadmap §6: this theorem is a paper in the sieve literature;
-it is not Lean. The write-up is this note. Gate A does **not** pass
-`AnalyticSurvivorBound` into Lean:
-that interface asks for zero large hard survivors, i.e. mass
-\(>\log x\), which is the k-budget ceiling. Formalising a power-saving
-count under that name would encode a result that does not empty the
-box. Write it on paper; do not compile it as QED progress.
+A \(T\in\{3,5,7,11\}\) grid at \(A=8,16,32\) does not repair the split.
+Unconditionally, the first primes above \(T\) each divide \(8\)–\(15\%\)
+of \(T\)-rough parts (stable in \(A\)). On surviving fibres those primes
+own \(\Delta_\rho\). Raising \(T\) deletes one column and hands the tax
+to the next prime, or (at \(T=11\)) kills \(\Delta\) and residual \(\mu\)
+together. Worst-fibre Titu at \(A=32\) is \(4.0\)–\(4.2\) for every \(T\),
+against \(k^2=25\). Even \(T=11\) only reaches \(-\log P/k^2\approx 0.07\)
+on 30 samples. Growing \(T\) is not a two-log schedule for this hub.
+These are finite-\(A\) measurements, not a proof that the Titu mass is
+\(o((\log A)^2)\), but they are why Harris/FKG is the wrong next Lean
+step: it upgrades \(\gamma\), not the mass.
+
+The exponent, if it exists, is split between hub elimination and
+large-prime coverage inside surviving fibres. A coefficient
+substantially below \(1\) would still suffice for
+\(E(x)\ll x^{1-\delta}\). No asymptotic conclusion should be drawn
+from the surrogate tables.
 
 ---
+
+## Priority
+
+1. Deduplicate the covering-event family (Lean: done as definitions
+   and the union-invariance theorem).
+2. Implement the exact prime-power hub decomposition (definitions;
+   `q=s\ell` still computational).
+3. Formalise hub fibres and conditional events (Lean: fibre card
+   \(\ell\) and \(P=1/\ell\) on a compatible fibre).
+4. Define exact \(\mu_\rho,\Delta_\rho,\delta_\rho\) (Python; not Lean).
+5. Extend the numerical experiments to search for uniform fibre
+   inequalities (`e_power_fibre_moments.py`).
+6. Specialised Suen / Harris: **stopped.** Independent one-modulus
+   count is done; do not inhabit H2 from it.
+7. Finite two-stage density: **withdrawn** as the next Lean object
+   (`erdos-straus-E-power-decision.md`).
+8. Covering-mass growth after deduplication: termwise
+   \(1/q\ge 1/(4acd)\) is done; two-log \(\kappa\) is uninhabited
+   and is not a substitute for density.
+9. Density-to-count transfer: AP seed \(L/M+1\) is done; residual
+   moduli are not. Do not start transfer without a genuine finite
+   density.
+10. Assemble `e_power_of` only after every dependency is
+    kernel-checked or an explicit external hypothesis. The current
+    `e_power_core_holds` is the combinatorial core, not the
+    exceptional-set theorem.
+
+**Immediate milestone:** recorded negative. Revival attempt 1
+(largest-prime residual) failed both revival numbers through
+\(A=32\). See `erdos-straus-E-power-decision.md`. Not inhabiting
+H1/H2. Not the exceptional-set count.
 
 ## What this is not
 
 - It is not QED, H_ES, or a retuned schedule that empties the box.
-- It is not a resolution of dummy covering. Dummy covering remains the
-  live kill of a QED-scale ClassRough box; extra ClassRough slices that
-  do not cut are not mass. Covering *cells* on integers still cut
-  residue classes, which is why this count survives that kill.
+- It is not a resolution of dummy covering.
 - It is not E_lane, T(A)\(^+\), or the T(3) lower bound.
-- It does not use spectral Selberg-\(L^2\) organization (plan §4n rungs
-  3/3b). That is the H_ES road. This theorem uses Suen on the cells.
-- It is not Lean.
+- It is not a compiled improvement on Vaughan.
+- Lemma SM is not Suen on the fibres.
 
-**Dies if** Lemma SM fails (it is proved) or if the implied ratios
-\(R_\Delta\), \(R_\delta\) grow with \(A\) on the schedule \(T\asymp\mu\)
-badly enough that \(\Delta e^{2\delta}\) is no longer \(O(\eta\mu)\).
-They do not, on \(A=24\to 2000\)
-(`e_power_suen_moments.py`, `e_power_suen_moments_large.py`):
-\(R_\Delta\) settles at \(0.13\) along \(T/\mu\approx 5\), and the
-Suen loss stays \(<0.15\,\mu\). Also dies if no positive \((c,\eta)\)
-makes the discrepancy smaller than the Suen main term — the same
-small-\(c\) constraint already in Lemma Transfer.
+**Died, on the measured range, as two-stage density.** H1 and H2
+fail the revival table at the prime-power hub and at the
+largest-prime residual split through \(A=32\). Unconditional
+deduplicated mass still tracks toward \(H_5/4\); that is not
+density. Transfer was never reached.
 
-**Next.** Record this note with `erdos-straus-E-partial.md` and plan
-§§4e, 4h against the Halberstam–Richert / *Opera de Cribro*
-lineage. Do not densify covering. Do not run \(x=10^{10}\). Do not
-assault H_ES. Do not discharge `AnalyticSurvivorBound`.
+**Next.** Revival attempt 1 (largest-prime residual) failed both
+numbers through \(A=32\). Stop. See `erdos-straus-E-power-decision.md`.
+Do not inhabit H1/H2. Do not formalise Harris/FKG. Do not start a
+second split without a written reason both numbers would pass. Do not
+restore the one-stage CDL. Do not treat \(O(H)\) as a discrepancy
+bound. Do not densify covering. Do not run \(x=10^{10}\). Do not
+discharge `AnalyticSurvivorBound`.

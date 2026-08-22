@@ -87,9 +87,10 @@ parametrization-invariant across the covering and divisor coordinates.
   escapees have p + 4 free of 3-mod-4 factors (the a = 1 mechanism is
   exact).
 - *Trace:* plan §4q, §4r; §4h / `erdos-straus-E-partial.md` (E_partial:
-  Layer 0 is E_power, claimed as the \(x^{1-\delta}\) covering-box bound
-  (`erdos-straus-E-power.md`), not `AnalyticSurvivorBound`; Gate A forbids
-  compiling it as QED progress).
+  Layer 0 is E_power, a recorded negative for the \(x^{1-\delta}\)
+  covering-box bound (`erdos-straus-E-power.md`,
+  `erdos-straus-E-power-decision.md`), not `AnalyticSurvivorBound`; Gate A forbids
+  compiling a power-saving count as QED progress).
 
 ### R5. Splitness compatibility
 C must locate the arithmetic where this surface actually keeps it: in

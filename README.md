@@ -9,10 +9,13 @@
 > not Lean.
 
 > [!NOTE]
-> **Project report (v0.2, 22 August 2026).** A compiled survey of this
+> **Project report (v0.3, 22 August 2026).** A compiled survey of this
 > public archive is
-> **[erdos-straus-programme-report-v0.2.pdf](erdos-straus-programme-report-v0.2.pdf)**.
-> LaTeX source: [`erdos-straus-programme-report-v0.2.tex`](erdos-straus-programme-report-v0.2.tex).
+> **[erdos-straus-programme-report-v0.3.pdf](erdos-straus-programme-report-v0.3.pdf)**.
+> LaTeX source: [`erdos-straus-programme-report-v0.3.tex`](erdos-straus-programme-report-v0.3.tex).
+> This supersedes v0.2: the E_power theorem is **withdrawn** (one-stage
+> CDL and two-stage hub density failed through \(A=32\)). Current
+> record: `erdos-straus-E-power.md`, `erdos-straus-E-power-decision.md`.
 
 ## Novel results (unverified)
 
@@ -26,7 +29,7 @@ the stated axioms; they are still not a solution.
 | T(3)+ : S(3,x) ≪ (log x)^(−3/2). Matching lower bound open (stalls at q > x^(1/2)). | written claim | **unverified** | `erdos-straus-T-3.md` |
 | T(A)+ at fixed A: aligned-prime Selberg bound. Γ-inflation o(log² A). Does not empty a QED-scale box. | written claim | **unverified** | `erdos-straus-T-A.md` |
 | E_lane: d=1 floor ≪ x exp(−c′ √log x · log log x). Below Vaughan. | written claim | **unverified** | `erdos-straus-T-A.md` |
-| E_power: covering-box S_A ≪ x^(1−δ) at A = exp(c √log x). Above Vaughan, below k-budget. Not `AnalyticSurvivorBound`. | written claim | **unverified** | `erdos-straus-E-power.md` |
+| E_power: one-stage CDL **withdrawn**. Prime-power-hub H1/H2 density **withdrawn**. Revival 1 (largest-prime residual) **failed** both numbers through \(A=32\); recorded negative. Combinatorial core stands. Not `AnalyticSurvivorBound`. | repair / programme | **unverified** | `erdos-straus-E-power.md`, `erdos-straus-E-power-decision.md`, `EPower.lean` |
 | Dummy covering: extra slices with cond ≡ 1 do not cut. Live kill of a QED-scale ClassRough schedule. | written claim | **unverified** | `erdos-straus-E-partial.md` |
 | No bilinear cell at the Bombieri–Vinogradov wall (M+N=1 and Q=1/2). | negative | **unverified** | `erdos-straus-T-3.md` |
 | r_χ → Kloosterman range no-go at Q = x^(1/2+). | negative | **unverified** | `erdos-straus-T-3.md` |
@@ -54,7 +57,7 @@ record of human coauthorship of the mathematics.
 A layered formalization of covering-landing and the Bright–Loughran
 geometry around the conjecture lives below. Programme notes (same
 directory as this file):
-`erdos-straus-programme.md` (v0.23 programme brief; geometry is theory-building, not QED),
+`erdos-straus-programme.md` (v0.24 programme brief; E_power recorded negative; geometry is theory-building, not QED),
 `erdos-straus-gs-reformulation.md` (analytic-lane dictionary: G–S /
 Heath-Brown; no new theorems),
 `erdos-straus-novel-structures-plan.md` (research record, §4v joint-lane freeze),
@@ -86,11 +89,12 @@ by distinct mechanisms at the same varying-modulus correlation; not
 T(3) progress),
 `erdos-straus-sieve-desk.md` (analytic worklist: T(A)\(^+\) /
 \(C_{\mathrm{sieve}}(A)\); E_lane; E_power; T(3) completion; do not densify covering),
-`erdos-straus-E-partial.md` (Gate A: E_power is the paper; still not
-`AnalyticSurvivorBound`),
-`erdos-straus-E-power.md` (claimed: \(S_A(x,2x)\ll x^{1-\delta}\), below
-the k-budget, above Vaughan; Lemma SM; second-moment check through
-\(A=2000\)),
+`erdos-straus-E-partial.md` (Gate A: E_power is a recorded negative;
+still not `AnalyticSurvivorBound`),
+`erdos-straus-E-power.md` / `erdos-straus-E-power-decision.md`
+(22 Aug 2026: one-stage CDL withdrawn; prime-power-hub H1/H2 density
+withdrawn; revival 1 failed; recorded negative; combinatorial core in
+`EPower.lean`),
 `erdos-straus-loughran-orbit.md` (geometric questions: the class
 statement, what is not a proof path),
 `erdos-straus-prior-archive.md` (prior Track-1 archive as library,
@@ -104,7 +108,13 @@ forbids finite-parameter Type I/II catalogues),
 
 **Layer A (core):** `ErdosStraus.lean`, `BrightLoughran.lean`, `ConicFiber.lean`,
 `TwistDescent.lean`, `SchinzelSep.lean`, `SchinzelDecide.lean`,
-`NoVieta.lean` — bare Lean,
+`NoVieta.lean`, `EPower.lean` (combinatorial cores: hub \(q=s\ell\)
+with \(\gcd(s,\ell)=1\), fibre \(1/\ell\), exact \(\mu_\rho,\Delta_\rho,\delta_\rho\),
+two-stage count identity, H1\(\times\)H2 combination algebra,
+empty-graph Suen, sequential Janson I counting, one-log slice,
+transfer at a genuine period; H1/H2 exponentials, two-log mass,
+finite density, and small-period transfer remain named uninhabited
+hypotheses; two-stage hub density is a recorded negative) — bare Lean,
 Lean ≥ 4.33.0, no imports; axioms: `propext`, `Quot.sound`, plus
 `Lean.ofReduceBool` for the `native_decide` instances (see
 [audit](#audit-layer-a-axioms)).
@@ -142,6 +152,7 @@ lean TwistDescent.lean
 lean SchinzelSep.lean
 lean SchinzelDecide.lean
 lean NoVieta.lean
+lean EPower.lean
 ```
 
 Requires Lean ≥ 4.33.0.  No Mathlib, no `lake`.

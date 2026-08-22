@@ -740,11 +740,17 @@ the Suen density paper — with the explicit caveat that beating a 55-year recor
 a fully rigorous write-up before any Lean claim.
 
 **(Amendment, 21 Aug 2026.)** That write-up is `erdos-straus-E-power.md`.
-E_power is claimed: \(S_A(x,2x)\ll x^{1-\delta}\) at
+E_power was claimed: \(S_A(x,2x)\ll x^{1-\delta}\) at
 \(A=\exp(c\sqrt{\log x})\). Lemma SM is the second-moment input;
 the implied constant is checked through \(A=2000\). Gate A still
 forbids compiling it as QED. The claim is not
 `AnalyticSurvivorBound` and does not empty the box.
+
+**(Amendment, 22 Aug 2026.)** The one-stage claim is withdrawn. See
+`erdos-straus-E-power.md` and `EPower.lean`. The two-stage replacement
+failed the revival table through \(A=32\)
+(`erdos-straus-E-power-decision.md`). Recorded negative. Do not
+inhabit H1/H2.
 
 **5. The wall's final form: the mass–level inequality, at a marginal constant.** QED
 requires exceptional count x·exp(−mass) < 1, i.e. sifted mass > log x. Every sieve
@@ -1467,11 +1473,13 @@ T(3) lower bound is a three-step plan whose sharp remaining question
 of the triple, in the same frontier bucket as §9's Brauer-\(\alpha\)
 fusion; the \(r_\chi\to\) Kloosterman look is a range no-go at
 \(Q=x^{1/2+}\); T(A)\(^+\) / \(C_{\mathrm{sieve}}(A)\), **E_lane** (the \(d=1\)
-floor, below Vaughan), and **E_power** (covering-box \(S_A\ll x^{1-\delta}\),
-above Vaughan, `erdos-straus-E-power.md`) are written. Dies if \(c'\ge\kappa\) or if
+floor, below Vaughan) are written; **E_power** (covering-box
+\(S_A\ll x^{1-\delta}\)) is a recorded negative
+(`erdos-straus-E-power.md`, `erdos-straus-E-power-decision.md`).
+Dies if \(c'\ge\kappa\) or if
 \(\mathrm{cond}\equiv 1\) persists to QED-scale \(A\) (dummy covering
-mass). Do not run \(10^{10}\). Upgrades E_partial from record-candidate
-to E_power claimed (`erdos-straus-E-power.md`).
+mass). Do not run \(10^{10}\). Do not treat E_power as a claimed
+count.
 2. **C2 cross-moduli symbol-correlation computation.** Done 20 Aug:
    `c4_c2_symbols.py`, \(x=10^9\), \(A\le 80\). Covering Jacobi symbols
    are independent (mean \(|z_{\mathrm{cov}}|=0.73\) at \(A=80\)); C2
@@ -1479,8 +1487,9 @@ to E_power claimed (`erdos-straus-E-power.md`).
 3. **E_partial written as the vehicle for (1)–(2), through Gate A.**
    Done: `erdos-straus-E-partial.md`, `erdos-straus-E-power.md`. Layer 1 =
    T(A)\(^+\) at fixed \(A\) plus E_lane as the \(d=1\) floor. Layer 0 =
-   E_power, claimed: \(S_A\ll x^{1-\delta}\). Gate A still forbids
-   compiling that write-up as QED progress.
+   E_power, recorded negative: \(S_A\ll x^{1-\delta}\) withdrawn at
+   both one-stage and two-stage hubs. Gate A still forbids
+   compiling a power-saving count as QED progress.
    Dummy covering, not \(c'\) vs \(\kappa\), stops a retuned schedule.
    Not an assault on H_ES.
 4. **G–S reformulation memo.** Done: `erdos-straus-gs-reformulation.md`.
@@ -1488,8 +1497,8 @@ to E_power claimed (`erdos-straus-E-power.md`).
    lower-tail of dependent multiplicative statistics). Names the
    analytic-lane dictionary (Granville–Soundararajan / Lamzouri /
    Heath-Brown). The analytic worklist names T(A)\(^+\) /
-   \(C_{\mathrm{sieve}}(A)\), E_lane, and E_power as theorems already in
-   the archive and the T(3) completion step as the remaining question
+   \(C_{\mathrm{sieve}}(A)\) and E_lane as written claims, E_power as a
+   recorded negative, and the T(3) completion step as the remaining question
    (`erdos-straus-sieve-desk.md`, `erdos-straus-T-3.md`,
    `erdos-straus-T-A.md`). Character-sum
    cancellation is admissible against the k-budget invariant; naive
