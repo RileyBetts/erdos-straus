@@ -1,0 +1,11 @@
+---
+description: Rebuild the programme-report PDF whenever its TeX changes
+globs: erdos-straus-programme-report-*.{tex,pdf}
+alwaysApply: false
+---
+
+# Programme report PDF
+
+If you edit `erdos-straus-programme-report-*.tex`, rebuild the matching PDF
+in the same turn with `./build-programme-report.sh` and commit both files
+together. Never push TeX without the rebuilt PDF.

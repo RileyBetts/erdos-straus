@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# If a programme-report TeX file is staged, rebuild and stage its PDF.
+set -euo pipefail
+
+root="$(git rev-parse --show-toplevel)"
+cd "$root"
+
+stale=0
+while IFS= read -r -d '' path; do
+  name="$(basename "$path")"
+  case "$name" in
+    erdos-straus-programme-report-*.tex) stale=1 ;;
+  esac
+done < <(git diff --cached --name-only -z -- 'erdos-straus-programme-report-*.tex')
+
+if [[ "$stale" -eq 0 ]]; then
+  exit 0
+fi
+
+FORCE=1 ./build-programme-report.sh
+git add erdos-straus-programme-report-*.pdf

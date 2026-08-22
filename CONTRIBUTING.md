@@ -49,6 +49,17 @@ Numeric scripts:
 python3 -m pip install -r requirements.txt
 ```
 
+Programme report PDF (keep it in lockstep with the TeX):
+
+```bash
+./build-programme-report.sh
+```
+
+Commit the matching `erdos-straus-programme-report-*.pdf` in the same
+change as the TeX. A Cursor hook rebuilds the PDF after those edits;
+copy `.githooks/pre-commit` to `.git/hooks/pre-commit` so a staged TeX
+file cannot be committed without a rebuilt PDF.
+
 ## Scope
 
 Do not densify covering. Do not treat Bradford 2026, Bounded-A, or extra

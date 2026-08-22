@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "hooks": {
+    "afterFileEdit": [
+      {
+        "command": ".cursor/hooks/rebuild-report-pdf.sh",
+        "timeout": 90
+      }
+    ],
+    "stop": [
+      {
+        "command": ".cursor/hooks/rebuild-report-pdf-on-stop.sh",
+        "timeout": 90
+      }
+    ]
+  }
+}
