@@ -5,7 +5,7 @@
 Companion to `erdos-straus-T-A.md` (T(A)\(^+\)), `erdos-straus-T-3.md`
 (T(3)\(^+\) claimed; three-step lower-bound plan), candidates C4_1,
 `erdos-straus-E-partial.md` (Gate A), `erdos-straus-E-power.md`
-(E_power claimed), `erdos-straus-gs-reformulation.md`
+(E_power repaired; one-stage claim withdrawn), `erdos-straus-gs-reformulation.md`
 (dictionary of the joint lower-tail, not this note).
 
 This note is the analytic question list. It is not a theorem, not a
@@ -104,10 +104,10 @@ beyond BV and can stall. Two escapes for the paper's outlook: weaker
 Granville–Soundararajan circle). Selberg does not re-create the
 covering law. **E_lane claimed:** one dimension-uniform FL lemma
 gives \(E_{\mathrm{lane}}(x)\ll x\exp(-c'\sqrt{\log x}\,\log\log x)\),
-the \(d=1\) aligned-prime floor, below Vaughan. **E_power claimed:**
-\(S_A(x,2x)\ll x^{1-\delta}\) (`erdos-straus-E-power.md`), the
-covering-box count, above Vaughan, below the k-budget. Lemma SM is
-the second-moment input (checked through \(A=2000\)). Dummy covering
+the \(d=1\) aligned-prime floor, below Vaughan. **E_power repaired:** the one-stage \(S_A\ll x^{1-\delta}\) claim is
+withdrawn (`erdos-straus-E-power.md`). Two-stage finite density is
+the Lean target; transfer is separate. Lemma SM is a surrogate-mass
+input (checked through \(A=2000\)), not fibre Suen. Dummy covering
 remains the live kill of a QED ClassRough schedule. Details:
 `erdos-straus-T-A.md`, `erdos-straus-E-power.md`.
 
@@ -407,13 +407,14 @@ that is the valuable result. Do not densify in response.
 | This one | `erdos-straus-sieve-desk.md` | T(3) joint well-factorable CRT residue; \(C_{\mathrm{sieve}}(A)\); leftover \(\hat C\); dummy covering |
 | Statement | `erdos-straus-T-3.md` | T(3)\(^+\) claimed; three-step plan; frontier question |
 | Working | `erdos-straus-T-A.md` | T(A)\(^+\) uniform Selberg; E_lane the \(d=1\) floor |
-| Gate A paper | `erdos-straus-E-power.md` | \(S_A\ll x^{1-\delta}\); Suen + small-\(c\) transfer |
+| Gate A paper | `erdos-straus-E-power.md` | one-stage claim withdrawn; two-stage density + separate transfer |
 | Second, analytic | `erdos-straus-gs-reformulation.md` | Dictionary of the joint lower-tail; C2 is a **null**; conditioned pretentious tail if cond sticks |
 | Geometric | `erdos-straus-loughran-orbit.md` | Class-theory and effectivity; not a proof path |
 
 This note is a written question list. The theorems already in the archive
-are T(A)\(^+\) (\(C_{\mathrm{sieve}}(A)\)), E_lane (the \(d=1\) floor), and
-E_power (the covering-box \(x^{1-\delta}\)); the T(3) lower bound is the
+are T(A)\(^+\) (\(C_{\mathrm{sieve}}(A)\)) and E_lane (the \(d=1\) floor);
+E_power is a repaired two-stage programme, not a compiled
+\(x^{1-\delta}\) count; the T(3) lower bound is the
 three-step plan with named risk. Companions:
 `erdos-straus-T-A.md` and `erdos-straus-T-3.md`.
 Do not mix this with the geometric questions.
@@ -442,8 +443,9 @@ Do not mix this with the geometric questions.
 > \exp(o(\log^2 A))\); expected \(B(A)=O(\log A)\). Selberg does not
 > re-create the covering law. E_lane:
 > \(x\exp(-c'\sqrt{\log x}\,\log\log x)\) as the \(d=1\) floor, below
-> Vaughan. E_power: \(S_A(x,2x)\ll x^{1-\delta}\) as the covering-box
-> count, above Vaughan, below the k-budget (`erdos-straus-E-power.md`).
+> Vaughan. E_power: one-stage \(S_A\ll x^{1-\delta}\) withdrawn; the
+> live target is two-stage finite density plus transfer
+> (`erdos-straus-E-power.md`).
 > Dummy covering remains the live kill of a QED ClassRough schedule.
 > Pairs factor; the prime-aligned Euler
 > factor is \(0.91\) and flat; leftover \(\hat C=S/\prod\rho_a\) grows

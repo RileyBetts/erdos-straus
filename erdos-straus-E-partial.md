@@ -54,21 +54,17 @@ mass against the full box's \(\log^2 A\). E_power is that full-box
 bound, claimed in `erdos-straus-E-power.md`. This paragraph is the
 \(d=1\) floor, not that theorem.
 
-**Layer 0 (E_power, claimed).** Covering-congruence survivors among all
-integers:
-\[
-S_A(x,2x)\;\ll\; x^{1-\delta},
-\]
-for \(A=\exp(c\sqrt{\log x})\), effective \(c,\delta>0\)
-(`erdos-straus-E-power.md`). Hub-conditioned Suen/Janson organizes the
-cell events (raw Bonferroni diverges at \(\mu\approx 2.2\)); a
-small-\(c\) transfer turns the density into a count. Lemma SM
-(`erdos-straus-E-power.md`) is the second-moment bound; the implied
-constant is checked through \(A=2000\)
-(`e_power_suen_moments_large.py`). This sits below
-the k-budget ceiling and strictly above Vaughan. It does not empty the
-box and is not `AnalyticSurvivorBound`. Dummy covering does not apply
-to this object (covering cells on integers still cut).
+**Layer 0 (E_power, repaired programme).** The 21 August claim
+\(S_A(x,2x)\ll x^{1-\delta}\) via one-stage hub-conditioned Suen plus
+an \(O(M_T)\) transfer is **withdrawn**
+(`erdos-straus-E-power.md`, 22 Aug 2026). The surviving programme is a
+two-stage finite covering-density theorem and a separate
+density-to-count transfer. Lemma SM remains a surrogate-mass estimate,
+checked through \(A=2000\) (`e_power_suen_moments_large.py`); it is
+not Suen's fibre \(\Delta\). This layer still sits below the k-budget
+ceiling. It does not empty the box and is not
+`AnalyticSurvivorBound`. Dummy covering does not apply to this object
+(covering cells on integers still cut).
 
 Passage from Layer 1 to a *growing* \(A\) on the QED schedule
 \(A=\exp(c\sqrt{\log x})\) with \(\kappa c^2>1\) is **not included**.

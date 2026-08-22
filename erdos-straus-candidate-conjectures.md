@@ -202,9 +202,9 @@ Kloosterman look is a range no-go at the stall. T(A)\(^+\)
 uniform Selberg: \(\Gamma(\beta+1)e^{\gamma\beta}=\exp(o(\log^2 A))\)
 as a theorem; expected \(B(A)=O(\log A)\) (`c4_sieve_constant.py`).
 **E_lane claimed:** \(x\exp(-c'\sqrt{\log x}\,\log\log x)\) as the
-\(d=1\) floor, below Vaughan. **E_power claimed:**
-\(S_A\ll x^{1-\delta}\) as the covering-box count, above Vaughan
-(`erdos-straus-E-power.md`).
+\(d=1\) floor, below Vaughan. **E_power repaired:** one-stage
+\(S_A\ll x^{1-\delta}\) withdrawn; two-stage finite density is the
+target (`erdos-straus-E-power.md`).
 
 **Why this, not pairs.** Pair ratios \(\rho_{ab}/(\rho_a\rho_b)\) stay
 \(1.000\) out to \(A=120\) (`c4_two_shift_probe.py`,

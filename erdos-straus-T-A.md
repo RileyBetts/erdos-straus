@@ -647,10 +647,11 @@ expansion, compared to \(\hat C(A,x)\) at \(A\le 10\)–\(20\).
 
 **Next, in order.**
 
-1. **E_power claimed** (`erdos-straus-E-power.md`). Covering-box
-   \(S_A\ll x^{1-\delta}\); Lemma SM is proved and checked through
-   \(A=2000\). Gate A still forbids compiling that write-up as QED. E_lane
-   remains the \(d=1\) floor.
+1. **E_power repaired** (`erdos-straus-E-power.md`). One-stage
+   \(S_A\ll x^{1-\delta}\) withdrawn. Live target: two-stage finite
+   density plus transfer (`EPower.lean`). Lemma SM is a surrogate,
+   checked through \(A=2000\). Gate A still forbids compiling a
+   power-saving count as QED. E_lane remains the \(d=1\) floor.
 2. **T(3) lower bound**, three-step plan with named risk
    (`erdos-straus-T-3.md`): (a) Iwaniec per slice; (b) Brüdern–Fouvry;
    (c) completion of \(q>x^{1/2}\). Sharp frontier question (plan §4w,

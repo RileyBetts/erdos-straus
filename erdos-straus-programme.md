@@ -1,5 +1,5 @@
 <!-- Copyright (c) 2026 Riley Betts Ltd. SPDX-License-Identifier: MIT -->
-# Programme brief — Erdős–Straus archive v0.23
+# Programme brief — Erdős–Straus archive v0.24
 
 **21 August 2026.** This file is the programme brief for the git
 repository. It is not a theorem. **No proof of the Erdős–Straus
@@ -23,6 +23,28 @@ geometric question is occupancy of **one real component** of a surface that
 already has integral points in the other.
 Bright–Loughran Theorem 1.8 is treated as a non-obstruction statement, not
 as existence of a positive-octant integral point.
+
+**Postscript (v0.24).** The 21 August one-stage E_power claim is
+withdrawn (`erdos-straus-E-power.md`). Conditioning on a primorial
+does not preserve \(\sum 1/q\); \(\sum_{\ell>T}\mu_\ell^2\) is not
+Suen's \(\Delta\); \(O(M_T)\) is not a discrepancy bound. The
+programme is a two-stage finite covering-density theorem (hub
+exponential + residual fibre Suen) plus a separate density-to-count
+transfer. Lean combinatorial cores in `EPower.lean` (`lean EPower.lean`:
+hub \(q=s\ell\) with \(\gcd(s,\ell)=1\), fibre \(1/\ell\), exact
+\(\mu_\rho,\Delta_\rho,\delta_\rho\), two-stage count identity,
+`finite_product_density_of` assembling H1\(\times\)H2). H1/H2
+exponentials, two-log mass, `FiniteProductDensityBound`, and
+`PeriodSmallEnough` are named uninhabited hypotheses. Fibre numerics:
+`e_power_fibre_moments.py`, `e_power_residual_primes.py`.
+**Postscript (decision, 22 Aug).** Inhabiting H1/H2 at the prime-power
+hub is withdrawn as the next Lean object
+(`erdos-straus-E-power-decision.md`). Growing \(T\) does not make both
+\(-\log P/k^2\) and Titu\(/k^2\) two-log. Revival attempt 1
+(largest-prime residual) failed the same table through \(A=32\).
+Recorded negative on the measured range. Stop. Gate A still forbids
+`AnalyticSurvivorBound`. Not Lean-complete. Do not restore one-stage
+CDL. Do not densify covering.
 
 **Postscript (v0.23).** Joint monodromy independence (FKMS
 arXiv:2511.09459, gallant GKR) does not apply to

@@ -1,2 +1,2 @@
-# Numeric scripts in this repository (c4_*, e_power_*, t2_*, t3_*).
+# Numeric scripts in this repository (c4_*, e_power_*, e_power_fibre_*, t2_*, t3_*).
 numpy>=1.26,<3

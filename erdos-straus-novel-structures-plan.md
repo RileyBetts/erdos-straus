@@ -740,11 +740,15 @@ the Suen density paper — with the explicit caveat that beating a 55-year recor
 a fully rigorous write-up before any Lean claim.
 
 **(Amendment, 21 Aug 2026.)** That write-up is `erdos-straus-E-power.md`.
-E_power is claimed: \(S_A(x,2x)\ll x^{1-\delta}\) at
+E_power was claimed: \(S_A(x,2x)\ll x^{1-\delta}\) at
 \(A=\exp(c\sqrt{\log x})\). Lemma SM is the second-moment input;
 the implied constant is checked through \(A=2000\). Gate A still
 forbids compiling it as QED. The claim is not
 `AnalyticSurvivorBound` and does not empty the box.
+
+**(Amendment, 22 Aug 2026.)** The one-stage claim is withdrawn. See
+`erdos-straus-E-power.md` and `EPower.lean`. The live target is a
+two-stage finite density theorem plus a separate transfer.
 
 **5. The wall's final form: the mass–level inequality, at a marginal constant.** QED
 requires exceptional count x·exp(−mass) < 1, i.e. sifted mass > log x. Every sieve
