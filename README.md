@@ -9,13 +9,13 @@
 > not Lean.
 
 > [!NOTE]
-> **Project report (v0.2, 22 August 2026).** A compiled survey of this
+> **Project report (v0.3, 22 August 2026).** A compiled survey of this
 > public archive is
-> **[erdos-straus-programme-report-v0.2.pdf](erdos-straus-programme-report-v0.2.pdf)**.
-> LaTeX source: [`erdos-straus-programme-report-v0.2.tex`](erdos-straus-programme-report-v0.2.tex).
-> The v0.2 PDF's E_power theorem is **withdrawn**: one-stage CDL and
-> two-stage hub density failed through \(A=32\). Current record:
-> `erdos-straus-E-power.md`, `erdos-straus-E-power-decision.md`.
+> **[erdos-straus-programme-report-v0.3.pdf](erdos-straus-programme-report-v0.3.pdf)**.
+> LaTeX source: [`erdos-straus-programme-report-v0.3.tex`](erdos-straus-programme-report-v0.3.tex).
+> This supersedes v0.2: the E_power theorem is **withdrawn** (one-stage
+> CDL and two-stage hub density failed through \(A=32\)). Current
+> record: `erdos-straus-E-power.md`, `erdos-straus-E-power-decision.md`.
 
 ## Novel results (unverified)
 
