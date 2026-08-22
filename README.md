@@ -8,6 +8,12 @@
 > refereed, not a solution of the conjecture. Analytic rows are write-ups,
 > not Lean.
 
+> [!NOTE]
+> **Project report (v0.2, 22 August 2026).** A compiled survey of this
+> public archive is
+> **[erdos-straus-programme-report-v0.2.pdf](erdos-straus-programme-report-v0.2.pdf)**.
+> LaTeX source: [`erdos-straus-programme-report-v0.2.tex`](erdos-straus-programme-report-v0.2.tex).
+
 ## Novel results (unverified)
 
 The archive is kept so the community can use this record. Negative

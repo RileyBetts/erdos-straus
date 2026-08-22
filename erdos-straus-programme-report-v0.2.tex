@@ -1,0 +1,2790 @@
+\documentclass[11pt]{article}
+
+% ---------- Packages ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tocloft}
+\usepackage[colorlinks=true,linkcolor=Blue,citecolor=OliveGreen,urlcolor=BrickRed,linktoc=all]{hyperref}
+\usepackage[capitalise,noabbrev]{cleveref}
+
+% ---------- Colours ----------
+\definecolor{Blue}{rgb}{0.0,0.2,0.55}
+\definecolor{OliveGreen}{rgb}{0.15,0.4,0.15}
+\definecolor{BrickRed}{rgb}{0.55,0.15,0.1}
+\definecolor{proved}{rgb}{0.0,0.35,0.0}
+\definecolor{claimed}{rgb}{0.55,0.35,0.0}
+\definecolor{negative}{rgb}{0.55,0.1,0.1}
+
+% ---------- Theorem environments ----------
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{claimstmt}[theorem]{Claim}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% ---------- Status tags ----------
+\newcommand{\LEAN}{\textcolor{proved}{\textsc{[Lean]}}}
+\newcommand{\CLAIMED}{\textcolor{claimed}{\textsc{[Claimed]}}}
+\newcommand{\NEGATIVE}{\textcolor{negative}{\textsc{[Negative result]}}}
+\newcommand{\MEASURED}{\textcolor{claimed}{\textsc{[Measured]}}}
+\newcommand{\file}[1]{\texttt{#1}}
+\newcommand{\lean}[1]{\texttt{#1}}
+\renewcommand{\_}{\textunderscore\allowbreak}
+\sloppy
+\emergencystretch=2.5em
+
+% ---------- Misc ----------
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\setlength{\cftbeforesecskip}{4pt}
+\titlespacing*{\section}{0pt}{2.2ex plus 1ex minus .2ex}{1.4ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{1.8ex plus 1ex minus .2ex}{1ex plus .2ex}
+
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Fq}{\mathbb{F}_q}
+\newcommand{\Br}{\operatorname{Br}}
+\newcommand{\inv}{\operatorname{inv}}
+\DeclareMathOperator{\ord}{ord}
+
+\title{\textbf{The Riley Betts Erd\H{o}s--Straus Programme:\\[2pt]
+A Lean~4 Formalisation and Analytic-Geometric Investigation\\[2pt]
+\large Project Report on the Public Archive \texttt{erdos-straus-main}\\[2pt]
+\normalsize Revision v0.2}}
+
+\author{Prepared for Riley Betts Ltd \\ \small Compiled from the public git archive of the
+Erd\H{o}s--Straus programme \\ \small (\texttt{erdos-straus-main}, 21 August 2026)}
+\date{22 August 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This report documents the full contents of \file{erdos-straus-main}, the public git archive of
+an extensive computer-assisted research programme directed at the Erd\H{o}s--Straus conjecture.
+The programme does \emph{not} claim a proof. Its concrete output is threefold. First, a
+substantial Lean~4 formalisation (thirteen source files, several thousand lines, axiom-audited)
+that reduces the conjecture to a single unproved analytic interface, proves a range of
+elementary and Brauer--Manin-theoretic facts about the associated affine surfaces, and certifies
+a finite verified range. Second, a sequence of analytic-number-theoretic partial results and
+honestly labelled negative findings on a covering-density reformulation of the conjecture,
+culminating in an unconditional exceptional-set bound stronger than Vaughan's 1970 theorem, and
+a capstone diagnosis of why four independent completion attempts share a single obstruction.
+Third, a geometric investigation of the Bright--Loughran Brauer--Manin approach, which is shown
+to reduce, together with every other geometric mechanism considered, to the same analytic core.
+The archive also triages a sibling research effort and an external claimed proof, keeping only
+what survives scrutiny as library material. We describe the mathematical objectives, present the
+formal architecture in detail, discuss each analytic and geometric approach investigated
+together with its results (positive, partial, or negative), catalogue the accompanying numerical
+experiments, and give a complete inventory of every file in the archive together with the full
+bibliography the programme draws on.
+\end{abstract}
+
+\tableofcontents
+
+
+\section{Introduction}
+\label{sec:intro}
+
+\subsection{The Erd\H{o}s--Straus conjecture}
+
+The Erd\H{o}s--Straus conjecture (ES), posed in 1948 and still open, asserts that for every
+integer $n\ge 2$ there exist positive integers $x,y,z$ with
+\[
+\frac{4}{n} = \frac{1}{x}+\frac{1}{y}+\frac{1}{z}.
+\]
+Clearing denominators gives the equivalent Diophantine statement
+\[
+\mathrm{IsES}(n,x,y,z) :\iff\; x,y,z>0 \ \text{and}\ 4xyz = n(xy+yz+zx).
+\]
+Classical work of Mordell, Schinzel, Aigner, Rosati, Yamamoto and others reduces the conjecture,
+via explicit polynomial identities, to the primes lying in a small number of residue classes
+modulo $840$ that are quadratic-residue classes and hence not amenable to identity-based
+coverage: the six classes $1,121,169,289,361,529 \pmod{840}$, the smallest representative being
+$p=1009$. The conjecture is exactly equivalent (Bloom's covering-equivalence theorem, with
+ancestry in Nakayama, Rosati and Mordell) to an infinite covering-system statement: every
+$n$ lies in a residue class $-a/c \pmod{4acd-1}$ for some positive integers $a,c,d$, or in one
+of finitely many auxiliary Type-II classes. Equivalently, writing $q=4acd-1$, solvability at $n$
+is the existence of a divisor $q\mid cn+a$ with $q\equiv -1\pmod{4ac d}$. The entire difficulty
+of the conjecture is concentrated in this covering statement for a density-zero exceptional set:
+Vaughan proved in 1970 that the number of $n\le x$ for which $4/n$ is \emph{not} a sum of three
+unit fractions is $O\!\left(x\exp(-c(\log x)^{2/3})\right)$, and no exponent has been improved
+upon since.
+
+\subsection{What this archive is, and what it is not}
+\label{subsec:whatitis}
+
+The archive under report, \file{erdos-straus-main}, is the public git repository of an
+AI-assisted mathematical research programme conducted under the auspices of Riley Betts Ltd,
+released under the MIT licence (with a single, separately attributed Apache~2.0 exception,
+\Cref{subsec:provenance}). Its own front-door document,
+\texttt{erdos-\allowbreak straus-\allowbreak programme.md}, states plainly:
+\begin{quote}
+\small\itshape
+``This file is the programme brief for the git repository. It is not a theorem. \textbf{No proof
+of the Erd\H{o}s--Straus conjecture is claimed or achieved.} The archive is kept so that the
+mathematical community can use the record.''
+\end{quote}
+This report inherits that discipline. Nothing below should be read as a claim that the
+Erd\H{o}s--Straus conjecture has been proved, reduced to a solved sub-problem, or even reduced to
+a single named open conjecture that the community regards as tractable. What the archive
+contains is:
+\begin{enumerate}[leftmargin=1.6em]
+  \item a genuine, if partial, \textbf{formal (Lean~4) development}, described in
+        \Cref{sec:lean}, that (i) is axiom-audited, (ii) proves the elementary reduction of ES to
+        an explicit covering system and a single named analytic interface
+        (\lean{AnalyticSurvivorBound}), (iii) formalises a non-trivial slice of the
+        Bright--Loughran Brauer--Manin theory for the associated affine cubic surfaces, and
+        (iv) verifies the conjecture unconditionally for every $n<100{,}000$ inside the kernel;
+  \item a sequence of \textbf{analytic partial theorems and precisely stated negative results}
+        on a covering-density reformulation of the conjecture (\Cref{sec:route1}), including an
+        unconditional record improving on Vaughan's 1970 exceptional-set bound, together with
+        several careful ``look and reject'' investigations of recent analytic number theory
+        (Zheng's simultaneous-progressions theorem, Heath-Brown's $\delta$-method,
+        Fouvry--Kowalski--Michel--Sawin monodromy independence, and a Maynard-type near-BV slab)
+        against the specific obstruction the programme identifies (the \emph{joint
+        well-factorable CRT residue} at the Bombieri--Vinogradov wall), culminating in a
+        capstone document that diagnoses the common failure mode of all four;
+  \item a \textbf{geometric investigation} (\Cref{sec:route2}) of the Bright--Loughran
+        Brauer--Manin obstruction theory for the Erd\H{o}s--Straus surfaces, formalising several
+        of their theorems, testing (and refuting) three candidate geometric proof mechanisms —
+        Harpaz's descent-fibration theorem, a real-compatible twist construction, and a
+        triangle-boundary Campana/semi-integral existence principle — and arriving at the
+        structural finding that every geometric mechanism considered reduces to the same
+        analytic covering-density core as Route~1;
+  \item a \textbf{triage of a sibling research effort and an external claimed proof}
+        (\Cref{sec:prior}): a prior, separate covering-density assault is examined and mostly
+        left out as a recorded negative, keeping only a ported Mathlib-style library theorem and
+        a small Type-II identity dictionary; and a 2026 preprint claiming an elementary proof of
+        ES is checked directly against the classical Mordell obstruction and found not to
+        establish the covering claim it needs;
+  \item a substantial body of \textbf{numerical experimentation} in Python
+        (\Cref{sec:computation}), instrumenting every quantitative claim above with reproducible
+        measurements at scales up to $x=10^9$;
+  \item and a disciplined \textbf{research log} (the twenty-three sections \S4a--\S4w of
+        \texttt{erdos-\allowbreak straus-\allowbreak novel-\allowbreak structures-\allowbreak plan.md}, together with a chain of dated
+        ``postscript'' entries in the programme brief) that records not only positive results
+        but every investigated route that was tried and found wanting, with the specific
+        obstruction named in each case.
+\end{enumerate}
+A recurring stylistic feature of the archive, preserved throughout this report, is the sharp
+distinction between three categories of statement: results that are \emph{proved} inside the
+Lean kernel (flagged \LEAN{} below); results that are \emph{claimed} on paper with a written
+mathematical argument but not machine-checked (flagged \CLAIMED{}); and quantities that are
+\emph{measured} computationally at finite, stated scales, which is evidence but not proof
+(flagged \MEASURED{}). Distinct again are the several \emph{negative} findings, where a
+specific published theorem or technique is checked against the programme's target and found not
+to apply, for a stated structural reason (flagged \NEGATIVE{}). This taxonomy is not a
+stylistic ornament: the archive's central methodological claim is that most of the historical
+difficulty of the Erd\H{o}s--Straus conjecture is explained by a single \emph{k-budget
+invariant} (\Cref{subsec:kbudget}) that every one of these negative results instantiates in a
+different technical guise.
+
+\subsection{Authorship and provenance}
+\label{subsec:provenance}
+
+The public archive is explicit about how the work was produced, and this report follows it in
+recording that explanation rather than paraphrasing it away. The programme brief states:
+\begin{quote}
+\small\itshape
+``Martyn Riley, of Riley Betts Ltd, facilitates the automation and the high-level strategy
+(novel routes, recorded negative results, documentation procedure for the agents). He makes no
+claim to expertise in number theory, combinatorics, or geometry. \dots{} The mathematical and
+formalization work is a collaboration of Anthropic agents, Grok~4.6, and Cursor agents, with
+Lean~4, Mathlib, and numerical test resources. It is not a record of human coauthorship of the
+mathematics.''
+\end{quote}
+This report adopts the same framing throughout: where the text below refers to ``the programme''
+producing a result, this denotes the automated research process described above, not a claim of
+individual human mathematical authorship. The repository is released under the MIT licence,
+copyright Riley Betts Ltd, with one stated exception: \lean{Stormer.lean}
+(\Cref{subsec:stormer}) is adapted from a public Mathlib pull request and remains Apache
+License~2.0, copyright Alexander Benjamin Worth Burns and Ravi Bajaj. A GitHub Actions workflow
+(\file{.github/workflows/ci.yml}) rebuilds the pinned Mathlib-dependent layer on every push, and
+a \file{CONTRIBUTING.md} records the archive's pinning policy (Lean toolchain, Mathlib revision,
+lockfile, Python numerics) and reiterates the same scope restrictions as the mathematical
+documents themselves: no covering densification, no treatment of the external claims of
+\Cref{sec:prior} as resolved, no treatment of the library-only files as progress toward the
+load-bearing interface.
+
+\subsection{Objectives of the programme}
+
+Stated explicitly across the roadmap document \texttt{erdos-\allowbreak straus-\allowbreak road-\allowbreak to-\allowbreak lean-\allowbreak qed.md} and the
+acceptance specification \texttt{erdos-\allowbreak straus-\allowbreak conjecture-\allowbreak spec.md}, the programme's objectives are:
+\begin{enumerate}[leftmargin=1.6em]
+  \item to convert the folklore statement of ES into a machine-checked reduction whose only
+        open content is a single, explicitly named analytic (or geometric) hypothesis;
+  \item to identify, as precisely as possible, \emph{why} the conjecture has resisted proof for
+        over 75 years — not merely to assert difficulty, but to locate a specific
+        information-theoretic ceiling (the k-budget invariant) that every interval-intrinsic
+        method is shown to respect, and to enumerate the input classes that are \emph{not}
+        capped by that ceiling;
+  \item to produce, along the way, genuine unconditional mathematics that stands on its own
+        merit regardless of whether the summit is reached — in particular a new exceptional-set
+        bound for the full covering problem, stronger than the 1970 record;
+  \item to formulate an \textbf{acceptance specification} (eight requirements, R1--R8,
+        \Cref{sec:spec}) that any candidate ``load-bearing'' conjecture $C$ must satisfy to
+        count as a genuine reduction of ES, and to test a wide slate of candidate conjectures
+        against it (\Cref{sec:candidates}), several of which are refuted or frozen along the
+        way;
+  \item and to record, as open mathematical questions addressed to the relevant published
+        literatures rather than as correspondence with named individuals, a bounded set of
+        questions in arithmetic geometry (integral points on log K3 surfaces,
+        \Cref{subsec:loughran-questions}) and in analytic number theory (the half-dimensional/
+        vector-sieve literature, \Cref{subsec:sievedesk}) that the programme's own tools cannot
+        resolve.
+\end{enumerate}
+
+\subsection{Structure of this report}
+
+\Cref{sec:covering} recalls the covering-system reformulation of ES that underlies the entire
+programme and the classical reductions it is built on. \Cref{sec:lean} gives a detailed,
+file-by-file account of the Lean~4 formalisation. \Cref{sec:route1} discusses the analytic
+covering-density route (``Route~1''), including the k-budget invariant, the sequence of
+theorems T(1)/T(3)/T(A)/T(A)$^+$/E\_lane/E\_power, the negative results obtained while
+attempting to complete the T(3) lower bound, and their capstone diagnosis. \Cref{sec:route2}
+discusses the geometric Bright--Loughran route (``Route~2''), including the formalised
+Brauer--Manin theory, the Harpaz/Cao--Xu/twist/Campana investigations, the Schinzel separator
+programme, and the synthesis that the two routes are one route. \Cref{sec:prior} describes the
+triage of the prior Track-1 archive and the examination of an external claimed proof.
+\Cref{sec:candidates} catalogues the eleven-plus named candidate conjectures the programme
+considered as the load-bearing statement $C$. \Cref{sec:spec} states the acceptance
+specification R1--R8 in full and gives the current scorecard. \Cref{sec:computation} describes
+the twenty Python scripts and their numerical findings in detail. \Cref{sec:discussion} gives an
+overall assessment. \Cref{app:files} is a complete catalogue of every file in the archive. The
+full bibliography, drawn from \file{README.md} and cross-referenced throughout, is given at the
+end.
+
+
+\section{The covering-system reformulation}
+\label{sec:covering}
+
+\subsection{Witnesses and the covering criterion}
+
+The programme's entire formal and analytic apparatus is built on a single elementary
+re-derivation, carried out independently in Lean (\Cref{sec:lean}) and used throughout the
+analytic work. Suppose $n$ admits parameters $a,c,d,m\in\Z_{>0}$ with
+\[
+cn+a+m = 4acdm. \tag{$\ast$}
+\]
+Call such a quadruple a \emph{witness} for $n$, written $\mathrm{Witness}(n,a,c,d,m)$. A short
+computation (the identity is proved as \lean{witness\_sound} in \file{ErdosStraus.lean};
+\Cref{subsec:erdosstraus-lean}) shows that a witness yields an explicit solution
+\[
+4/n \;=\; \frac{1}{adm} + \frac{1}{n\!\cdot\! acd} + \frac{1}{n\!\cdot\! cdm}.
+\]
+Writing $q=4acd-1$, equation $(\ast)$ is equivalent to $q\mid cn+a$ with cofactor $m$; when
+$c=1$ this is the classical Type-I congruence $n\equiv -a\pmod{q}$. The \emph{covering system}
+at level $A$ consists of every cell $(a,c,d)$ with $1\le a,c\le A$, $1\le d\le 5$; $n$ is
+\emph{covered} at level $A$ if some cell in the box divides $cn+a$, and a \emph{survivor}
+otherwise. Because a hit always yields a witness (this is exactly
+\lean{ES.Covering.covering\_sound}), the entire conjecture reduces to a statement about
+survivors:
+\[
+\text{ES holds for } n \quad\Longleftarrow\quad n \text{ is covered at some level } A.
+\]
+The classical polynomial identities of Mordell, Aigner, Schinzel and others are simply
+particular, fixed, small-parameter witnesses (or one-parameter families of them); they dispose
+of every residue class modulo $840$ except the six \emph{hard classes} listed above. The
+programme's Lean development formalises this reduction completely (\Cref{subsec:mordell}),
+so that the open content of ES is exactly:
+\begin{quote}
+\itshape every sufficiently large prime in a hard class is covered by the level-$A(x)$ box, for
+a suitable growing schedule $A(x)$, and the finitely many small exceptions can be checked by
+computation.
+\end{quote}
+This is the \lean{HardLandingHypothesis} of the Lean development, and the single open interface
+the programme names is \lean{AnalyticSurvivorBound} (\Cref{subsec:coveringlayer}).
+
+\subsection{The divisor-form duality}
+
+An equivalent and, for analytic purposes, more convenient coordinate system is the
+\emph{divisor form}: $n$ is covered by the cell $(a,d)$ exactly when
+\[
+q \mid n + 4a^2 d, \qquad q \equiv -1 \pmod{4ad},
+\]
+for some divisor $q\ge 3$ of $n+4a^2d$. The programme identifies this (\lean{divisor\_form\_sound}
+in \file{ErdosStraus.lean}) as a re-coordinatisation of the same covering box, with $c$ playing
+the role of the free cofactor. In this form the covering condition is manifestly a statement
+about the prime (or divisor) factorisation of a shifted value $n+4a^2d$, which is the natural
+language for sieve theory: it is exactly the setting of Iwaniec's half-dimensional sieve and its
+relatives (\Cref{sec:route1}). The quantity
+\[
+\mathrm{ClassRough}(p,a) \;:\Longleftrightarrow\; p+4a^2 \text{ has \emph{no} divisor } q\ge 3
+\text{ with } q\equiv -1 \pmod{4a}
+\]
+(composite divisors included, not only aligned primes) is the Lean predicate that names one
+``slice'' of the $d=1$ covering box, and its joint density over a growing family of slices
+$a=1,\dots,A$ is the object $S(A,x)$ studied throughout \Cref{sec:route1}.
+
+\subsection{Classical background and the size of the hard classes}
+
+The six hard classes modulo $840$ are exactly the classes that are quadratic residues modulo
+each of $8$, $3$, $5$ and $7$ simultaneously (equivalently, quadratic residues modulo $840$),
+and it is a theorem of Mordell (via quadratic reciprocity) that no fixed polynomial witness
+family can cover a quadratic-residue class: this is why the classical reductions stop exactly
+at these six classes, and why the exceptional set of ES --- if non-empty --- is confined to
+them. The programme's Lean development reproves this full reduction from scratch
+(\Cref{subsec:mordell}); its analytic and geometric investigations are conducted entirely on
+this hard-class population.
+
+
+\section{The Lean~4 formalisation}
+\label{sec:lean}
+
+\subsection{Architecture: two orthogonal layer systems}
+\label{subsec:architecture}
+
+The archive contains thirteen Lean source files together with a \file{lakefile.toml},
+\file{lean-toolchain} and \file{lake-manifest.json} defining the build, plus a
+\file{.github/workflows/ci.yml} that rebuilds the pinned layer on every push. Eleven files sit
+at the repository root and are the active Lake library; two further files sit in an
+\file{archive/} subdirectory and are explicitly excluded from the build
+(\Cref{subsec:legacy}). Two \emph{different} stratifications named ``Layer A/B(/C)'' occur in
+the documentation and must not be conflated (the archive itself flags this risk explicitly in
+\texttt{erdos-\allowbreak straus-\allowbreak novel-\allowbreak structures-\allowbreak plan.md},
+\S4s):
+
+\begin{description}[leftmargin=1.4em]
+  \item[File-map layers (\file{README.md}).] \emph{Layer A} is the bare-Lean core —
+        \file{ErdosStraus.lean}, \file{BrightLoughran.lean}, \file{ConicFiber.lean},
+        \file{TwistDescent.lean}, \file{SchinzelSep.lean}, \file{SchinzelDecide.lean},
+        \file{NoVieta.lean} — compiling under Lean~$\ge 4.33.0$ with \emph{no imports at all},
+        checkable with the bare \texttt{lean} binary and no \texttt{lake}/Mathlib dependency.
+        \emph{Layer B} is \file{ErdosStrausQR.lean}, \file{ErdosStrausBLRoute.lean}, and the two
+        library-only additions of this revision, \lean{Leochlon.lean} and \lean{Stormer.lean}
+        (\Cref{subsec:leochlon,subsec:stormer}), all of which \texttt{import} Mathlib. The first
+        two discharge the single deep mathematical input that Layer A leaves as an explicit
+        interface (Hilbert/quadratic reciprocity); the latter two are unrelated library material
+        kept for documentation reasons (\Cref{sec:prior}) and carry no weight on the proof
+        architecture.
+  \item[Roadmap layers (\texttt{erdos-\allowbreak straus-\allowbreak road-\allowbreak to-\allowbreak lean-\allowbreak qed.md}, \S14).] A different,
+        orthogonal three-way split of the \emph{proof architecture}: \emph{Layer A} (formal
+        algebra and the reduction to \lean{HardLandingHypothesis}, fully compiled); \emph{Layer
+        B} (the still-open deep analytic or geometric theorem); \emph{Layer C} (the finite
+        certificate closing the range below the analytic threshold $X_0$, whose lane is chosen
+        among kernel \texttt{decide}, \texttt{native\_decide}, or a future zero-knowledge-attested
+        computation).
+\end{description}
+Both stratifications are in force simultaneously and are used side by side in the archive; this
+report follows the source in keeping them distinct, and uses ``file-map Layer A/B'' and
+``roadmap Layer A/B/C'' where ambiguity could arise.
+
+\subsection{Build configuration and licensing}
+
+The Layer-B files are built with \texttt{lake} against a pinned revision of \texttt{mathlib4}
+(commit \texttt{1a0ef26d9624d64a1ad11853d17c30b8c32f2a10}) under
+\texttt{leanprover/lean4:v4.34.0-rc1} (\file{lean-toolchain}, explicitly documented as a release
+candidate rather than a moving nightly), declared in \file{lakefile.toml} (package
+\texttt{ErdosStraus}, eleven library roots). The Layer-A files require no such dependency and
+can be checked with a bare \texttt{lean} invocation per file, as documented in \file{README.md}.
+The lockfile \file{lake-manifest.json} is committed as part of the archive, and
+\file{CONTRIBUTING.md} directs that it be regenerated and committed alongside any toolchain or
+Mathlib bump; \file{.github/workflows/ci.yml} runs \texttt{lake exe cache get} and
+\texttt{lake build} on every push to guard against silent drift. Numeric scripts are pinned
+separately via \file{requirements.txt} (a single \texttt{numpy} version constraint). The
+repository is released under the MIT licence (\file{LICENSE}), copyright Riley Betts Ltd, with
+one exception: \lean{Stormer.lean} (\Cref{subsec:stormer}) carries its own Apache License~2.0
+notice (\file{LICENSE-APACHE}), copyright Alexander Benjamin Worth Burns and Ravi Bajaj, as
+adapted from a public Mathlib pull request.
+
+\subsection{Axiom discipline}
+\label{subsec:axioms}
+
+Every theorem in the file-map Layer-A core is accompanied, in \file{README.md}, by an explicit
+axiom audit obtained from Lean's \texttt{\#print axioms}. Three axiom profiles occur:
+\begin{itemize}[leftmargin=1.4em]
+  \item \textbf{Axiom-free} (\texttt{decide}): theorems whose truth is certified by the Lean
+        kernel's own evaluator with no additional axiom, e.g.\ \lean{primes\_below\_100\_covered\_kernel},
+        \lean{lemma38\_check\_true}, \lean{TwistDescent.descent}, \lean{SchinzelSep.signed\_9\_5},
+        \lean{SchinzelDecide.sep\_9\_5}, \lean{SchinzelDecide.sep\_13\_7}, \lean{SchinzelDecide.pos\_4\_5}.
+  \item \textbf{Standard} (\texttt{propext}, \texttt{Quot.sound}, and sometimes
+        \texttt{Classical.choice}): the great majority of theorems, including the main identity
+        \lean{witness\_sound}, the conditional-QED assembly \lean{conditional\_qed\_hard}, the
+        conic-fibre correspondence \lean{ConicFiber.fiber\_to\_divisor}/\lean{divisor\_to\_fiber},
+        and \lean{NoVieta.es\_unique\_x}.
+  \item \textbf{\texttt{native\_decide}} (adds \texttt{Lean.ofReduceBool}): used only for the
+        large finite verifications that would be impractically slow under kernel reduction —
+        \lean{primes\_below\_10000\_covered}, \lean{hard\_primes\_below\_10000\_covered},
+        \lean{okay\_below\_100000} (the verified frontier to $n<100{,}000$), and the
+        Brauer--Manin instance checks \lean{thm12\_instance\_1009},
+        \lean{witness\_fingerprint\_1009} in \file{BrightLoughran.lean}.
+\end{itemize}
+The file-map Layer-B files, including the two library additions of this revision, necessarily
+carry Mathlib's own axiom footprint (in particular \texttt{Classical.choice} and
+\texttt{propext} pervasively, and \texttt{Quot.sound} where quotient types are used in Mathlib's
+own development) and are not separately re-audited in \file{README.md}; the table in
+\Cref{app:axioms} reproduces the Layer-A audit exactly as published. The roadmap explicitly
+reserves a third, not-yet-implemented lane for closing the \texttt{native\_decide} gap at
+larger scale: replacing its trusted-compilation axiom with a zero-knowledge-attested execution
+proof of the same checker (the lean-tee/SP1 pipeline referenced in
+\texttt{erdos-\allowbreak straus-\allowbreak novel-\allowbreak structures-\allowbreak plan.md}, Option~7/Track~C), which is outside
+the scope of this archive but is named as the intended mechanism for scaling the verified
+frontier from $10^5$ toward the classical computational record of $10^{17}$ (Salez,
+arXiv:1406.6307).
+
+
+\subsection{\file{ErdosStraus.lean} — the core reduction and covering system}
+\label{subsec:erdosstraus-lean}
+
+This is the largest and most load-bearing file in the archive (3420 lines). It is organised
+into five successive strata, each building on the last.
+
+\subsubsection{Witness algebra and the finite verified frontier}
+
+\begin{itemize}[leftmargin=1.4em]
+  \item \lean{IsES n x y z} is the cleared-denominator predicate defined in \Cref{sec:covering}.
+  \item \lean{Witness n a c d m} is the covering condition $(\ast)$.
+  \item \LEAN{} \lean{witness\_sound}: a witness for $n$ yields the explicit ES solution
+        $(x,y,z)=(adm,\,n\!\cdot\! acd,\,n\!\cdot\! cdm)$. This is the main algebraic identity
+        the whole programme is built on, proved by a single \texttt{omega}-closed calculation
+        after clearing denominators.
+  \item \LEAN{} \lean{scale}: a solution for $p$ lifts to any multiple of $p$ — the standard
+        observation that it suffices to prove ES for primes.
+  \item \LEAN{} \lean{exists\_prime\_factor}: every $n\ge 2$ has a prime factor, proved
+        self-containedly (no import of \texttt{Nat.exists\_prime\_and\_dvd}), by strong
+        induction with an explicitly defined \lean{IsPrime} predicate and a proof of
+        \lean{IsPrime.dvd\_or\_dvd}.
+  \item \LEAN{} \lean{LandingHypothesis}: every prime has a witness. \LEAN{}
+        \lean{conditional\_qed : LandingHypothesis → ErdosStraus} assembles the full conjecture
+        from this one open hypothesis, via \lean{witness\_sound} and \lean{scale}.
+  \item \MEASURED (\texttt{native\_decide})~\LEAN{} instances: every prime, and separately every
+        hard-class prime, below $10{,}000$ has a witness with parameters $\le 25$; every prime
+        below $100$ is verified with the axiom-free kernel \texttt{decide}. A worked example,
+        \lean{es\_1009 : IsES 1009\ 276\ 3027\ 92828}, is derived from the witness
+        $(a,c,d,m)=(3,1,1,92)$.
+  \item An additional one-parameter family, the \emph{one-slot} construction
+        (\lean{OneSlot}, Elsholtz--Tao Type~I, complementary to the two-slot \lean{Witness}),
+        is proved sound (\lean{oneSlot\_sound}, \lean{oneSlot\_es}) and later folded into a
+        \emph{hybrid} covering predicate (\lean{HybridCovered}) that is provably weaker to
+        satisfy than the two-slot box alone.
+\end{itemize}
+
+\subsubsection{The Mordell reduction to the six hard classes}
+\label{subsec:mordell}
+
+A second stratum reproves, entirely inside Lean and by explicit one-line \texttt{omega} proofs
+from named polynomial witnesses, the classical elementary reduction:
+\begin{itemize}[leftmargin=1.4em]
+  \item \LEAN{} \lean{es\_of\_not\_one\_mod\_four}: ES holds outright for every $n\ge 2$ with
+        $n\not\equiv 1\pmod 4$ — the class $n\equiv 3\pmod 4$ via witness $(1,2,t+1,1)$, and all
+        even $n$ by scaling the $n=2$ solution.
+  \item Seven further named polynomial witnesses discharge $n\equiv 2\pmod 3$;
+        $n\equiv 5\pmod 8$; $n\equiv 3,5,6\pmod 7$; $n\equiv 7,13\pmod{15}$
+        (\lean{w\_two\_mod\_three}, \lean{w\_five\_mod\_eight}, \lean{w\_three\_mod\_seven}, etc.),
+        each a single-line \texttt{omega} discharge of the witness equation.
+  \item These are combined, via a \lean{HardClass} predicate and a Presburger CRT lemma
+        \lean{mod840\_hard} (again closed by \texttt{omega} alone), into
+        \LEAN{} \lean{es\_prime\_not\_hard}: \emph{every prime outside the six hard classes
+        satisfies ES unconditionally}.
+  \item \LEAN{} \lean{HardLandingHypothesis} and \lean{conditional\_qed\_hard} then restate the
+        conditional QED so that the only remaining open hypothesis concerns primes
+        $\equiv 1,121,169,289,361,529\pmod{840}$ — exactly matching the classical state of the
+        art, now machine-checked end to end.
+\end{itemize}
+
+\subsubsection{The verified frontier below $100{,}000$}
+
+\LEAN{} \lean{es\_below\_100000}, of type
+$2\le n \to n < 100000 \to \exists\, x\,y\,z,\ \mathrm{IsES}\ n\ x\ y\ z$,
+is proved by strong induction combined with a self-certifying range check \lean{okay}: at each
+$n$, either a proper factor is found (and the solution is obtained recursively by scaling), or a
+bounded covering witness is found directly. Because \lean{okay} is self-certifying, no separate
+primality-completeness proof is required. This theorem uses the \texttt{native\_decide} axiom
+lane described in \Cref{subsec:axioms} and is identified in the roadmap as the seed of the
+zero-knowledge-attested Track~C: replacing \lean{ofReduceBool} by a verified execution proof of
+the same checker, and scaling the bound from $10^5$ towards $10^{17}$, is described (but not
+implemented in this archive) as the intended lean-tee/SP1 pipeline.
+
+\subsubsection{The covering-system layer and the analytic interfaces}
+\label{subsec:coveringlayer}
+
+The fourth stratum (\lean{namespace ES.Covering}, roadmap Steps~1--2) formalises the covering
+system of \Cref{sec:covering} as executable Booleans and proves everything about it that does
+\emph{not} require analytic input:
+\begin{itemize}[leftmargin=1.4em]
+  \item \lean{coversB a c d n}, \lean{coveredB A n} (a decidable Boolean scan of the level-$A$
+        box), \lean{Covered A n}, \lean{Survivor A n} (with decidability instances).
+  \item \LEAN{} \lean{covering\_sound}: \lean{Covered A n} implies the existence of a witness —
+        the elementary half of the reduction, proved unconditionally for every level $A$.
+  \item \LEAN{} \lean{survivor\_typeI\_aps}: a survivor avoids every Type-I arithmetic
+        progression in the box — the ``survivor bundle'' used throughout the analytic
+        discussion.
+  \item \lean{survivorCount A lo hi} and \LEAN{} \lean{no\_survivors\_of\_card\_eq\_zero}: the
+        \emph{cardinality-to-QED bridge} — an explicit count of zero survivors in an interval
+        kills every survivor there, by simple integrality.
+  \item \textbf{The single load-bearing unproven target}, stated but deliberately left as a
+        bare \lean{Prop} (roadmap Step~2, ``statement-first discipline''):
+        \[
+        \texttt{AnalyticSurvivorBound (Alevel : Nat → Nat) (X0 : Nat) : Prop :=}
+        \]
+        \[
+        \forall\, p,\ X_0\le p \to \mathrm{IsPrime}\ p \to \mathrm{HardClass}\ p \to
+        \mathrm{Covered}\ (\mathrm{Alevel}\ p)\ p.
+        \]
+        \LEAN{} \lean{hard\_landing\_of\_interface} and \lean{erdos\_straus\_of\_interface}
+        assemble this interface, together with a finite closure hypothesis below $X_0$, into
+        the full conjecture. \emph{This definition is the precise formal target that
+        Route~1 (\Cref{sec:route1}) attempts, and fails within the scope of this archive, to
+        discharge}; \Cref{sec:route1} explains exactly how far short of it the analytic
+        results fall, and why.
+  \item A parallel \emph{divisor-form} interface, \lean{DivisorLandingBound}, and the kernel
+        equivalence \lean{divisor\_form\_sound} (``the divisor criterion IS the covering box's
+        free-$c$ slot'', \texttt{erdos-\allowbreak straus-\allowbreak novel-\allowbreak structures-\allowbreak plan.md} \S4q), together with a
+        family of bridge theorems (\lean{dfi\_dictionary\_forward}, \lean{dfi\_dictionary},
+        \lean{d1\_landing}) connecting the two coordinate systems.
+\end{itemize}
+
+\subsubsection{ClassRough, real characters, and the certificate architecture}
+\label{subsec:classrough-lean}
+
+The final and most intricate stratum of \file{ErdosStraus.lean} develops, entirely inside Lean,
+the \emph{character-certificate} theory that underlies T(A) and T(3) (\Cref{sec:route1}):
+\begin{itemize}[leftmargin=1.4em]
+  \item \lean{ClassRough p a}: $p+4a^2$ has \emph{no} divisor $q\ge 3$ (composite divisors
+        included) with $q\equiv-1\pmod{4a}$.
+  \item A hand-rolled theory of \emph{odd real characters} modulo $4,8,12$ is built from
+        scratch as completely multiplicative, periodic, $\pm1$-valued functions: \lean{chi4}
+        (the character mod $4$, $\chi_4(3)=-1$), \lean{chi8}, \lean{chi4chi8}, \lean{chi3mod12},
+        \lean{chi4chi3}, each proved multiplicative (\lean{chi4\_mul}, \lean{chi8\_mul},
+        \lean{chi3mod12\_mul}, \dots) and periodic, and packaged as instances of a generic
+        \lean{OddRealChar} structure.
+  \item \LEAN{} \lean{classRough\_of\_certifies} (the ``certificate direction''): if a real odd
+        character $\chi$ modulo $4a$ certifies $p+4a^2$ — every prime factor of $p+4a^2$
+        coprime to $4a$ lies in $\ker\chi$ — then $\mathrm{ClassRough}(p,a)$ holds. This is
+        proved for general odd real characters via complete multiplicativity
+        (\lean{chi\_eq\_one\_of\_dvd}).
+  \item The \emph{converse} is proved as an exact biconditional at $a=1,2,3$:
+        \LEAN{} \lean{classRough\_iff\_chi4} ($a=1$), \lean{classRough\_a2\_iff\_certificates}
+        ($a=2$, two characters $\chi_4,\chi_4\chi_8$ mod $8$), and
+        \lean{classRough\_a3\_iff\_certificates} ($a=3$, two characters $\chi_4,\chi_4\chi_3$ mod
+        $12$), combined into the single \textbf{T(3) kernel theorem}
+        \[
+        \textbf{\lean{classRough\_123\_iff\_certificates}}
+        \]
+        stating that $\mathrm{ClassRough}$ jointly at $a=1,2,3$ is \emph{exactly} the $1\times
+        2\times 2$ union of the four resulting certificate assignments. This single theorem is
+        the formal anchor of the entire T(3) analytic argument in \Cref{subsec:t3}.
+  \item A companion elementary stratum, \lean{ThreeModFourFree} and the theorems
+        \lean{exists\_three\_mod\_four\_prime\_factor}, \lean{d1\_a1\_of\_three\_mod\_four\_factor},
+        \lean{not\_d1\_a1\_of\_free}, identifies the $a=1$, $d=1$ escapee condition with
+        ``$p+4$ has no prime factor $\equiv 3\pmod 4$'' — the classical sum-of-two-squares
+        condition, and the base case that calibrates the whole certificate hierarchy.
+\end{itemize}
+
+\subsubsection{The Henriot/Nair--Tenenbaum interface: an elementary $d=1$ sieve, in Lean}
+\label{subsec:henriot-lean}
+
+The final $\sim 800$ lines of the file (from \lean{coprime\_four\_of\_odd} to
+\lean{D1UniformNtBound} at the file's end) carry out, entirely by elementary \texttt{omega}- and
+divisibility-level reasoning, a self-contained combinatorial sieve analysis of the $d=1$,
+$a=1$ lane — what the documentation calls ``door (b)'' of the k-budget investigation
+(\Cref{subsec:kbudget}). This is the only part of the archive's analytic reasoning that is
+carried out \emph{inside} the Lean kernel rather than on paper. Its architecture:
+\begin{itemize}[leftmargin=1.4em]
+  \item An \emph{inner/outer slot} dichotomy (\lean{D1InnerSlot}, \lean{D1OuterSlot},
+        \lean{inner\_or\_outer}) partitions the aligned divisors of $p+4$ by size relative to a
+        threshold $2D$.
+  \item A sequence of purely combinatorial ``hit-spacing'' lemmas
+        (\lean{no\_three\_hits\_in\_interval\_len\_q}, \lean{at\_most\_two\_hits\_in\_box},
+        \lean{odd\_hits\_impossible\_of\_kq\_gt\_D}, \lean{unique\_large\_aligned\_landing})
+        bound how many aligned divisors of $p+4$ can lie in a fixed-length window, by pure
+        counting — no analytic input.
+  \item A \lean{SmoothTo} predicate and \lean{outer\_landing\_has\_factor\_gt\_two\_D} /
+        \lean{outer\_smooth\_has\_hub\_prime} identify the two mutually exclusive escape
+        mechanisms for an ``outer'' landing: either a genuinely large prime factor, or
+        smoothness through a bounded ``hub'' prime.
+  \item This is packaged into \lean{D1NtExceptional}, \lean{D1Remainder}, and finally a
+        \emph{named, unproved} target
+        \[
+        \texttt{D1UniformNtBound (Dlevel : Nat → Nat) (X0 : Nat) (M : Nat → Nat) : Prop}
+        \]
+        asserting that whenever a Nair--Tenenbaum/Henriot-type mean-value bound $M(p)$ on the
+        number of class-rough slots stays strictly below the interval length $D_{\mathrm{level}}(p)$,
+        no $d=1$ exceptional escape occurs. \LEAN{} \lean{D1Remainder\_of\_uniform\_nt} and
+        \lean{erdos\_straus\_of\_d1\_uniform\_nt} show, unconditionally, that discharging this
+        one named hypothesis at the intended schedule $D\sim\exp(c\sqrt{\log x})$ (with $M$ the
+        Henriot implicit constant) would complete ES on the $d=1$ lane. The hypothesis itself is
+        explicitly \emph{not} discharged in this archive; it is the Lean-level shadow of ``door
+        (b)'' in the k-budget investigation (\Cref{subsec:kbudget}), and its status is
+        identical to \lean{AnalyticSurvivorBound}: named, wired, open.
+\end{itemize}
+This stratum is, in effect, a hand-formalised skeleton of a mean-value sieve argument, built to
+the point where only one external analytic input (a $k$-uniform Nair--Tenenbaum/Henriot bound)
+remains — precisely the ``door (b)'' investigation recorded on paper in
+\texttt{erdos-\allowbreak straus-\allowbreak novel-\allowbreak structures-\allowbreak plan.md} \S4g--\S4h (\Cref{subsec:kbudget}).
+
+
+\subsection{\file{BrightLoughran.lean} — the finite arithmetic heart of Theorem~1.2}
+\label{subsec:brightloughran-lean}
+
+This 407-line file formalises the elementary, finite-computation heart of Bright and
+Loughran's Theorem~1.2 \cite{BrightLoughran2020}, isolating the single deep external input
+(Hilbert reciprocity over $\Q$) as an explicit \lean{structure} interface.
+\begin{itemize}[leftmargin=1.4em]
+  \item Serre's $2$-adic symbol data (\cite{Serre1973}) is defined directly on residues:
+        \lean{eps r} ($=1$ iff $r\equiv 3\pmod 4$) and \lean{omg r} ($=1$ iff
+        $r\equiv\pm3\pmod 8$).
+  \item \textbf{The finite heart of BL Lemma~3.8.} In reduced $2$-adic coordinates
+        $(u_1,u_2,u_3)=(2^{s+e}r_1,2^{s+e}r_2,2^e r_3)$ with $r_i$ odd and $s\ge1$ (a shape
+        forced by BL's own valuation analysis), the $2$-adic invariant of the Brauer class
+        $\alpha$ is $(-1)^{f+g}$ with $f=\varepsilon(-r_1r_3)\varepsilon(-r_2r_3)$ and
+        $g=s(\omega(r_1)+\omega(r_2))$. Because only residues mod $8$ and $(2^s\bmod 8,\,s\bmod
+        2)$ matter, the general lemma reduces to a \emph{finite} verification over
+        $4^3\times4=256$ cases, executed by \lean{lemma38Check} and proved true —
+        \emph{axiom-free} — by \LEAN{} \lean{lemma38\_check\_true : lemma38Check = true := by
+        decide}.
+  \item \lean{InvariantData}: a \lean{structure} packaging the four local invariants of
+        $\alpha$ (at $\infty$, at $2$, at the odd prime $p\mid n$, and the product over all
+        remaining good places) together with the single deep field
+        \[
+        \texttt{reciprocity : invInf * inv2 * invP * invGood = 1}
+        \]
+        — Hilbert reciprocity, left as an interface on bare Lean and discharged on a machine
+        with Mathlib in \file{ErdosStrausQR.lean}.
+  \item \LEAN{} \lean{bl\_thm12\_prime\_anatomy}: given $\inv_\infty=-1$ (the positive-octant
+        invariant, BL Lemma~3.1), $\inv_2=1$ (odd $n$, BL Lemma~3.8), and $\inv_{\mathrm{good}}=1$
+        (BL Lemma~3.5), reciprocity alone forces $\inv_p=-1$ — Yamamoto's non-residue
+        condition, i.e.\ exactly the covering-witness fingerprint of \Cref{sec:covering}.
+        \lean{yamamoto\_condition} restates this as a statement about the Legendre symbol
+        directly.
+  \item \MEASURED (\texttt{native\_decide})~\LEAN{}: verified instances of Theorem~1.2 and its
+        Yamamoto cross-check at the smallest hard-class prime, $p=1009$:
+        \lean{thm12\_instance\_1009} and \lean{witness\_fingerprint\_1009}, tying the geometric
+        invariant directly to the covering witness \lean{es\_1009} proved in
+        \file{ErdosStraus.lean}.
+  \item BL Lemma~3.2 (the \emph{unit-ratio lemma}: among three coordinates with distinct
+        $p$-adic valuations, some ratio $u_i/u_j$ is a $p$-adic unit) is proved in full,
+        \LEAN{} \lean{lemma32}, together with the supporting Hilbert-symbol machinery
+        (\lean{hilbertOdd}, \lean{hilbert2Odd}, \lean{lemma34}, \lean{lemma31}/\lean{lemma31\_pos}
+        — the real-place invariant is $-1$ on the positive octant).
+\end{itemize}
+
+\subsection{\file{ErdosStrausQR.lean} — the Mathlib discharge}
+\label{subsec:erdosstrausqr-lean}
+
+A 170-line file importing \texttt{Mathlib.Tactic} and
+\texttt{Mathlib.NumberTheory.\allowbreak LegendreSymbol.\allowbreak QuadraticReciprocity}, this is the smallest
+Layer-B file and exists solely to connect the bare-Lean interfaces of
+\file{ErdosStraus.lean}/\file{BrightLoughran.lean} to genuine Mathlib number theory.
+\begin{itemize}[leftmargin=1.4em]
+  \item \LEAN{} \lean{isPrime\_iff\_prime}: the hand-rolled \lean{IsPrime} predicate coincides
+        with \lean{Nat.Prime}.
+  \item \LEAN{} \lean{typeI\_legendre} / \lean{typeI\_nonresidue\_of\_square\_a}: the
+        \emph{Yamamoto fingerprint} — a Type-I witness with prime modulus $q=4ad-1$ forces
+        $(p/q)=(-a/q)$ via the Legendre symbol; when $a$ is itself a square and
+        $q\equiv3\pmod4$, this forces $(p/q)=-1$, recovering the Schinzel/Mordell Type-I
+        obstruction directly from Mathlib's Legendre-symbol API.
+  \item \lean{quadratic\_reciprocity\_odd} instantiates Mathlib's
+        \lean{legendreSym.quadratic\_reciprocity} for the odd-place content of BL~\S4, and
+        \lean{thm12\_instance\_1009\_mathlib}, \lean{witness\_1009\_typeI\_symbol},
+        \lean{reciprocity\_1009\_11} reproduce the $p=1009$ verified instances using genuine
+        Mathlib reciprocity rather than the bounded-search \lean{legendre} of Layer~A.
+  \item \lean{lemma32\_of\_prime} specialises \lean{BL.lemma32} to \lean{Nat.Prime}.
+\end{itemize}
+Hilbert symbols themselves are not present in Mathlib, so \lean{InvariantData.reciprocity}
+remains an interface even in this file; what is discharged here is the odd--odd quadratic
+reciprocity content it reduces to, which is the part Mathlib does supply.
+
+\subsection{\file{ErdosStrausBLRoute.lean} — the Bright--Loughran route, in full}
+\label{subsec:blroute-lean}
+
+At 3675 lines, this is the single largest file in the archive and the principal deliverable of
+the geometric investigation (\Cref{sec:route2}). It develops, on top of the Layer-A/B interfaces
+above, the full affine $\Z$-model of the Erd\H{o}s--Straus and Schinzel surfaces, the
+Bright--Loughran octant invariant, and an extensive discharge of Hilbert reciprocity for the
+specific rational arguments the ES problem produces. Its contents, grouped by theme:
+
+\paragraph{Character algebra and the hybrid covering bypass (plan \S4p--\S4q).}
+\lean{witness\_legendre}, \lean{typeI\_d\_slice}, \lean{typeI\_modulus\_11\_pairs},
+\lean{hard\_prime\_legendre\_three}, and \LEAN{} \lean{survivor\_legendre\_three} formalise the
+finding that Type-I covering exclusions are unions of quadratic-residue \emph{cosets}: a
+Legendre-symbol mismatch at a small modulus (e.g.\ $q=11$) excludes an entire $d$-slice at once.
+\lean{erdos\_straus\_of\_character\_covering} and \lean{erdos\_straus\_of\_hybrid\_covering}
+package this as an alternative sufficient route to ES.
+
+\paragraph{The affine $\Z$-model (BL \S2--\S3).}
+\lean{IsSchinzelZ m n x y z} is the integer-point predicate for the affine cubic
+$m\cdot xyz=n(xy+yz+zx)$; \lean{IsSchinzelZ 4 n} specialises to \lean{IsESZ}. \LEAN{}
+\lean{isES\_to\_esZ}/\lean{isES\_of\_esZ\_pos}: natural-number solutions are exactly the
+positive-octant integer points, so \LEAN{}
+\[
+\texttt{erdos\_straus\_iff\_pos\_octant} : \mathrm{ErdosStraus} \iff \forall n\ge 2,\
+U_n(\Z)\cap C_+ \ne \varnothing.
+\]
+\LEAN{} \lean{esZ\_nonempty}: $U_n(\Z)$ is nonempty for \emph{every} $n\ge 2$ — even $n=2t$ via
+the positive point $(2t,2t,t)$, odd $n=2k+1$ via the classical mixed-sign point
+$\tfrac1k+\tfrac1{k+1}-\tfrac1{nk(k+1)}$, which lies \emph{off} the positive octant
+(\lean{esZ\_of\_odd\_not\_pos}). \lean{schinzelZ\_not\_all\_neg}: no all-negative point exists.
+
+\paragraph{The Jahnel--Schindler/BL box (Lemma~3.10).}
+\LEAN{} \lean{schinzelZ\_min\_le}/\lean{esZ\_min\_le}/\lean{es\_pos\_min\_le}: every ordered
+integer point satisfies $m\,|u_{\min}|\le 3n$, derived from the factor identity
+$(ry-s)(rz-s)=s^2$ with $r=mx-n$, $s=nx$ (\lean{schinzelZ\_factor}, \lean{schinzelZ\_coord\_dvd}).
+The converse in the positive octant, \LEAN{} \lean{es\_of\_s2\_divisor}, converts a divisor pair
+of $s^2$ at fixed $x$ into a positive point; \emph{existence} of such a pair as $n$ varies is
+exactly the conjecture. A single explicit slice ($x=(n+3)/4$, $r=3$) is shown to occupy the
+octant for every $n\equiv5\pmod8$ (\lean{es\_five\_mod\_eight\_of\_repair}) and for those
+$n\equiv1\pmod4$ whose companion $s$ has a prime factor $\equiv2\pmod3$
+(\lean{es\_of\_r3\_slice}); it is shown, honestly, to \emph{fail} at $n=73$
+(\lean{r3\_slice\_obstructed\_at\_73}), and the file explicitly does not pursue chaining further
+moduli, describing that as ``covering densification''.
+
+\paragraph{The octant invariant and TUB-EP.}
+\lean{invInfES} is the real Hilbert symbol of $\alpha$, cleared of the positive square $u_3^2$.
+\LEAN{} \lean{invInfES\_eq\_neg\_one\_iff}: it equals $-1$ exactly on the same-sign octants (the
+all-negative octant being empty, this detects the positive component — BL Lemma~3.1 on the
+$\Z$-model). \LEAN{} \lean{invInfES\_of\_esZ\_mixed}/\lean{invInfES\_odd\_mixed}: mixed-sign
+integer points have invariant $+1$ (BL Theorem~1.5 at the real place). The central named
+hypothesis of the geometric route is then
+\[
+\textbf{\lean{TubEpHypothesis}} : \forall n\ge 2,\ \exists\, u_1,u_2,u_3>0,\ \mathrm{IsSchinzelZ}\ 4\ n\ u_1\ u_2\ u_3,
+\]
+with \LEAN{} \lean{erdos\_straus\_of\_tub\_ep} proved and \LEAN{}
+\[
+\textbf{\lean{tub\_ep\_iff\_erdos\_straus}}
+\]
+establishing that \lean{TubEpHypothesis} is \emph{logically equivalent} to the full conjecture
+— a fact the report returns to repeatedly in \Cref{sec:route2}, since a genuine reduction must
+have independent mathematical content beyond a bare restatement (requirement R2,
+\Cref{sec:spec}). The Z-model facts any candidate existence principle may legitimately consume
+are packaged as a \lean{structure} \lean{TubEpConsumed} (nonemptiness, the box, the octant
+invariant, the mixed-sign-off-$C_+$ fact, and the positive-rational point $(n,n,n/2)$ that shows
+directly why Cao--Xu toric strong approximation cannot by itself imply ES).
+
+\paragraph{Hilbert reciprocity, extensively discharged.}
+The largest single portion of the file (roughly lines 1250--3000) proves Hilbert-symbol
+reciprocity, via Jacobi/$\chi_4$/$\chi_8$ symbols, for every combination of sign and
+coprimality that the ES/Schinzel arithmetic actually produces: odd primes, odd coprime
+positives, negative odd coprimes, powers of $2$, mixed signs, odd ratios, and specifically the
+BL~3.8 shape $(-2^s r_1/r_3,\,-2^s r_2/r_3)$ when the odd parts are pairwise coprime, together
+with a shared-odd-factor variant that removes the pairwise-coprimality restriction after
+cancelling common squares. Representative named theorems: \lean{hilbert\_reciprocity\_odd\_primes},
+\lean{hilbert\_reciprocity\_odd\_coprime}, \lean{hilbert\_reciprocity\_neg\_odd\_coprime},
+\lean{hilbert\_reciprocity\_two\_pow}, \lean{hilbert\_reciprocity\_neg\_two\_pow},
+\lean{hilbert\_reciprocity\_self}, \lean{hilbert\_reciprocity\_neg\_pos\_odd\_coprime},
+\lean{hilbert\_reciprocity\_odd\_ratio}, \lean{hilbert\_reciprocity\_es\_ratio},
+\lean{hilbert\_reciprocity\_shared}, \lean{hilbert\_reciprocity\_odd\_integers}. These feed
+\LEAN{} \lean{thm12\_discharged} (the bookkeeping $\inv_\infty=-1$, $\inv_2=1$,
+$\inv_{\mathrm{good}}=1$, plus reciprocity $\Rightarrow \inv_p=-1$) and
+\lean{yamamoto\_of\_nat\_solution}.
+
+\paragraph{Lemma~3.8's two-adic valuation analysis.}
+A further self-contained block (lines $\approx3030$--$3600$) proves the two-adic valuation
+bookkeeping BL Lemma~3.8 actually needs on \emph{natural-number} solutions rather than the
+idealised reduced coordinates of \Cref{subsec:brightloughran-lean}: \lean{es\_v2\_balance},
+\lean{exists\_unique\_min\_pair}, \lean{es\_odd\_two\_adic\_vals}, culminating in
+\LEAN{} \lean{lemma38\_of\_two\_adic\_shape} and \lean{lemma38\_of\_nat\_solution}, which
+derives the reduced $(r_1,r_2,r_3,s,e)$ shape BL~\S3.3.4 requires directly from an arbitrary
+positive integer solution, closing the gap between \Cref{subsec:brightloughran-lean}'s finite
+lemma and genuine ES solutions. The file closes with \lean{RepresentedX2p4Y2},
+\lean{odd\_three\_mod\_four\_free\_is\_form}, and \lean{D1ShiftForm}/\lean{d1\_a1\_iff\_not\_free},
+tying the $a=1$ certificate condition of \Cref{subsec:classrough-lean} back to the classical
+sum-of-two-squares representation.
+
+\paragraph{What this file does not claim.}
+The file's own header is explicit: it does not claim unconditional \lean{ErdosStraus} or
+\lean{TubEpHypothesis}; Theorem~1.8 is not formalised and is not treated as existence of a
+point; Cao--Xu is not treated as filling the octant; Harpaz is not applicable (\Cref{subsec:conicfiber});
+completeness of any covering system is not claimed.
+
+
+\subsection{\file{ConicFiber.lean} — the split-fibre theorem}
+\label{subsec:conicfiber}
+
+This 194-line file is small, entirely self-contained, and proves the single geometric fact that
+determines the fate of every fibration-based attack considered in \Cref{sec:route2}. Fixing the
+third ES coordinate $t$ in $4txy=n(xy+tx+ty)$ and setting $A=4t-n$, the surface equation is
+shown, by pure algebraic manipulation over $\N$ (no case split needed beyond positivity), to be
+equivalent to the identity
+\[
+(Ax-nt)(Ay-nt) = (nt)^2,
+\]
+proved as \LEAN{} \lean{fiber\_identity}, built from the auxiliary lemmas \lean{four\_t\_gt},
+\lean{fiber\_relation} and \lean{coord\_exceeds}. Consequently \emph{every} conic fibre of the
+Erd\H{o}s--Straus surface is a \emph{split} conic $uv=c$, for every $n\ge2$ and every fibre $t$
+— not merely generically. Two further theorems make this constructive:
+\begin{itemize}[leftmargin=1.4em]
+  \item \LEAN{} \lean{fiber\_to\_divisor}: a positive point on fibre $t$ yields an explicit
+        positive divisor pair $(u,v)$ of $(nt)^2$ with $u\equiv v\equiv -nt\pmod{4t-n}$, and the
+        coordinates recover linearly, $(4t-n)x=u+nt$.
+  \item \LEAN{} \lean{divisor\_to\_fiber}: conversely, any such positive divisor pair in the
+        correct residue class produces a positive point on fibre $t$.
+\end{itemize}
+Together these prove, unconditionally and for \emph{all} $n\ge2$, that along every conic
+fibration of the ES surface, the positive-point existence question \emph{is} the divisor
+problem of \Cref{sec:covering} — the geometric and analytic routes are, at the level of this one
+theorem, the same object viewed in two coordinate systems. The immediate consequence, discussed
+at length in \Cref{subsec:harpaz}, is that Harpaz's descent-fibration theorem for conic log~K3
+surfaces \cite{Harpaz2019} cannot apply here: its hypotheses require \emph{non-split} conic
+fibres carrying genuine Selmer structure, and none exists on this surface. The file's axiom
+profile is the minimal \texttt{propext}, \texttt{Quot.sound} pair throughout.
+
+\subsection{\file{TwistDescent.lean} — the real-compatible twist and its Gate~3 failure}
+\label{subsec:twistdescent}
+
+A 219-line file implementing the corrected form of candidate conjecture C5 (\Cref{sec:candidates}):
+the \emph{real-compatible twist} $V_{n,d}$, obtained by adjoining $w^2=d\cdot u_1u_3$ ($d>0$
+squarefree) to the affine model $U_n$.
+\begin{itemize}[leftmargin=1.4em]
+  \item \lean{OnUn}, \lean{IsTwist n d x y z w}, \lean{PosRealLocus} set up the objects.
+  \item \LEAN{} \lean{naive\_cover\_empty}: the \emph{naive} $\alpha$-trivialising cover
+        $w^2=-u_1u_3$ has no real points at all over the positive octant (since
+        $u_1,u_3>0\Rightarrow u_1u_3>0$) — the kernel form of the refutation of the original,
+        naive version of candidate C5 (\Cref{sec:candidates}).
+  \item \textbf{Gate~2} (the cheap half of requirement R1, \Cref{sec:spec}): \LEAN{}
+        \lean{descent}: an integral point of $V_{n,d}$ in the positive real locus projects to a
+        positive-octant point of $U_n$. \LEAN{} \lean{lift}: conversely, every positive-octant
+        point of $U_n$ lifts to some twist (with $d=u_1u_3$, not claimed squarefree-minimal).
+  \item \textbf{Gate~3} (\Cref{subsec:c5}, the decisive negative finding): fibering $V_{n,d}$ by
+        $u_2=t$, an \emph{explicit rational section} over $\Q(t)$ is exhibited and its cleared
+        form proved as a Nat identity, \LEAN{} \lean{t\_fiber\_section\_cleared}. A rational
+        section means the generic fibre is \emph{split}, so Harpaz's Theorem~1.0.1 — whose
+        engine requires non-split fibres — does not apply to this fibration either, for the
+        same structural reason as \Cref{subsec:conicfiber}.
+  \item \textbf{Autopsy} (20 August 2026): the very same rational curve, reparametrised, is
+        shown to also be a section of the projections $\pi=u_1$ and $\pi=w$
+        (\LEAN{} \lean{u1\_fiber\_section\_cleared}, \lean{u1\_fiber\_twist}) — changing the
+        linear projection does not produce a genuinely non-split conic fibration of $V_{n,d}$.
+\end{itemize}
+This file is the kernel record of candidate C5's refutation chain (C5 $\to$ C5$_1$ $\to$
+C5$_2$, \Cref{subsec:c5}): a mathematically substantial idea, formally checked, and formally
+closed within the same investigation.
+
+\subsection{\file{SchinzelSep.lean} and \file{SchinzelDecide.lean} — the Schinzel separator suite}
+\label{subsec:schinzel-lean}
+
+Two short files (84 and 268 lines) implementing the S1/S1$_1$ investigation
+(\Cref{subsec:schinzel}) into the generalised Schinzel family $m/n=1/x+1/y+1/z$.
+\begin{itemize}[leftmargin=1.4em]
+  \item \file{SchinzelSep.lean}: \lean{OnSchinzel m n x y z} is the general cleared model.
+        \LEAN{} \lean{signed\_9\_5}: the explicit mixed-sign integer point $(-5,1,1)$ satisfies
+        $\tfrac95=1+1-\tfrac15$ (axiom-free \texttt{decide}). \LEAN{} \lean{no\_pos\_9\_5}: for
+        \emph{ordered} $x\le y\le z$, no positive solution of $9/5$ exists — proved by a direct
+        elementary bounding argument (the leading coefficient is forced to $x=1$, then
+        $y\in\{1,2\}$, both residues fail), entirely by hand, no search.
+  \item \file{SchinzelDecide.lean}: a genuinely \emph{decidable} procedure
+        \lean{decideCplus m n}, searching $x\le 3n$, $y\le 2nx$ and recovering $z$ from
+        $nxy=zD$. \LEAN{} \lean{decideCplus\_sound} and, more substantially,
+        \LEAN{} \lean{decideCplus\_complete} prove that this bounded search is both sound
+        \emph{and complete} for positive-octant solvability of \emph{any} fixed $(m,n)$ — a
+        genuine finite decision procedure, proved correct by an explicit chain of bounding
+        lemmas (\lean{exists\_sorted}, and bounds \texttt{hb1}--\texttt{hb4} inside the
+        completeness proof) rather than by brute enumeration alone.
+        \LEAN{} \lean{sep\_9\_5}, \lean{sep\_13\_7} (both axiom-free \texttt{decide}): the
+        checker returns \texttt{false} on $9/5$ and on the companion separator $13/7$ (from the
+        family $(2z-1)/z$ at $z=7$), yielding \LEAN{} \lean{no\_pos\_9\_5} and
+        \lean{no\_pos\_13\_7} as corollaries; \lean{pos\_4\_5} is a positive control
+        ($4/5=\tfrac12+\tfrac14+\tfrac1{20}$).
+\end{itemize}
+These two files jointly establish, unconditionally, that \emph{mixed-sign integer occupancy of
+a Schinzel surface does not imply positive-octant occupancy} — the necessity check that drives
+the refinement of candidate conjecture C11 (\Cref{claim:c11}).
+
+\subsection{\file{NoVieta.lean} — no Markoff-type involution}
+\label{subsec:novieta}
+
+A 156-line file proving the single structural fact that closes the ``geometric mechanism
+inventory'' of \Cref{subsec:synthesis}: the affine equation $m\,xyz=n(xy+yz+zx)$ is
+\emph{linear} in each coordinate separately (unlike the Markoff equation
+$x^2+y^2+z^2=3xyz$, which is quadratic in each variable and hence admits the Vieta involution
+$x\mapsto 3yz-x$ underlying the Bourgain--Gamburd--Sarnak strong-approximation machinery
+\cite{BGS2016}).
+\begin{itemize}[leftmargin=1.4em]
+  \item \lean{denomX m n y z} $= myz-ny-nz$ is the fibre denominator for the $x$-coordinate;
+        \LEAN{} \lean{linear\_in\_x}: $x\cdot\mathrm{denomX} = n\,yz$ — the equation really is
+        linear in $x$ once $(y,z)$ is fixed.
+  \item \LEAN{} \lean{unique\_x}: given a nonzero fibre denominator, $x$ is uniquely determined
+        by $(y,z)$ — \emph{there is no second root}, hence no Vieta-type involution and no
+        Markoff-style correspondence orbit.
+  \item \LEAN{} \lean{es\_unique\_x} specialises this to the ES equation ($m=4$) on positive
+        naturals.
+\end{itemize}
+This is a small file but a structurally important one: it is the formal reason, verified rather
+than merely asserted, that the entire Bourgain--Gamburd--Sarnak/Markoff-orbifold literature
+(\Cref{subsec:synthesis}) cannot be imported wholesale to the Erd\H{o}s--Straus setting.
+
+\subsection{\lean{Leochlon.lean} — a Type-II identity dictionary}
+\label{subsec:leochlon}
+
+A 95-line library file, new in this revision, importing \file{ErdosStraus.lean} together with
+Mathlib's \lean{Linarith} and \lean{Ring} tactics. It formalises a single Egyptian-fraction
+identity reported for an external, informally documented construction (`leochlon/erdstrau'; the
+archive notes that the originating URL was not reachable when first recorded, and treats the
+construction purely as a mathematical statement to be checked on its own terms):
+\[
+(4b-1)(4c-1) = 4p\delta+1, \qquad \delta\mid bc.
+\]
+\begin{itemize}[leftmargin=1.4em]
+  \item \lean{LeochlonWitness p delta b c} (parameters $p,\delta,b,c$) packages the hypotheses; \LEAN{}
+        \lean{leochlon\_key\_identity} rewrites the defining equation over $\Z$ into the
+        cancellation-free form $4bc = b+c+p\delta$.
+  \item \LEAN{} \lean{isES\_of\_leochlon}: any such witness always yields the explicit Type-II
+        Erd\H{o}s--Straus triple $(pb,\,pc,\,bc/\delta)$ — i.e.\ $p$ divides two of the three
+        denominators, exactly the shape of the archive's own \lean{Witness} predicate
+        (\Cref{subsec:erdosstraus-lean}).
+  \item \LEAN{} \lean{leochlon\_of\_q\_succ\_div\_four} specialises to $b=(q+1)/4$ when
+        $q\equiv3\pmod4$, connecting the construction to the archive's own small-modulus
+        covering cells.
+\end{itemize}
+The file's own header, and the companion note \texttt{erdos-\allowbreak straus-\allowbreak leochlon.md}, are explicit
+that this is a \emph{dictionary} into \lean{ES.IsES} and nothing more: the identity is not
+automatically a covering-landing witness at any particular $(a,c,d,m)$, and it is not treated as
+a gateway or finite-catalogue covering construction. \Cref{sec:prior} discusses the provenance
+and scope of this file in full.
+
+\subsection{\lean{Stormer.lean} — a ported library theorem, out of scope for the proof}
+\label{subsec:stormer}
+
+An 855-line file, new in this revision and licensed separately from the rest of the archive
+(\Cref{subsec:provenance}), proving St\o rmer's 1897 theorem \cite{Stormer1897} on consecutive smooth numbers,
+adapted from a public Mathlib pull request (\#42040) to build outside Mathlib's own
+\texttt{module} root. The file's own header states plainly that it is ``library only'' and
+``not on the T(A)/geometry QED path''. Its mathematical content: given a positive solution of
+the Pell equation $x^2=1+dy^2$ whose $y$-coordinate has no prime factor outside a fixed finite
+set together with the Pell parameter $d$, the solution is forced to be the \emph{fundamental}
+one (\LEAN{} \lean{eq\_fundamental\_of\_primeFactors\_y\_subset\_parameter} and
+\lean{eq\_of\_primeFactors\_y\_subset\_parameter}, built on an explicit prime-divisibility lemma
+for the Lucas-sequence coordinate \lean{pellY}, \LEAN{}
+\lean{exists\_prime\_dvd\_pellY\_not\_dvd\_parameter}). This is then packaged into a
+three-valued ``exponent code'' on $s$-smooth numbers (\lean{exponentCode},
+\lean{consecutiveCode}) and used to bound the number of consecutive pairs of $s$-factored
+naturals: \LEAN{} \lean{card\_consecutive\_factoredNumbers\_le\_sub} gives an explicit bound of
+$3^{|s|}$ minus a correction, and \LEAN{} \lean{finite\_consecutiveFactoredNumbers} concludes
+finiteness of the set of such consecutive pairs for any fixed finite prime set $s$. None of this
+material is used anywhere else in the archive; it is included, and separately licensed, purely
+as a documented piece of provenance from the sibling investigation discussed in \Cref{sec:prior}.
+
+\subsection{Frozen and legacy files}
+\label{subsec:legacy}
+
+Two further Lean files are present but explicitly marked as non-canonical by \file{README.md},
+and are kept in an \file{archive/} subdirectory excluded from the \file{lakefile.toml} build:
+\texttt{archive/\allowbreak ErdosStraus-\allowbreak core.lean} (2073 lines) is described as ``a frozen snapshot of an earlier
+covering file, not a Lake root'', and \texttt{archive/\allowbreak ErdosStraus-\allowbreak mathlib-\allowbreak project.lean} (2480 lines) as
+``a duplicate of \file{ErdosStraus.lean}''. Both share the same header and opening definitions
+as the canonical \file{ErdosStraus.lean} (\Cref{subsec:erdosstraus-lean}) but represent earlier
+development states; a short \texttt{archive/README.md} states explicitly that they are not Lake
+roots and should not be imported. This report does not describe them further.
+
+\subsection{Summary of what is, and is not, proved}
+\label{subsec:lean-summary}
+
+Collecting the strata above, the unconditional content of the Lean formalisation is:
+\begin{itemize}[leftmargin=1.4em]
+  \item the full elementary reduction of ES to \lean{HardLandingHypothesis} (six hard classes
+        mod 840), with every classical polynomial-witness case machine-checked;
+  \item soundness of the covering system at every level (\lean{covering\_sound}) and the
+        cardinality-to-QED bridge;
+  \item unconditional verification of ES for every $n<100{,}000$;
+  \item the finite arithmetic heart of Bright--Loughran's Theorem~1.2 (Lemma~3.8's $256$-case
+        table), verified instances at $p=1009$, and an extensive discharge of Hilbert
+        reciprocity for the rational arguments the ES problem actually produces;
+  \item the $\Z$-model nonemptiness, box bound, and octant-invariant theorems, and the
+        equivalence \lean{TubEpHypothesis}~$\iff$~\lean{ErdosStraus};
+  \item the split-fibre theorem and its exact divisor correspondence, for every $n\ge2$ and
+        every conic fibre;
+  \item the Gate~2/Gate~3 twist-descent theorems, including the rational-section proof that
+        closes candidate C5;
+  \item the Schinzel-separator decision procedure and its verified instances at $9/5$ and
+        $13/7$;
+  \item the no-Vieta uniqueness theorem;
+  \item and, as library material carrying no weight on the reduction, a checked Type-II
+        identity dictionary (\lean{Leochlon.lean}) and a ported Mathlib-style theorem on
+        consecutive smooth numbers (\lean{Stormer.lean}), both discussed further in
+        \Cref{sec:prior}.
+\end{itemize}
+What remains explicitly, and by design, unproved and named as such are exactly two interfaces:
+\lean{AnalyticSurvivorBound} (equivalently \lean{DivisorLandingBound}, equivalently
+\lean{D1UniformNtBound} on the restricted $d=1$ lane) on the analytic side, and
+\lean{TubEpHypothesis} on the geometric side — with the kernel theorem
+\lean{tub\_ep\_iff\_erdos\_straus} establishing that the latter has, at present, no content
+beyond a restatement of the conjecture itself. Neither interface is discharged anywhere in this
+archive.
+
+
+\section{Route 1: the analytic covering-density approach}
+\label{sec:route1}
+
+\subsection{The research log and the identification of the k-budget invariant}
+\label{subsec:kbudget}
+
+Sections \S1--\S4l of \texttt{erdos-\allowbreak straus-\allowbreak novel-\allowbreak structures-\allowbreak plan.md} record a single day (18
+August 2026) of rapid, iterated attempts on a \emph{covering density lemma} — an upper bound on
+the density of integers avoiding every congruence class in a growing covering box — together
+with the honest documentation of where each attempt stalled. The log is unusual for a research
+document in that it preserves refuted intermediate claims rather than silently correcting them;
+this report follows that discipline and reconstructs the chain in order, since the final
+negative result (the k-budget invariant) is only meaningful in light of what it subsumes.
+
+\paragraph{The ladder of reformulations (\S4a--\S4d).}
+An initial \emph{Landing Lemma} (roots of the quadratic congruence $\nu^2\equiv -pd\pmod q$
+landing in a divisor-constrained position) is identified as equivalent, via the classical
+dictionary of quadratic forms and ring class fields, to a Duke--Friedlander--Iwaniec-style
+equidistribution statement (\cite{DFI}; this is ``Option~9/Option~5 fusion'' in the plan's own
+numbering). A first quantitative version, the \emph{Covering Density Lemma}, conjectures
+$u(A)\ll A^{-2-\varepsilon}$ for the density of survivors of the level-$A$ box, calibrated
+against a measured constant $\kappa\approx0.139$ (the exponent of $\log^2A$ in the covering
+mass). A \emph{partial theorem} is then proved rigorously by restricting to prime cofactor $m$
+and using exact CRT independence across distinct primes plus Bombieri--Vinogradov, giving an
+unconditional power-law density bound with exponent $\kappa^*\approx0.29$ — the first genuine
+theorem of the investigation, and a template for everything that follows.
+
+\paragraph{The Suen conditioning scheme (\S4e).}
+Conditioning on all primes $\le T$ turns the survivor-density problem into a product space over
+large-prime coordinates, to which \emph{Suen's correlation inequality} \cite{Suen1990,Janson1990}
+applies directly:
+\[
+u \;\le\; \exp\!\bigl(-\mu+\Delta e^{2\delta}\bigr),
+\]
+with $\mu$ the total conditioned mass, $\Delta$ the mass on dependent pairs, and $\delta$ the
+maximum neighbour mass. Measured gates at toy scale ($A=24$--$48$) show that a small-prime
+``hub'' (the primes $3,7,11,13$) is the entire source of dependence, and that conditioning it
+away reduces $\Delta,\delta$ to $O(\mu^2/T),O(\mu/T)$ — an elementary second-moment bound, later
+made fully rigorous as Lemma~SM (\Cref{subsec:epower}). This is identified as, in principle, a
+route to the \emph{full} super-polynomial covering-density bound $u(A)\le\exp(-(1-o(1))\kappa\log^2A)$.
+
+\paragraph{The Vaughan barrier and its correction (\S4f--\S4h).}
+A first (later corrected) attempt to transfer this density bound into an exceptional-\emph{count}
+bound over a growing interval $[x,2x]$ derives a sieve-dimension constraint
+$\theta<1/3$ for a covering level $A=\exp((\log x)^\theta)$, and — remarkably — recovers
+\emph{exactly} Vaughan's 1970 exponent $\exp(-c(\log x)^{2/3})$ at the boundary $\theta=1/3$,
+independently from three unrelated technologies (the fundamental lemma, the large sieve, and
+Vaughan's original exponential-sum method). This ``triple convergence'' is initially read as
+strong evidence for a genuine barrier. A subsequent, more careful trace of the relevant Nair--
+Tenenbaum/Henriot machinery (\S4g--\S4h, ``door (b)''; this is the analysis formalised in
+\Cref{subsec:henriot-lean}) discovers that the original barrier arithmetic \emph{conflated total
+sifted mass with sieve dimension}. Corrected, the achievable cap is not
+$\exp(-c(\log x)^{2/3})$ but a genuine \emph{power saving} $x^{-c\kappa}$, i.e.\ an
+unconditional exceptional-set bound $O(x^{1-c})$ \textbf{strictly stronger than Vaughan}. This
+correction — explicitly flagged as such in the document, with the original \S4f retained
+unedited as a record — is the origin of the E\_power theorem (\Cref{subsec:epower}).
+
+\paragraph{The k-budget invariant, in final form (\S4k--\S4l).}
+The corrected barrier is then re-derived a \emph{third} independent way, via a
+circuit-complexity/``fooling'' argument (intervals fooling a depth-$2$ CRT formula, in the
+style of Braverman--Bazzi-type constructions), and the three derivations are triangulated into
+a single invariant:
+\begin{quote}\itshape
+\textbf{The k-budget invariant.} The interval-intrinsic independence budget is $k\cdot\log A\le
+\log x$, while QED-precision requires effective independence $k\gtrsim\text{mass}>\log x$. Every
+method consuming only interval-intrinsic randomness — sieves, the large sieve, Shiu-type
+transfers, $k$-wise-independence fooling — is capped by this inequality.
+\end{quote}
+The invariant is not claimed as a theorem (the plan calls it ``conjectural, proof-shaped''), but
+it organises the entire remainder of the programme: it identifies exactly two input classes that
+are \emph{not} capped by it — genuinely spectral/bilinear arithmetic input (Kloosterman/DFI-type
+cancellation), and algebraic rigidity used non-statistically (the reciprocity/character-coset
+structure of \Cref{subsec:t_a}) — and every subsequent ``look'' investigation in
+\Cref{subsec:t3-negative} is, explicitly, a test of whether some named modern technique
+supplies input from one of these two classes at the specific modulus where the programme's own
+argument stalls.
+
+The resulting statement of the residual open problem is named \textbf{H\_ES} (Survivor Level of
+Distribution): at level $A=\exp(c\sqrt{\log x})$ with $\kappa c^2>1$, the survivor count in
+$[x,2x]$ should satisfy $\#S\ll x\,e^{-(1-o(1))\kappa\log^2A}$. This is, precisely,
+\lean{AnalyticSurvivorBound} restated analytically; it is not proved anywhere in the archive,
+and the k-budget invariant is the programme's own explanation of why it should be hard.
+
+\subsection{T(A): the joint density of class-roughness at fixed width}
+\label{subsec:t_a}
+
+The central working object of the programme's second phase (20--21 August 2026,
+\file{erdos-straus-T-A.md}) is a reformulation of the density question in terms of the
+\lean{ClassRough} predicate of \Cref{subsec:classrough-lean}. For $p$ ranging over hard primes,
+write
+\[
+\rho_a(x) = \Pr\bigl[\mathrm{ClassRough}(p,a)\bigr], \qquad
+S(A,x) = \Pr\bigl[\mathrm{ClassRough}(p,a)\ \text{for all}\ 1\le a\le A\bigr],
+\]
+and
+\[
+\widehat C(A,x) \;=\; \frac{S(A,x)}{\prod_{a=1}^A \rho_a(x)}
+\]
+for the \emph{selection constant}. The conjectural statement T(A) is that, for each fixed $A$,
+$S(A,x)\asymp C(A)\prod_a\rho_a(x)$ with $C(A)$ an explicit, trackable sequence, and the
+programme's stated exposure is
+\[
+\limsup_{A\to\infty} \frac{\log C(A)}{\log^2 A} \;<\; \kappa \;=\; 0.139
+\]
+(the same constant as \Cref{subsec:kbudget}), \emph{together with} the requirement that extra
+covering width continue to contribute genuine mass rather than becoming what the archive calls
+\emph{dummy covering} — the two ``die conditions'' tracked throughout.
+
+\paragraph{The certificate architecture.} $\mathrm{ClassRough}(p,a)$ is shown (\Cref{subsec:classrough-lean})
+to be \emph{certified} by any real odd character $\chi\bmod 4a$ all of whose non-trivial values
+on prime factors of $p+4a^2$ avoid the forbidden class — this is the exact, kernel-checked
+direction. The converse (every class-rough $p$ has \emph{some} certifying character) is proved
+as an exact biconditional only at $a\in\{1,2,3\}$ (and, by a parallel elementary argument, at
+$a=6$) — precisely the values of $a$ for which the unit group $(\Z/4a\Z)^\times$ is an
+elementary abelian $2$-group. \MEASURED{} At general $a$ the converse is an \emph{$\omega$-gap},
+not a near-equivalence: at $x=10^6$, $A\le40$, the certificate covers only $84.6\%$ of
+class-rough survivors, with the shortfall growing sharply with the number of coprime prime
+factors $\omega(N)$ of the shifted value ($100\%$ at $\omega=1$, falling to $35\%$ at
+$\omega=4$); this is the \emph{defect layer}, shown (\file{c4\_defect\_layer.py}) to be exactly
+the combinatorial phenomenon that $-1$ can lie in the subgroup generated by the prime residues
+of $N$ without being a literal subset product, which is possible precisely when
+$\lambda(4a)\nmid 2$, i.e.\ for $a\notin\{1,2,3,6\}$.
+
+\subsection{T(3): a two-sided bracket, upper half claimed}
+\label{subsec:t3}
+
+The \textbf{T(3) kernel theorem} (\lean{classRough\_123\_iff\_certificates}) makes $a=1,2,3$
+exact: $\mathrm{ClassRough}$ jointly on these three slices is precisely the union of four
+certificate assignments built from the characters $\chi_4$ (mod $4$), $\chi_4,\chi_4\chi_8$
+(mod $8$), and $\chi_4,\chi_4\chi_3$ (mod $12$). \MEASURED{} At $x=10^6$ this is verified against
+$2{,}370$ hard primes with an exact match (656 class-rough on all three slices, 656 in the
+certificate union).
+
+\begin{claimstmt}[T(3)$^+$, \CLAIMED] \label{claim:t3plus}
+\[
+S(3,x) \;\ll\; (\log x)^{-3/2} \qquad (x\to\infty),
+\]
+with an effective, explicit implied constant.
+\end{claimstmt}
+The proof (given in full in \file{erdos-straus-T-3.md}) is a genuine, if not machine-checked,
+Selberg upper-bound sieve of dimension $3/2$ on the six hard classes, sieved to level
+$z=x^{1/4}(\log x)^{-B}$, with Bombieri--Vinogradov supplying the remainder term at the required
+level $z^2\le x^{1/2-}$. The dimension $3/2$ arises because each of the three certificate
+kernels excludes a density-$1/2$ set of primes $q$, and the three densities sum (up to $O(1)$
+collision corrections, verified to be exactly zero for the relevant small moduli) to $3/2$.
+\begin{claimstmt}[T(1), \CLAIMED, by citation]
+$\mathrm{ClassRough}$ at $a=1$ is exactly the $\chi_4$-certificate, i.e.\ $p=x^2+y^2-4$ for hard
+$p\equiv1\pmod4$, and by Iwaniec \cite{Iwaniec1974} together with the congruence-layer extension
+of Fuchs--Hsu--Rickards--Schindler--Stange \cite{FHRSS2025}, $S(1,x)\asymp(\log x)^{-1/2}$.
+\end{claimstmt}
+This one-slice asymptotic calibrates the exponent $\kappa=1/2$ per certificate that the
+dimension-count above extrapolates.
+
+\paragraph{The matching lower bound: a three-step plan with a named stall.}
+The programme is explicit that the two-sided T(3) bracket is \emph{not} claimed. The plan for
+$c_->0$ is: \textbf{(a)} Iwaniec's half-dimensional sieve \cite{Iwaniec1976} gives a genuine
+lower bound per certificate slice (dimension $1/2<1$ evades the parity/sifting-limit problem);
+\textbf{(b)} the Br\"udern--Fouvry vector-sieve inequality \cite{BrudernFouvry1994,BrudernFouvry1996}
+(with Nath--Xie \cite{NathXie2025} as the two-component template) combines lower-bound weights
+across the three simultaneous kernels; \textbf{(c)} \emph{completion} — passing from ``no bad
+factor below $z$'' to the genuine certificate condition requires controlling factors
+$q>x^{1/2}$, which sits beyond Bombieri--Vinogradov and is where the argument can, and the
+programme believes does, stall. Two \emph{escapes} are recorded for the eventual paper's
+outlook rather than claimed: a weaker $c_-$ (a positive proportion of the expected order, via
+``almost-certificates''), or switching to the divisor-sum detector
+$r_\chi(n)=\sum_{d\mid n}\chi(d)$ and a dispersion-method (Linnik \cite{Linnik1960}) attack. The
+sharp remaining mathematical question, stated precisely and repeatedly across
+\file{erdos-straus-T-3.md}, \texttt{erdos-\allowbreak straus-\allowbreak sieve-\allowbreak desk.md} and
+\texttt{erdos-\allowbreak straus-\allowbreak novel-\allowbreak structures-\allowbreak plan.md} \S4w, is:
+\begin{quote}\itshape
+Does a joint well-factorable weight framework exist for a CRT residue
+$\alpha(d_1,d_2,d_3)\bmod\operatorname{lcm}(d_1,d_2,d_3)$ that depends on the summed triple, and
+if not, can one be built for this specific three-kernel case (conductors $4,8,12$)?
+\end{quote}
+
+\subsection{Four negative results at the completion stall}
+\label{subsec:t3-negative}
+
+Between 21 August 2026 and the archive's final state, four separate ``look and reject''
+investigations were carried out against exactly this stall, each testing a specific recent piece
+of analytic machinery. All four are honestly negative, and each pins down precisely why.
+
+\paragraph{(i) Zheng's simultaneous arithmetic progressions \NEGATIVE{} (\file{erdos-straus-T-2.md}, \texttt{zheng-\allowbreak wellfactorable.md}).}
+Zongkun Zheng's theorem on primes in two simultaneous arithmetic progressions
+\cite{Zheng2025} is tested as a two-modulus ($T(2)$) mean-value input. A first technical
+obstacle (\texttt{zheng-\allowbreak wellfactorable.md}) is that the natural weight
+$\lambda_d=\chi(d)\mathbf 1_{d\le D}$ is \emph{not} automatically well-factorable in Zheng's
+sense (Definition~1.1 is a Dirichlet-convolution statement, not a pointwise factorisation), a
+subtlety resolved by isolating the squarefree part. Substantively: after switching, both
+divisors $d_1,d_2$ lie in $[0,\sqrt x]$, and Zheng's Theorem~1.1 restricts one leg to
+$\theta\le7/36$. \MEASURED{} On a $181\times181$ grid of the switched exponent plane, the
+symmetric cell $d_1\approx d_2\approx\sqrt x$ — exactly the cell the completion step needs — lies
+in \emph{neither} Bombieri--Vinogradov nor Zheng's Theorem~1.1 or~1.2; the union of ordinary BV
+and Zheng covers only $0.518$ of the relevant plane, and an ``uneven'' reroute that leaves one
+of the three T(3) kernels in a Type~I/polylog slot and applies Zheng to the remaining pair still
+fails on the cell $(0,1/2,1/2)$ (\file{t2\_zheng\_ranges.py}). \textbf{Verdict:} range no-go;
+not T(2)$^+$; not T(3) progress.
+
+\paragraph{(ii) Heath-Brown's $\delta$-symbol method \NEGATIVE{} (\texttt{erdos-\allowbreak straus-\allowbreak T-\allowbreak 3-\allowbreak delta.md}).}
+Heath-Brown's dissection identity \cite{HeathBrown1996} is tested as a way to detect the moving
+CRT congruence jointly rather than sequentially, hoping the Farey/dissection parameter
+$Q_\delta$ supplies a genuinely extra degree of freedom. A short lemma
+(``Farey--$k$ incompatibility'') shows that at the Bombieri--Vinogradov wall ($M+N=1$,
+$Q_D=1/2$), opening a bilinear cell against the dissection modulus forces $Q_\delta>1/2$, while
+completing the residual AP-index sum forces $Q_\delta\le1/2$ — the same identity as the Phase~1
+stall, merely repackaged (\file{t3\_delta\_ranges.py}). At the specific uneven cell
+$(0,1/2,1/2)$ this particular incompatibility is vacuous (the AP index is absent there), but no
+positive saving is obtained up to $D\sim x$ or $D\sim x^{3/2}$ either. \textbf{Verdict:} does not
+avoid the wall; no range gained; not T(3) progress.
+
+\paragraph{(iii) Joint monodromy independence \NEGATIVE{} (\texttt{erdos-\allowbreak straus-\allowbreak T-\allowbreak 3-\allowbreak monodromy.md}).}
+The 2026 Fouvry--Kowalski--Michel--Sawin theorem on bilinear forms with trace functions
+\cite{FKMS2026} is tested as a route to square-root cancellation in the product
+$\chi_2(d_2)\chi_3(d_3)K(\cdot\,;D)$ for two moving quadratic-character moduli. Four structural
+mismatches are identified: the relevant kernel is not a trace function of a single
+$\ell$-adic sheaf on a product variety over a \emph{fixed} finite field (the modulus $D$ moves
+with the summation point); the individual characters $\chi_2,\chi_3$ are rank-$1$ Kummer sheaves
+with abelian monodromy, not the required ``gallant'' (irreducible, quasisimple) type; after
+switching, a \emph{prime} modulus in this family cannot exceed $\sqrt x$, landing exactly on the
+BV wall, where the relevant length inequalities fail; and a \emph{composite} modulus (two prime
+factors) has monodromy of type $\mathrm{SL}_2\times\mathrm{SL}_2\to\mathrm{SO}_4$, which FKMS
+explicitly classify as \emph{not} gallant. \textbf{Verdict:} the theorem's hypotheses are not
+met on any reachable cell; no range past $x^{1/2}$ is obtained; not T(3) progress.
+
+\paragraph{(iv) The $r_\chi$-to-Kloosterman bilinear reduction \NEGATIVE{} (\file{erdos-straus-T-3.md}, Phases~0--4).}
+Escape~2 of the three-step plan (\Cref{subsec:t3}) is carried through explicitly: the weighted
+count $W(x)=\sum_p r_{\chi_1}(p+4)r_{\chi_2}(p+16)r_{\chi_3}(p+36)$ is expanded, the inner
+congruence system is solved via a moving CRT residue $\alpha(d_1,d_2,d_3)$, and — after opening
+Type~II via additive characters — the remainder is reduced to an explicit trilinear Kloosterman
+sum, of exactly the shape treated by three 2025--26 papers: Pascadi \cite{Pascadi2026},
+Milić\'evi\'c--Qin--Wu \cite{MQW2026}, and Blomer--Pascadi \cite{BlomerPascadi2026}. A short
+lemma (``no bilinear cell at the wall'') shows that at the Bombieri--Vinogradov boundary itself
+$\delta=0$ (writing the modulus as $x^{1/2+\delta}$) there is provably no bilinear cell at all —
+one Type~II factor necessarily folds to a complete residue system. \MEASURED{} Testing the
+saving ranges of all three cited theorems against the dual-interval lengths available just past
+the wall: Pascadi's Corollary~1.4 length constraint is satisfied but its \emph{saving} range is
+not reached until $\delta\gtrsim1/3$; Blomer--Pascadi's genuine saving over the trivial Weil
+bound with balanced dual lengths first appears only at $\delta\approx0.367$
+($Q\approx x^{0.87}$); MQW's theorem uses the wrong (product-argument, not AP-Poisson) kernel
+shape and its length hypotheses require $Q\ge x^{4/5}$ (\file{t3\_kloosterman\_ranges.py}).
+\textbf{Verdict:} no-go at the stall; the entire admissible-saving gap $x^{1/2}<Q<x^{0.87}$
+remains untouched by any cited 2025--26 result; not a third escape.
+
+\begin{remark}
+The four negative results above are methodologically of a piece: each identifies a specific,
+named, currently-published theorem that a naive reading might expect to bridge the
+Bombieri--Vinogradov wall for this problem, and each is shown, by an explicit range or hypothesis
+check rather than a vague appeal to difficulty, not to reach the cell the completion step of
+T(3) needs. None of the four claims to have proved a barrier theorem; all four are consistent
+with — and are read by the programme as further evidence for — the k-budget invariant of
+\Cref{subsec:kbudget}, since all four available techniques supply either interval-intrinsic
+input (capped) or genuinely spectral input that happens not to reach far enough in this specific
+family at this specific modulus. \Cref{subsec:varyingmodulus} draws out the common structural
+reason.
+\end{remark}
+
+\subsection{The varying-modulus correlation gap: a capstone diagnosis}
+\label{subsec:varyingmodulus}
+
+A later document, \texttt{erdos-\allowbreak straus-\allowbreak varying-\allowbreak modulus-\allowbreak gap.md}, steps back from the four
+individual negative results of \Cref{subsec:t3-negative} and asks what they have in common. It
+adds a fifth, informally recorded route to the comparison — an attempt using Maynard-type
+uniform-residue sieve technology (Maynard~I--III) to reach a thin near-Bombieri--Vinogradov slab
+just past the wall, which the document notes was never filed as a separate look because it fails
+for the same reason as the Zheng reroute: any window inside that thin slab still forces
+sacrificing one of the three kernels, which reduces to the already-closed two-modulus cell of
+\Cref{subsec:t3-negative}(i). With this fifth route included, the document states its finding as
+an absence rather than a construction: after Phase~1 of \texttt{erdos-\allowbreak straus-\allowbreak T-\allowbreak 3.md}
+(\Cref{subsec:t3}), what remains is square-root cancellation, uniform in $d_2,d_3$, of
+\[
+\sum_{d_2,d_3}\chi_2(d_2)\chi_3(d_3)\,K(\cdot\,;D), \qquad D=\operatorname{lcm}(d_2,d_3)\asymp d_2d_3,
+\]
+where both $d_2$ and $d_3$ run up to (and, before switching, past) $\sqrt x$, so that $D$ itself
+is the \emph{jointly growing, multi-factor} object — not a fixed quantity relative to which
+something else varies.
+
+\begin{claimstmt}[The two-shape classification, \CLAIMED{}]
+Every method surveyed by the programme, across all five routes, falls into exactly one of two
+shapes: \textbf{(1) fixed residue, growing modulus} — Bombieri--Vinogradov, BFI well-factorable
+estimates, and Maynard~I--III, which all want a residue $a$ held independent of $q$ as $q$
+grows, whereas the T(3) residue $\alpha(d_2,d_3)$ moves with the modulus by construction; or
+\textbf{(2) fixed modulus (field), varying argument} — the $\delta$-symbol's Farey dissection
+past the BV wall, and the entire $\ell$-adic trace-function lineage (Katz~\cite{Katz1988};
+Fouvry--Kowalski--Michel on sums of products \cite{FouvryKowalskiMichel2015} and on trace
+functions over the primes \cite{FouvryKowalskiMichel2014}; Kowalski--Michel--Sawin
+\cite{KowalskiMichelSawin2017}; Fouvry--Kowalski--Michel--Sawin \cite{FKMS2026}), each of which
+fixes a base field $\mathbf F_q$ (or a prime modulus $q$) and lets an auxiliary argument, tuple,
+or family index vary instead.
+\end{claimstmt}
+No route surveyed supplies cancellation when the modulus itself is the jointly growing,
+multi-factor object — this is exactly the FKMS failure mode already identified in
+\Cref{subsec:t3-negative}(iii), and the document traces the same cut through the wider family
+tree behind it, including Ricotta--Royer's Kloosterman paths for prime-power moduli $p^n$ with
+$n\ge2$ \emph{fixed} (only $p\to\infty$ varies) \cite{RicottaRoyer2016}, and a partial, harder
+adjacent case (Kowalski, uniform monodromy as both the field and a conductor grow, for
+elliptic-curve twists \cite{Kowalski2006}) that the document reads as structurally closer to
+what T(3) would need but not the same object. The open question is posed precisely:
+\begin{quote}\itshape
+Does there exist — or can one construct — a Goursat--Kolchin--Ribet-type independence statement
+for a family of Kloosterman-type (or gallant) sheaves in which the modulus is the outer,
+growing, multi-factor summation variable, rather than the fixed base field over which a single
+sheaf's argument ranges?
+\end{quote}
+The document explicitly does not claim the gap is permanent — only that the specific family tree
+already engaged by the programme does not contain a citation that closes it — and it notes one
+untested avenue as a plausible testbed rather than a claimed result: the function-field analogue
+$\mathbf F_q[t]$, where Weil-quality bounds are unconditional, so that independence across
+several jointly growing polynomial moduli might be stateable and checkable before any attempt
+over $\Z$. This document, more than any single one of the four negative results it synthesises,
+is the programme's clearest statement of exactly where the T(3) lower bound's difficulty is
+currently understood to live.
+
+\subsection{T(A)$^+$: a uniform Selberg bound, and E\_lane}
+\label{subsec:talane}
+
+Independently of the T(3) completion question, the programme proves a genuinely unconditional
+upper bound at \emph{every} fixed covering width $A$, generalising the T(3)$^+$ argument.
+\begin{claimstmt}[T(A)$^+$, \CLAIMED]
+For each fixed $A\ge1$, writing $\beta(A)=\sum_{a\le A}1/\varphi(4a)$ for the joint sieve
+dimension (the number of distinct forbidden residues, which residue collisions can only
+decrease — verified computationally to be exactly zero for $A\le200$),
+\[
+S(A,x) \;\ll\; C_{\mathrm{sieve}}(A)\,(\log x)^{-\beta(A)}, \qquad
+C_{\mathrm{sieve}}(A) = \Gamma(\beta(A)+1)\exp\bigl(\gamma\beta(A)-B(A)\bigr),
+\]
+by a Selberg sieve at level $z=x^{1/4}(\log x)^{-B}$ with Bombieri--Vinogradov remainders (the
+$A=3$ case is exactly T(3)$^+$).
+\end{claimstmt}
+A crucial supporting fact, proved as a genuine unconditional theorem (Stirling's formula applied
+to the explicit bound $\beta(A)=O(\log A\log\log A)$, itself a consequence of $\varphi(n)\gg
+n/\log\log n$), is that the $\Gamma$-factor's contribution to $\log C_{\mathrm{sieve}}(A)$ is
+$\exp(o(\log^2A))$ — sub-critical against the $\log^2A$ covering law, so this apparatus cannot
+by itself resurrect the covering density's own scaling. \MEASURED{} the Mertens-constant sum
+$B(A)$ is computed at two independent cutoffs ($Q=10^6,10^7$) and agrees to three decimals,
+staying in $[0.32,0.47]$ for $A\le200$; its \emph{expected} size $O(\log A)$ follows from
+Norton's lemma \cite{Norton1976} together with the typical size of $L(1,\chi)$ in the
+Granville--Soundararajan circle \cite{GranvilleSoundararajan2003}.
+\begin{claimstmt}[Lemma FL, cited]
+The dimension-uniform fundamental lemma (Halberstam--Richert \cite{HalberstamRichert1974};
+Friedlander--Iwaniec \cite{OperaDeCribro}) extends T(A)$^+$'s main term and remainder uniformly
+in $A$, for $A\le\exp(c\sqrt{\log x})$, with effective constants.
+\end{claimstmt}
+\begin{claimstmt}[E\_lane, \CLAIMED]
+Optimising the Selberg exponent against Lemma~FL's growing-level constraint, there exist
+effective $c,c'>0$ such that the number of hard primes $p\le x$ escaping the $d=1$
+aligned-prime lane at width $A(x)=\exp(c\sqrt{\log x})$ satisfies
+\[
+E_{\mathrm{lane}}(x) \;\ll\; x\exp\bigl(-c'\sqrt{\log x}\,\log\log x\bigr).
+\]
+\end{claimstmt}
+E\_lane is deliberately \emph{weaker} than Vaughan's 1970 bound: the $d=1$ lane carries only
+$\log A$ worth of sieve mass, against the full covering box's $\log^2A$. It is presented as the
+provable, effective ``floor'' the aligned-prime sieve alone can deliver — a useful calibration
+point rather than a record.
+
+\subsection{E\_power: an unconditional exceptional-set bound beating Vaughan}
+\label{subsec:epower}
+
+The programme's single strongest unconditional analytic result concerns the \emph{full}
+covering box on \emph{all} integers (not only hard primes) — recall from \Cref{subsec:erdosstraus-lean}
+that Lean's \lean{Covered}/\lean{Survivor} predicate on the full $(a,c,d)$ box is a
+\emph{superset} of the true ES exceptional set, so an upper bound here is automatically an upper
+bound there.
+
+\begin{lemma}[Lemma SM, second moments, \CLAIMED{} with a written proof]
+\label{lem:sm}
+Let $Q(A)$ be the moduli $q=4acd-1$ of the Lean covering cells ($1\le a,c\le A$, $1\le d\le5$),
+$\mu(A)=\sum_q 1/q$ the total mass, $\mu_\ell(A)=\sum_{\ell\mid q}1/q$ the mass divisible by a
+prime $\ell$, $\Delta(A,T)=\sum_{\ell>T}\mu_\ell^2$, and
+$\delta_{\mathrm{ub}}(A,T)=\max_q\sum_{\ell\mid q,\,\ell>T}\mu_\ell$. There is an absolute
+effective $C$ such that for all $A\ge3$ and $3\le T\le20A^2$,
+\[
+\Delta(A,T) \;\le\; C\Bigl(\frac{\mu(A)^2}{T}+\frac{(\log2A)^2}{\sqrt T}
++\log\log(2A^2+3)-\log\log T+1\Bigr),
+\]
+\[
+\delta_{\mathrm{ub}}(A,T) \;\le\; C\,\mu(A)\Bigl(\frac{\log2A}{T\log T}+\frac1{\sqrt T\log2A}\Bigr).
+\]
+\end{lemma}
+The proof (reproduced in full in \texttt{erdos-\allowbreak straus-\allowbreak E-\allowbreak power.md}) is elementary: it reduces to a
+divisor-in-arithmetic-progression bound $\sum_{n\le x,\,n\equiv a(q)}d(n)\ll (x/q)\log(2x)+\sqrt
+x$, a weighted-harmonic corollary, a pointwise bound on $\mu_\ell$, and finally a second-moment
+sum over primes $\ell>T$ split by Mertens' theorem. On the schedule $T=\mu/\eta$ for fixed small
+$\eta\in(0,1/4]$, where $\mu(A)\asymp(\log A)^2$, both error terms in Suen's inequality
+(\Cref{subsec:kbudget}) become $\Delta e^{2\delta}=O(\eta\mu)$ — exactly the input the density
+argument needs. \MEASURED{} the implied constants in Lemma~SM are checked computationally on the
+Lean covering cells at $A$ from $24$ up to $2000$ (\file{e\_power\_suen\_moments.py},
+\file{e\_power\_suen\_moments\_large.py}): along the schedule $T/\mu\approx5$, the ratio
+$R_\Delta=T\sum_{\ell>T}\mu_\ell^2/\mu^2$ settles at $\approx0.13$ and the Suen loss
+$\Delta e^{2\delta}/\mu$ stays below $0.15$ throughout this two-order-of-magnitude range.
+
+\begin{theorem}[E\_power, \CLAIMED]
+\label{thm:epower}
+There exist effective constants $c,\delta,X_0>0$ such that for all $x\ge X_0$ and
+$A=\exp(c\sqrt{\log x})$,
+\[
+S_A(x,2x) \;\ll\; x^{1-\delta},
+\]
+where $S_A(x,2x)$ is the number of $n\in[x,2x)$ surviving the level-$A$ covering box.
+Consequently the number of $n\in[x,2x)$ for which $4/n$ is \emph{not} a sum of three unit
+fractions is $\ll x^{1-\delta}$.
+\end{theorem}
+This is proved by combining Lemma~SM's second-moment input with Suen's inequality (giving
+density $u(A)\le\exp(-(1-O(\eta))\mu(A))$) and a ``Lemma Transfer'' step: at
+$A=\exp(c\sqrt{\log x})$, the hub modulus $M_T=\prod_{p\le T}p$ has size $x^{\alpha/\eta+o(1)}$
+(with $\alpha=\kappa_{\mathrm{cov}}c^2$), and for $c$ small enough that $\alpha/\eta<1/2$ the
+main term dominates the discrepancy over residues modulo $M_T$, giving the stated power saving.
+Explicitly, $\delta=(1-O(\eta))\kappa_{\mathrm{cov}}c^2$ for the admissible range of $(c,\eta)$;
+the numerical value of $\delta$ is not the content, effectivity and positivity are. The honest
+comparison recorded throughout the archive: Theorem~\ref{thm:epower} \emph{strictly improves}
+Vaughan's 1970 exponential-saving bound $\ll x\exp(-c(\log x)^{2/3})$ to a genuine power saving,
+on the same object (all integers $n\le x$, not merely hard primes) — this is, on the programme's
+own account, the single strongest unconditional new mathematical statement to come out of the
+archive.
+
+\subsection{Gate A: the discipline separating a written record from a formalised claim}
+\label{subsec:gatea}
+
+The programme applies an explicit editorial control, ``Gate~A'' (\texttt{erdos-\allowbreak straus-\allowbreak E-\allowbreak partial.md}),
+governing what may and may not be compiled into the Lean interface
+\lean{AnalyticSurvivorBound}. Gate~A \emph{admits}: the elementary Layer-A covering machinery
+(already compiled); a written paper of T(A)$^+$/E\_lane/E\_power, with both ``die conditions'' of
+\Cref{subsec:t_a} stated in the abstract; the Granville--Soundararajan restatement as a
+dictionary into a published literature, not as extra independent characters. Gate~A
+\emph{forbids}: discharging
+\lean{AnalyticSurvivorBound} in Lean, or any lemma whose conclusion is zero large hard
+survivors; treating E\_power or E\_partial as H\_ES or as an assault on it; retuning $\kappa$
+from the flat prime-aligned Euler factor $C_{\mathrm{euler}}\approx0.91$ (\MEASURED{}, computed
+in \file{c4\_euler\_factor.py} to be flat in $A$ from $A=40$ to $A=200$, with zero residue
+collisions verified for $A\le200$); densifying covering while the \emph{conditional retention
+probability} $\mathrm{cond}(a)=\Pr[R_a\mid R_1,\dots,R_{a-1}]$ sits at $\approx1$ (\MEASURED{} at
+$x=10^9$, $\mathrm{cond}(a)\to1$ past $a=80$, mean $0.993$ on $a=161$--$200$ — meaning
+essentially all of the extra covering width beyond $A\approx80$ contributes what the archive
+calls \emph{dummy covering mass}, not genuine additional constraint); and running further
+large-scale computation beyond $x=10^9$. This discipline is the explicit mechanism by which the
+archive prevents a genuine, useful, unconditional record (Theorem~\ref{thm:epower}) from being
+silently over-claimed as progress toward the load-bearing interface.
+
+\subsection{The Granville--Soundararajan reformulation}
+\label{subsec:gs}
+
+A final analytic-lane document (\texttt{erdos-\allowbreak straus-\allowbreak gs-\allowbreak reformulation.md}) restates the T(A)
+survivor-density target in the language of pretentious multiplicative number theory: each
+covering condition corresponds, via quadratic reciprocity, to a real Dirichlet character
+condition, so the joint survival event is a large-deviation lower tail of a sum of quadratic
+character values at primes — precisely the object the Granville--Soundararajan pretentiousness
+programme \cite{GranvilleSoundararajan2001,GranvilleSoundararajan2007} and Lamzouri's
+large-deviation theorems for character sums were built to compute. The document is explicit that
+it contains \emph{no new theorem}; its role is to name the correct published dialect for the
+open question of \Cref{subsec:sievedesk}, and it records two structural caveats: the number of
+covering moduli in play ($A=\exp(c\sqrt{\log x})$) is small enough that a naive application of
+Heath-Brown's quadratic large sieve \cite{HeathBrown1995} is trivial, so the genuine leverage
+would have to come from \emph{growing moments} rather than a raw second-moment bound; and
+character-sum cancellation, unlike interval-intrinsic randomness, is \emph{not} capped by the
+k-budget invariant of \Cref{subsec:kbudget}, so this is one of the few investigated directions
+the invariant does not pre-refute. A companion measurement, the ``C2'' cross-moduli
+Jacobi-symbol correlation test (\file{c4\_c2\_symbols.py}), checks directly whether reciprocity
+among the forced covering symbols produces \emph{super}-multiplicative shrinkage beyond the
+deterministic exclusions already counted; \MEASURED{} at $x=10^9$, $A\le80$ it does not: mean
+$|z|$ on covering-modulus pairs ($0.73$) is if anything \emph{smaller} than on inert pairs
+($0.89$), and the sign of any residual bias is wrong for it to explain the observed selection
+constant $\widehat C(80)=2.69$.
+
+\subsection{The analytic worklist: an open question posed to the sieve literature}
+\label{subsec:sievedesk}
+
+The programme maintains one further document, \texttt{erdos-\allowbreak straus-\allowbreak sieve-\allowbreak desk.md}, whose own
+header describes it as ``the analytic question list. It is not a theorem, not a request to prove
+the Erd\H{o}s--Straus conjecture, and not a request to densify covering.'' Unlike the working
+notes discussed above, it is written to be legible to a reader outside the programme: it restates
+the T(A)$^+$/E\_lane/E\_power results as theorems already established in this archive, restates
+the T(3) completion question and the negative findings of \Cref{subsec:t3-negative,subsec:varyingmodulus}
+as the open remainder, and names the relevant published dialect as the half-dimensional/
+vector-sieve literature on ker-character conditions at primes — in particular the active
+$m^2+n^2+1$ literature (Hooley~\cite{Hooley1973}; Iwaniec~\cite{Iwaniec1974,Iwaniec1976};
+Nath--Xie~\cite{NathXie2025}; Fuchs--Hsu--Rickards--Schindler--Stange~\cite{FHRSS2025}). It is
+explicit that this is a bounded mathematical question, not a request for anyone to prove ES, and
+that it should not be mixed in the same discussion with the geometric question of
+\Cref{subsec:loughran-questions}: the two are addressed to different published literatures and
+share only the identification, discussed in \Cref{subsec:synthesis}, that both ultimately reduce
+to the same analytic core.
+
+
+\section{Route 2: the Bright--Loughran geometric approach}
+\label{sec:route2}
+
+\subsection{Background: the Brauer--Manin theory of Erd\H{o}s--Straus surfaces}
+\label{subsec:blbackground}
+
+Bright and Loughran \cite{BrightLoughran2020} study, for each $n\ge2$, the affine cubic surface
+$U_n:4xyz=n(xy+yz+zx)$ over $\Q$, showing $\Br U_n/\Br\Q\cong\Z/2$, generated by the
+transcendental quaternion algebra $\alpha=(-u_1/u_3,\,-u_2/u_3)$, computed on the
+desingularisation $\widetilde U_n$ (whose complement of three boundary lines is a torus
+$\mathbb G_m^2$). Their principal results, all formalised or directly used in this archive:
+\begin{itemize}[leftmargin=1.4em]
+  \item \textbf{Theorem~1.2}: every natural-number solution satisfies
+        $\prod_{p\mid n}(-u_1/u_3,-u_2/u_3)_p=-1$ (\Cref{subsec:brightloughran-lean});
+  \item \textbf{Theorem~1.5}: non-natural integer solutions give $+1$ instead
+        (\Cref{subsec:blroute-lean}, the octant invariant);
+  \item \textbf{Theorem~1.8}: there is \emph{no} Brauer--Manin obstruction to ES itself — the
+        conjecture survives their computation, but this is a non-obstruction statement, not an
+        existence proof;
+  \item \textbf{Theorem~1.9}: Brauer--Manin is \emph{not} the only obstruction to strong
+        approximation on these surfaces — the exhibited failure is a consequence of the
+        \emph{finiteness} of integral points (the box, Lemma~3.10) via Lang--Weil, i.e.\ a
+        density phenomenon, not an obstruction-theoretic one.
+\end{itemize}
+The programme's own summary of the open mathematical content, after formalising this apparatus:
+\emph{ES is the question of occupancy of one real component ($C_+$, the positive octant) of a
+surface that already has integral points in the other} (mixed-sign points always exist,
+\lean{esZ\_nonempty}).
+
+\subsection{The formalised $\Z$-model and TUB-EP}
+
+\Cref{subsec:blroute-lean} already describes the Lean content in detail: the affine $\Z$-model,
+the box bound, the octant invariant, and the central named hypothesis
+\lean{TubEpHypothesis} — occupancy of the positive octant for every $n\ge2$ — proved
+\emph{equivalent} to \lean{ErdosStraus} itself (\lean{tub\_ep\_iff\_erdos\_straus}). This
+equivalence is treated throughout the archive as a methodologically important negative fact
+rather than a positive step: requirement R2 of the acceptance specification
+(\Cref{sec:spec}) demands that a genuine load-bearing conjecture $C$ have mathematical content
+\emph{beyond} ES itself, and a certified equivalence is explicitly disqualified as ``a
+translation, not a target'' with ``zero strategic distance''. The geometric route's honest
+status, reached only after the negative investigations below, is that it supplies
+\emph{class-theory and an effectivity framework} — a precise vocabulary in which a well-posed
+question about a class of surfaces can be stated — rather than a proof mechanism with tools that
+presently exist.
+
+\subsection{Harpaz's descent-fibration theorem: inapplicable, and provably so}
+\label{subsec:harpaz}
+
+The first candidate geometric mechanism tested is Harpaz's theorem on integral points of conic
+log~K3 surfaces \cite{Harpaz2019}, whose engine is Swinnerton-Dyer-style descent on norm-$1$ tori
+of a quadratic field, contingent on independence, in $\Q^\times/(\Q^\times)^2$, of a specific
+finite collection of classes attached to the fibration. As established unconditionally in
+\Cref{subsec:conicfiber} (\lean{ConicFiber.fiber\_identity}), \emph{every} conic fibre of $U_n$,
+for every $n\ge2$ and every choice of fibre parameter $t$, is algebraically split: $uv=(nt)^2$.
+On a split conic there is no non-trivial Selmer structure to compare, and Harpaz's hypotheses
+fail degenerately rather than merely being hard to verify. The programme records this both as a
+negative result for the naive application, and, via
+\lean{fiber\_to\_divisor}/\lean{divisor\_to\_fiber}, as a positive structural theorem: along every
+fibration, TUB-EP's existence question \emph{is} the divisor problem of \Cref{sec:covering} — the
+two routes are, at the level of this one surface family, literally the same question in two
+coordinate systems.
+
+\subsection{Cao--Xu toric strong approximation: the wrong theorem}
+
+A second natural candidate is Cao--Xu's theorem that Brauer--Manin suffices for strong
+approximation on genuinely toric varieties \cite{CaoXu2018}. The desingularised surface
+$\widetilde U_n$ does contain a torus $\mathbb G_m^2$ in its interior, but — as recorded in BL's
+own Remark~3.12 and reconfirmed in the plan's route-2 dossier — the natural torus action does
+\emph{not extend} to the boundary compactification, so $\widetilde U_n$ is not an honest toric
+variety in the sense Cao--Xu's theorem requires. \LEAN{} \lean{esQ\_pos}: the existence of a
+positive \emph{rational} point $(n,n,n/2)$ independently of any BM computation is recorded as a
+direct illustration of why Cao--Xu cannot, by itself, be what fills the octant with an
+\emph{integral} point.
+
+\subsection{Candidate C5 and its refutation chain: the real-compatible twist}
+\label{subsec:c5}
+
+The most substantial single geometric idea investigated is candidate conjecture C5: since the
+Brauer class $\alpha$ is exactly what obstructs strong approximation, perhaps descending through
+$\alpha$ — replacing $U_n$ by a torsor on which $\alpha$ trivialises — produces \emph{non-split}
+conic fibrations to which Harpaz's engine genuinely applies. The investigation, entirely
+documented and largely kernel-checked, proceeds through three stages:
+\begin{enumerate}[leftmargin=1.6em]
+  \item \textbf{C5 (naive, refuted same day).} The naive $\alpha$-trivialising cover
+        $w^2=-u_1u_3$ is shown, by \Cref{subsec:blroute-lean}'s octant invariant, to have
+        \emph{no real points at all} over the positive octant (since $u_1u_3>0$ there),
+        formalised as \LEAN{} \lean{TwistDescent.naive\_cover\_empty}. The Brauer class does not
+        merely obstruct existence; it walls its own trivialising cover off from the octant
+        entirely.
+  \item \textbf{C5$_1$ (corrected, examined and re-scored).} The natural repair replaces the
+        trivialising cover by \emph{real-compatible twists} $w^2=d\cdot u_1u_3$ ($d>0$
+        squarefree), which do have real points over $C_+$ by construction. Every positive
+        solution of $U_n$ is shown to lift to some twist (\lean{TwistDescent.lift}, Gate~2), with
+        $d=O(n^2)$ forced by the box bound — ruling out any fixed, $n$-independent twist family
+        (which would fail requirement R4, \Cref{sec:spec}). A hand calculation shows the
+        pulled-back quaternion data on the twist takes the shape $(-d,-u_2u_3)$; fibering by
+        $u_2=t$ and rationalising, integrality on the twist is shown to be equivalent to a
+        divisor condition on norm-form values over $\Q(\sqrt{-d})$ — a genuine toolkit gain
+        (imaginary-quadratic factorisation and Chebotarev machinery become available), but also,
+        honestly, a restatement rather than an evasion of the same analytic core.
+  \item \textbf{C5$_2$ (Gate~3, negative, closed).} The specific $t$-fibration named in C5$_1$'s
+        derivation is shown to possess an \emph{explicit rational section} over $\Q(t)$
+        (\Cref{subsec:twistdescent}, \lean{t\_fiber\_section\_cleared}) — the generic fibre is
+        \emph{split for every $d$}, reproducing exactly the same obstruction one level up the
+        tower. Harpaz's Theorem~1.0.1 (the specific, unconditional case of his theorem
+        applicable here, whose hypotheses require non-split fibres and whose conclusion is in
+        any case only $S$-integral with $2\in S$, not a genuine $\Z$-point of $C_+$) does not
+        apply. A same-day autopsy (\lean{u1\_fiber\_section\_cleared}) shows the identical
+        rational curve, merely reparametrised, is \emph{also} a section of the projections
+        $\pi=u_1$ and $\pi=w$ — changing the linear projection does not open a genuinely
+        non-split fibration of this surface.
+\end{enumerate}
+The programme records an explicit methodological lesson from this chain: \emph{run the section
+test first} — before any Selmer or descent architecture is discussed for a proposed fibration of
+any surface in this family, either exhibit a $\Q(t)$-section (which closes the route
+immediately) or prove non-splitness of the generic fibre (which opens it). The line is
+recorded as closed pending a genuinely new, non-split fibration, none having been found.
+
+\subsection{Candidate C3 and its freeze: Campana points do not reach $C_+$}
+
+Candidate C3 proposes a triangle-boundary semi-integral (Campana/orbifold) existence principle,
+motivated by the observation that ES pairs have a totally split boundary triangle with interior
+$\mathbb G_m^2$. Three checks (recorded as C3$_1$) freeze this line:
+\begin{enumerate}[leftmargin=1.6em]
+  \item ES pairs \emph{do} have the claimed geometric structure (a paper fact BL already use, not
+        a new theorem);
+  \item Campana/semi-integral points do \emph{not}, in general, imply a genuine $\Z$-point of
+        $C_+$: Mitankin--Uhlemann \cite{MitankinUhlemann2025} prove that Markoff orbifold pairs
+        satisfy the semi-integral Hasse principle while often having \emph{empty} integral point
+        sets — their own Remark~1.5 states explicitly that Campana/Darmon points ``do not behave
+        in the way that $\mathcal U_m(\Z)$ does''; consequently a class-level Campana Hasse
+        principle, even with empty obstruction, does not bridge to \lean{TubEpHypothesis};
+  \item there is no named theorem $T$ in the literature that supplies effective existence of a
+        $\Z$-point of $C_+$ on the ES pairs by this route.
+\end{enumerate}
+A further claimed discriminator — that the Markoff boundary is an irreducible conic rather than a
+triangle, and so C3's triangle hypothesis would automatically exclude the Markoff
+counterexample — is checked directly against Mitankin--Uhlemann's actual compactification and
+found to be \emph{false}: their model $x_0(x_1^2+x_2^2+x_3^2)-x_1x_2x_3=mx_0^3$ has boundary
+$D=\bigcup_i\{x_0=x_i=0\}$, itself a triangle of three lines. The triangle hypothesis does not
+exclude the known negative comparison case.
+
+\subsection{The Schinzel separator programme}
+\label{subsec:schinzel}
+
+To test what an occupancy-forcing principle would need beyond mixed-sign existence and the box,
+the programme studies the generalised Schinzel family $m/n=1/x+1/y+1/z$ directly.
+\Cref{subsec:schinzel-lean} records the Lean content; the mathematical narrative is:
+\begin{itemize}[leftmargin=1.4em]
+  \item An infinite family $(2z-1)/z$ ($z\notin\{3,4,6\}$) has an explicit mixed-sign point but
+        no positive solution, since positive solvability would require $(z-2)\mid4$. The
+        flagship case $z=5$ is $9/5$.
+  \item \MEASURED{} A bounded computer sweep of the ``narrow band'' $1<m/n<3$, $n\le40$, finds
+        \textbf{86 separators} in lowest terms (mixed-sign witness exists, positive search
+        provably empty — the positive search is complete for $x\le3n/m$)
+        (\file{s1\_schinzel\_separators.py}); only the $9/5$ and $13/7$ instances are Lean-verified
+        (\Cref{subsec:schinzel-lean}), the remaining 84 being script-level results.
+  \item \textbf{The mechanism, identified precisely.} For $m/n$ bounded strictly between $1$ and
+        $3$, the positive search tree has $O(1)$ branching (the leading denominator is bounded by
+        $3n/m=O(1)$), so failure is a \emph{finite, Archimedean-integral} phenomenon — Bright and
+        Loughran's own Theorem~1.9 finiteness mechanism, promoted from an obstruction to strong
+        approximation into an outright existence failure. Ordinary Brauer--Manin machinery, which
+        is not sensitive to Archimedean tree size, does not detect this.
+  \item \textbf{The regime split (S1$_1$).} The Schinzel class splits into a \emph{narrow} band
+        ($m/n$ bounded away from $0$), where the tree is finite and existence reduces to a
+        decidable computation (\lean{decideCplus}, \Cref{subsec:schinzel-lean}), and a
+        \emph{wide} band ($m/n\to0$, tree width $\sim n/2$ for $m=4$) — which is exactly where
+        Erd\H{o}s--Straus itself lives. A ``wide-tree separator'' cannot, by construction, occur
+        in the narrow band; extending the 86-pair sweep therefore cannot test whether any
+        occupancy principle is \emph{sufficient} in the regime that matters.
+  \item A hand (non-kernel) adelic sketch on $9/5$ tests whether $\alpha$ obstructs a
+        $C_+$-restricted integral adele there: two explicit points ($(1,-5,1)$ at good places,
+        $(9/11,45/11,3)$ as a $\Z_2$-point) are assembled with hand-computed Hilbert symbols at
+        $2$, giving product of invariants $+1$ — i.e.\ \emph{no} obstruction is found on this
+        sketch, meaning the $9/5$ separator's failure is invisible to the Brauer--Manin
+        machinery precisely as the finite-tree mechanism above predicts. This sketch is
+        explicitly labelled non-kernel and is presented as a computation to be confirmed by
+        specialists, not a result.
+\end{itemize}
+\begin{claimstmt}[Candidate C11, refined existence schema — not proved]
+\label{claim:c11}
+Mixed-sign occupancy $+$ the box $+$ no integral Brauer--Manin obstruction against $C_+$ $+$
+\emph{Archimedean non-degeneracy} (the admissible leading-denominator range growing with $n$,
+equivalently $m/n\to0$ along the family) implies positive-octant existence.
+\end{claimstmt}
+C11 is scored honestly against the eight-point acceptance specification in \Cref{sec:spec} and
+found to satisfy none of the eight outright; its role in the archive is as the sharpest currently
+stated version of what a genuine geometric existence principle for this family would have to
+assert, together with the explicit necessity proof (the 86 separators) that its fourth hypothesis
+cannot be dropped.
+
+\subsection{No Vieta: why the Markoff/Bourgain--Gamburd--Sarnak playbook cannot be imported}
+
+\Cref{subsec:novieta} records the Lean content of the final structural finding: the ES/Schinzel
+affine equation is linear, not quadratic, in each coordinate, so it admits no second root and
+hence no Vieta-type involution analogous to the Markoff surface's $x\mapsto3yz-x$. This is the
+formal reason the entire Bourgain--Gamburd--Sarnak strong-approximation machinery
+\cite{BGS2016,GhoshSarnak2022} for Markoff-type surfaces — the natural comparison class,
+since $U_n(\Z)$ is never empty exactly where sibling Markoff surfaces frequently have \emph{no}
+integral points at all \cite{LoughranMitankin2021,CTWX2020} — has no orbit structure to act on
+here.
+
+\subsection{Synthesis: the two lanes are one lane}
+\label{subsec:synthesis}
+
+The geometric investigation's terminal finding (\texttt{erdos-\allowbreak straus-\allowbreak novel-\allowbreak structures-\allowbreak plan.md}
+\S4v, 20 August 2026 evening) is that every geometric mechanism considered reduces to the same
+analytic core:
+\begin{itemize}[leftmargin=1.4em]
+  \item fibrations reduce to divisor conditions (\Cref{subsec:conicfiber}), conserved under the
+        real-compatible twists (\Cref{subsec:c5});
+  \item the universal torsor of $\widetilde U_n$ is literally the witness equation, so
+        torsor-counting (candidate C10) is the Elsholtz--Tao count \cite{ElsholtzTao2013}, whose
+        all-$n$ lower bound is again the divisor-dispersion problem of \Cref{sec:route1};
+  \item the affine equation's linearity (\Cref{subsec:novieta}) rules out any Vieta/Markoff
+        dynamical mechanism, closing that branch of the inventory entirely.
+\end{itemize}
+The consequence drawn is not that geometry is worthless, but that its honest role is
+\textbf{class-theory and an effectivity framework}: precise, publishable foundational questions
+(\Cref{subsec:loughran-questions}) about a class of strongly-obstructed log~K3 surfaces, with an
+explicit effectivity framework as a genuine open problem in its own right — not a currently
+available QED engine. Both lanes converge on the same object: for every real geometric mechanism
+tried, the residual open mathematics is a question about the joint distribution or divisor
+structure of shifted values, exactly the object T(A)/T(3) already name analytically.
+
+\subsection{Open geometric questions in the Bright--Loughran literature}
+\label{subsec:loughran-questions}
+
+The programme records five bounded, numbered open questions in a document,
+\texttt{erdos-\allowbreak straus-\allowbreak loughran-\allowbreak orbit.md}, whose own header describes it as ``the geometric
+worklist. It is not a theorem, not a request to prove the Erd\H{o}s--Straus conjecture.'' The
+document identifies the relevant literature as the body of work descending from Bright and
+Loughran's founding paper \cite{BrightLoughran2020} — Mitankin, Uhlemann, Colliot-Th\'el\`ene,
+Wei, Xu, Harpaz, Uppal, Jahnel, and Schindler among others — and states the five questions
+purely as mathematics, without addressing them to any named individual:
+\begin{enumerate}[leftmargin=1.6em]
+  \item whether the notation
+        $\bigl(U(\mathbb A_\Z)^{C_+}\bigr)^{\mathrm{Br}} := \bigl(C_+\times\prod_p U(\Z_p)\bigr)^{\mathrm{Br}}$
+        is the right formalisation of ``no integral Brauer--Manin obstruction against a real
+        component'', and whether Theorem~1.8 amounts to its nonemptiness for the ES pairs;
+  \item whether the two $2$-adic Hilbert symbols in the non-kernel $9/5$ adelic sketch of
+        \Cref{subsec:schinzel} are correct, and whether the construction is the correct analogue
+        of Theorem~1.8 on the $9/5$ Schinzel model;
+  \item whether any refined obstruction in the semi-integral literature detects ``the positive
+        search tree is finite and empty'' — the mechanism the Schinzel separators exhibit but
+        which ordinary Brauer--Manin does not see;
+  \item whether any class-level framework in this literature asserts anything in the
+        \emph{wide} regime ($m/n\to0$) — the regime in which Erd\H{o}s--Straus itself lives, as
+        opposed to the narrow band in which the 86 Schinzel separators were found; and
+  \item whether TUB-EP, or the refined schema C11 (\Cref{claim:c11}), is a statement that
+        literature would recognise, reject, or refine as a genuine class principle.
+\end{enumerate}
+The document is explicit about what these questions are \emph{not}: not a request to apply
+Harpaz, Cao--Xu, or Theorem~1.8 (each already shown inapplicable or insufficient,
+\Cref{subsec:harpaz,subsec:route2-c3}); not a request to explain why ES models have integral
+points when Markoff models do not (the premise conflates two different statements,
+\Cref{subsec:novieta}); and not a request to densify covering or to treat any external claimed
+proof as settled (\Cref{sec:prior}). A companion table in the source document lists further,
+more specialised literatures (Jahnel--Schindler and Colliot-Th\'el\`ene--Wittenberg on affine
+cubics; Mitankin--Uhlemann on Campana points; the dispersion/DFI literature behind
+\Cref{subsec:sievedesk}; Schinzel's own polynomial-identity literature) as adjacent questions to
+be kept separate from the five above and from the analytic question of \Cref{subsec:sievedesk}.
+
+
+\section{External claims and the prior archive}
+\label{sec:prior}
+
+Alongside its own investigation, the programme carries out two triage exercises against material
+external to this archive: an examination of a sibling, separately maintained research effort
+(referred to throughout as the ``prior Track-1 archive''), and a direct check of a 2026 preprint
+claiming an elementary proof of the conjecture. Both are documented explicitly as
+\emph{library/documentation, not a merge}, and neither changes the status of any result reported
+in \Cref{sec:route1,sec:route2}.
+
+\subsection{The prior Track-1 archive: what was kept, and what was not}
+\label{subsec:prior-archive}
+
+\texttt{erdos-\allowbreak straus-\allowbreak prior-\allowbreak archive.md} documents a sibling repository — not part of this
+archive — pursuing a different existence-assault strategy: a ``gateway'' construction asserting
+that every hard residual prime admits a bound $A\le C$ in $\mathbb F_A^\times$ (a working
+constant $C=500$, with an empirical maximum $A=211$ observed through $6\times10^9$), packaged as
+finite-catalogue-type (FCT) and gateway covering across hundreds of generated Lean files. The
+document is explicit about the verdict: \emph{``This programme already classified that vehicle
+as interval-intrinsic covering densification. Extra slices do not empty a QED-scale box''} — i.e.\
+the sibling effort is read as another instance of the density-versus-universality pattern this
+programme's own k-budget invariant (\Cref{subsec:kbudget}) already explains. \Cref{tab:prior}
+summarises what was, and was not, brought into this archive as a result.
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{@{}p{0.34\linewidth}p{0.22\linewidth}p{0.34\linewidth}@{}}
+\toprule
+Artefact & Kept here as & Role \\
+\midrule
+St\o rmer's theorem on consecutive smooth numbers (Apache~2.0; Mathlib PR~\#42040) &
+  \lean{Stormer.lean} & Library theorem only; not on the T(A)/geometry path (\Cref{subsec:stormer}). \\
+Bello-Hern\'andez--Benito--Fern\'andez Lemma~3/Theorem~8, and an examination of Bradford 2026 &
+  \texttt{erdos-\allowbreak straus-\allowbreak bradford-\allowbreak lemma3.md} & Documentation of a finite-parameter
+  covering no-go, and of why Bradford 2026 does not establish its covering claim
+  (\Cref{subsec:bradford}). \\
+Leochlon Type-II identity $(4b-1)(4c-1)=4p\delta+1$ &
+  \texttt{erdos-\allowbreak straus-\allowbreak leochlon.md}, \lean{Leochlon.lean} & Dictionary into
+  \lean{ES.IsES} (\Cref{subsec:leochlon}); not an FCT/gateway merge. \\
+\bottomrule
+\end{tabular}
+\caption{What the prior Track-1 archive contributed to this repository.}
+\label{tab:prior}
+\end{table}
+
+\noindent Explicitly \emph{not} brought into this archive, per the same document: the generated
+covering cascade (\texttt{Cover*}, \texttt{Hit*}, \texttt{Band*} Lean files); the
+\lean{HasGatewayNsqWitness} bounded-$A$ construction as a completeness vehicle; a
+Paley--Zygmund-based ensemble argument proposed as an every-$n$ proof; a claimed
+Matthiesen--Wang interface discharge of a ``ForcedSix'' obstruction (the prior archive's own
+record already states that it does not discharge it); further finite-catalogue growth; and any
+zkVM/SP1 verified-execution wrapping. The document's closing instruction is unambiguous: do not
+treat \lean{Stormer.lean} or \lean{Leochlon.lean} as progress toward
+\lean{erdos\_straus\_of\_interface}, and do not reopen the sibling archive's Bounded-$A$
+construction or Bradford 2026 as a proof.
+
+\subsection{Bradford 2026 and the Bello-Hern\'andez--Benito--Fern\'andez rigidity lemma}
+\label{subsec:bradford}
+
+\texttt{erdos-\allowbreak straus-\allowbreak bradford-\allowbreak lemma3.md} examines two related pieces of external literature
+directly.
+
+\paragraph{Lemma~3 / Theorem~8 (Bello-Hern\'andez--Benito--Fern\'andez).} The statement, quoted
+from \cite{BelloHernandez2026} Theorem~8 with the proof deferred to \cite{BelloHernandez2010}
+Lemma~3, is a rigidity
+result: one cannot generate a finite number of congruence classes containing \emph{all} primes
+$p\equiv1\pmod4$ by fixing, in the classical Type~I/Type~II witness equations, three of the four
+parameters to a finite set and leaving the fourth free. The proof idea is elementary lcm
+arithmetic — each frozen triple produces an arithmetic progression or finite set of $n$; taking
+the lcm $T$ of the moduli attached to any finite collection $S$ of triples, the progression
+$\{4Tt+1:t>0\}$ cannot arise from any triple in $S$, since matching the parametric formula would
+force $1$ itself to be an Erd\H{o}s--Straus number. The document records precisely what this does
+and does not rule out: it rules out any \emph{finite} catalogue of fixed-parameter identities,
+matching this programme's own ``do not densify covering'' discipline exactly; it does
+\emph{not} rule out constructions whose free parameters grow with $n$ (there being then no
+single finite $S$ and no single modulus $T$) — such constructions merely lie outside the
+lemma's hypothesis, which is not the same as a confirmed density escape.
+
+\begin{claimstmt}[Bradford 2026, \NEGATIVE]
+K.~Bradford's preprint \cite{Bradford2026} claims an elementary proof of ES for every prime,
+treating $p\equiv1\pmod4$ via Type~I/Type~II identities and asserting that combining them yields
+a covering system. The programme's examination finds the covering claim unsubstantiated: the
+preprint's only written verification is a $k=0$ list of four moduli ($44,20,8,140$) and the
+observation that $5,13,17,29$ are the first four primes $\equiv1\pmod4$; there is no verification
+that every such prime lies in one of the listed progressions, no table for any $k\ge1$, and no
+engagement with Mordell's quadratic-residue obstruction. Three specific reasons the covering
+claim fails are recorded: (i)~Mordell's classical obstruction (\Cref{subsec:whatitis}) already
+forbids any finite family of polynomial identities from covering $p\equiv1\pmod{840}$, since $1$
+is always a square, and Bradford's Lemmas~1--2 are identities of exactly this type;
+(ii)~the written proof exhibits only $k=0$, so it is precisely the finite-parameter cover that
+Lemma~3 above rules out, and no infinite template over all $k$ is supplied;
+(iii)~listing four small primes is not a covering argument; and (iv)~several of the listed
+arithmetic progressions ($13\bmod20$, $29\bmod44$) coincide with identities already present in
+the classical Mordell layer of this archive's own Lean development
+(\Cref{subsec:mordell}).
+\end{claimstmt}
+The document's conclusion is that formalising Bradford's claim as a proof is not worthwhile, and
+that formalising its Lemmas~1--2 as general identity schemas would itself constitute the
+covering densification this programme deliberately avoids; consequently neither is carried into
+Lean. Three further Bradford-adjacent publications \cite{Bradford2021,BradfordIonascu2015,Bradford2024}
+are noted as distinct papers that do not remove the
+Mordell obstruction either.
+
+
+\section{The candidate-conjecture catalogue}
+\label{sec:candidates}
+
+\texttt{erdos-\allowbreak straus-\allowbreak candidate-\allowbreak conjectures.md} maintains a running list of named candidates for
+the load-bearing statement $C$ that a proof of ES would ultimately rest on, each scored against
+the acceptance specification of \Cref{sec:spec} and each carrying an explicit statement of its
+\emph{primary risk} — the requirement most likely to kill it. The document's own framing is
+important: ``None is asserted true; several are expected to fail. That is what a candidate list
+is for.'' \Cref{tab:candidates} summarises the full list and its current status; candidates
+discussed in detail elsewhere in this report are cross-referenced rather than re-derived.
+
+\begingroup
+\small
+\begin{longtable}{@{}p{0.08\linewidth}p{0.27\linewidth}p{0.17\linewidth}p{0.38\linewidth}@{}}
+\toprule
+\textbf{ID} & \textbf{Statement (informal)} & \textbf{Input class} & \textbf{Status / primary risk} \\
+\midrule
+\endhead
+C1 & Structured-modulus dispersion: level of distribution~1 for the joint divisor condition,
+     uniformly over the growing $(a,d)$ family & spectral/bilinear
+   & Reference candidate; ``H\_ES in its most attackable dress''. Risk R2: may be ES relocated. \\
+C2 & Reciprocity coupling: forced character conditions compound \emph{beyond} their raw covering
+     mass via quadratic reciprocity & algebraic rigidity
+   & \MEASURED{} \textbf{Does not fire} (\Cref{subsec:gs}): cross-moduli Jacobi-symbol
+     correlations are noise, wrong sign for $\widehat C>1$. \\
+C3 & Triangle-boundary semi-integral (Campana) existence principle & global geometry
+   & \textbf{Frozen at C3$_1$} (\Cref{subsec:route2-c3}): Campana points do not reach $C_+$; the
+     claimed Markoff-excluding discriminator is false. \\
+C4 / C4$_1$ & Simultaneous shift-roughness / \textbf{T(A)}: joint density of class-roughness at
+     fixed covering width & spectral (Wirsing/LSD) + compositum densities
+   & \textbf{The programme's primary in-house line} (\Cref{subsec:t_a}); T(3) opening case
+     claimed at the upper-bound half (\Cref{subsec:t3}). \\
+C5 / C5$_1$ / C5$_2$ & Descent through $\alpha$: real-compatible twist $V_{n,d}$ & global
+     geometry (Harpaz-type)
+   & \textbf{Refuted / closed} (\Cref{subsec:c5}): the named $t$-fibration is split
+     (Gate~3, kernel-checked); ``run the section test first''. \\
+C6 & Theory-4 flatness: Selberg-$L^2$ residual of the survivor indicator is $\varepsilon_j$-flat
+     against later covering shells & spectral (new equidistribution)
+   & Rungs~1--3b partially executed (\Cref{subsec:kbudget} discussion); primary risk R2/R3, may
+     be H\_ES relocated at asymptotic scale. \\
+C7 / C7$_1$ & Bounded-coupling covering family: a new identity family breaking the Poisson
+     coupling law & none (combinatorial discovery)
+   & \MEASURED{} \textbf{First search negative} (\Cref{subsec:computation-misc}): 193 degree-1
+     identities searched, none covers a hard class; bounded-$\omega$ mass does not break the
+     coupling law at toy scale. Probably false. \\
+C8 & Thin-exception mop-up: a two-stage Frobenius-thin containment plus effective Chebotarev
+     closure & spectral + rigidity
+   & Not pursued computationally; primary risk is the classical ``for-all gap'' at R4 (thinness
+     historically gives density zero, not emptiness). \\
+C9 & Discriminant-uniform spectral equidistribution (theta route): a $p$-dependent uniform
+     DFI-type statement & spectral \newline (GL(2)/\allowbreak metaplectic)
+   & Not pursued; primary risk is that $p$-dependent uniformity at this level is beyond current
+     spectral technology. \\
+C10 & Effective uniform log-Manin on the ES Cox ring (universal torsor counting) & mixed
+     geometry/circle method
+   & \textbf{Identified as C1/C4 in disguise} (\Cref{subsec:synthesis}): the torsor is the
+     witness equation, so this is the Elsholtz--Tao count. \\
+C11 & TUB-EP-refined: mixed-sign $+$ box $+$ no integral BM obstruction against $C_+$ $+$
+     Archimedean non-degeneracy $\Rightarrow$ positive existence & global geometry (schema)
+   & \Cref{claim:c11}; the sharpest current geometric schema, satisfies none of R1--R8 outright;
+     necessity of the fourth hypothesis proved via the 86 Schinzel separators. \\
+NV & No Vieta (closes the geometric mechanism inventory) & --
+   & \LEAN{} \textbf{Proved} (\Cref{subsec:novieta}): the affine equation is linear in each
+     coordinate; no second root, no Markoff-type involution. \\
+S1 / S1$_1$ & Schinzel separator suite; narrow/wide regime split & --
+   & \Cref{subsec:schinzel}: 86 separators found; the wide band is where ES itself lives; a
+     non-kernel adelic sketch on $9/5$. \\
+\bottomrule
+\end{longtable}
+\endgroup
+\label{tab:candidates}
+
+\subsection{C3, restated for completeness}
+\label{subsec:route2-c3}
+See \Cref{sec:route2} for the full discussion of C3/C3$_1$, C5/C5$_1$/C5$_2$, S1/S1$_1$, C11 and
+NV, and \Cref{sec:route1} for C1/C2/C4/C4$_1$/C6/C10. The programme's own portfolio note groups
+C1, C4, C4$_1$, C6, C9 and C10 as ``one object'': they die together if the selection constant
+$C(A)$ turns out to be super-critical in $\log^2A$ ($c'\ge\kappa$), or if the conditional
+retention probability $\mathrm{cond}(a)$ sticks at~$1$ (dummy covering) out to QED scale; as
+measured (\Cref{subsec:t_a}, \Cref{subsec:gatea}), growing $A$ to $200$ at $x=10^9$ showed
+neither has yet happened, but the margin against $\kappa$ is thin ($c'=0.104$ against
+$\kappa=0.139$) and the dummy-covering trend is the more immediate concern.
+
+
+\section{The acceptance specification}
+\label{sec:spec}
+
+\texttt{erdos-\allowbreak straus-\allowbreak conjecture-\allowbreak spec.md} formulates, as an explicit deliverable in its own right,
+an \emph{acceptance specification} for what any candidate load-bearing conjecture $C$ must
+satisfy in order to genuinely solve ES rather than merely restate it. The document frames this
+as itself a piece of mathematics: ``Each requirement is traceable to a theorem, measurement, or
+refutation in the programme record; each has already eliminated at least one proposed
+candidate.'' The eight requirements, with the notation $A$ for the covering level, $\kappa\approx
+0.139$ for the measured marginal constant, and $q\mid p+4a^2d,\,q\equiv-1\pmod{4ad}$ for the
+divisor form:
+
+\begin{description}[leftmargin=1.6em]
+  \item[R1 (Verified sufficiency).] $C$ must imply \lean{HardLandingHypothesis} — hence ES —
+        through kernel-checked implications. \emph{Status: cheap and fully under the
+        programme's control}; both named interfaces satisfy it by construction
+        (\Cref{subsec:coveringlayer}).
+  \item[R2 (Independent content).] $C$ must be attackable by methods that do not already amount
+        to proving ES; a certified equivalence is a translation, not a target.
+        \emph{Status: the open risk for essentially every candidate} — \lean{TubEpHypothesis}
+        fails it outright (\Cref{subsec:blroute-lean}); T(A)/C1's relocation risk is flagged as
+        needing an early expert check.
+  \item[R3 (Barrier evasion — the k-budget invariant).] $C$'s proof must inject arithmetic input
+        from \emph{outside} the interval-intrinsic class capped by \Cref{subsec:kbudget}:
+        admissible classes are spectral/bilinear arithmetic, algebraic rigidity used
+        non-statistically, or genuinely global geometry not routed through fibres. \emph{Any $C$
+        whose natural proof is ``sieve harder'' fails R3 before it starts.}
+  \item[R4 (Exceptional-set annihilation, with mandatory growth).] Fixed parameter boxes
+        provably leave $\sim x/(\log x)^{1+c(D_0)}$ exceptions (compounding failure densities
+        across a fixed box); $C$ must involve a level growing with $x$ at rate
+        $\log^2(\mathrm{level})\gtrsim\log x$, i.e.\ $\mathrm{level}=\exp(c\sqrt{\log x})$ with
+        $\kappa c^2>1$. \emph{Status: eliminates every fixed-box proposal outright}, including an
+        externally advised fixed-$D_0$ landing lemma (shown heuristically false,
+        \Cref{subsec:kbudget} discussion of plan \S4q).
+  \item[R5 (Splitness compatibility).] $C$ must locate the arithmetic in integrality and
+        divisors, not in fibre-level local--global structure, since every conic fibre of the ES
+        surface is split (\Cref{subsec:conicfiber}). \emph{Status: satisfied natively} by the
+        divisor form (\Cref{sec:covering}); \textbf{fails} for every fibration-based geometric
+        mechanism tried (\Cref{subsec:c5}).
+  \item[R6 (Consistency with known negatives).] $C$ must not prove too much: it must be
+        compatible with genuine Markoff-type integral Hasse failures
+        \cite{GhoshSarnak2022,LoughranMitankin2021,CTWX2020}, with BL Theorem~1.9, and with
+        abelian insufficiency (no finite set of congruence conditions covers the hard classes).
+        \emph{Status:} eliminates C3 as originally stated (\Cref{subsec:route2-c3}).
+  \item[R7 (Effectivity).] $C$ must come with an explicit threshold $X_0$ — an ineffective
+        Siegel-style existence statement would establish ES as true while leaving the
+        machine-checked proof permanently uncompilable. \emph{Status: satisfied by the finite
+        certificate mechanism of \Cref{subsec:erdosstraus-lean} in principle; open for every
+        geometric candidate.}
+  \item[R8 (Statability now, in a published dialect).] $C$ must be formalisable as
+        a kernel \lean{Prop} today, and phrased in a published dialect — bilinear forms in
+        divisor problems, or global existence principles for log~K3 surfaces — so that the
+        statement has existing theorems to cite, not only ES. \emph{Status: both named
+        interfaces satisfy (a); the analytic worklist (\Cref{subsec:sievedesk}) and the
+        geometric questions (\Cref{subsec:loughran-questions}) are the programme's record of
+        (b).}
+\end{description}
+
+\Cref{tab:scorecard} reproduces the specification document's own scorecard for the two live
+candidates it regards as closest to satisfying all eight requirements simultaneously.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}p{0.20\linewidth}p{0.36\linewidth}p{0.36\linewidth}@{}}
+\toprule
+Requirement & \lean{DivisorLandingBound} (growing bound) & Existence principle $\Rightarrow$ TUB-EP \\
+\midrule
+R1 sufficiency & \textbf{proved} & via \lean{erdos\_straus\_of\_tub\_ep} once $C$ is stated \\
+R2 independence & open --- the known risk & open --- if stated for a genuine surface class \\
+R3 barrier evasion & designed for spectral input; unproven & automatic (not interval-bound) \\
+R4 growth & \textbf{built in} & must be engineered (uniformity in $n$) \\
+R5 splitness & \textbf{native} (it is the divisor form) & the hard design constraint \\
+R6 negatives & quantitative, not local--global & \textbf{the hard design constraint} \\
+R7 effectivity & plausible (dispersion proofs usually effective) & needs care \\
+R8 statability/dialect & \textbf{stated; dispersion school} & statable schema; Bright--Loughran literature \\
+\bottomrule
+\end{tabular}
+\caption{The acceptance-specification scorecard, reproduced from \texttt{erdos-\allowbreak straus-\allowbreak conjecture-\allowbreak spec.md}.
+Neither candidate currently satisfies all eight requirements.}
+\label{tab:scorecard}
+\end{table}
+
+The specification's own one-paragraph summary captures the programme's central methodological
+stance precisely enough to reproduce verbatim: \emph{``A conjecture that solves Erd\H{o}s--Straus
+must be a kernel-statable proposition with mathematical life beyond ES, whose proof injects
+spectral, rigidity, or global-geometric input outside the interval-intrinsic class, which
+annihilates (not merely thins) the exceptional set through a parameter growing like
+$\exp(c\sqrt{\log x})$ with $\kappa c^2>1$, which respects the surface's total splitness by
+living in divisor/integrality structure or in genuinely global geometry, which is consistent
+with the Markoff failures, Theorem~1.9, and abelian insufficiency, which names its threshold,
+and which is written in a published dialect with existing theorems, not only ES. Everything short
+of this is infrastructure — valuable, publishable, and already substantially built — but not the
+keystone.''} The specification document's own closing attribution, which this report reproduces
+in place of an earlier, superseded version naming specific model systems, reads: \emph{``Prepared
+as part of the Riley Betts Ltd Erd\H{o}s--Straus programme, facilitated by Martyn Riley
+(automation and high-level strategy; not a claim of expertise in number theory, combinatorics,
+or geometry). The mathematical work is a collaboration of Anthropic agents, Grok~4.6, and
+Cursor agents, with Lean~4, Mathlib, and numerical test resources. No proof of the conjecture is
+claimed. Every claim above is traceable to a kernel-checked theorem, a labelled measurement, or a
+recorded refutation in the programme archive.''}
+
+
+\section{Computational investigations}
+\label{sec:computation}
+
+Every quantitative claim in \Cref{sec:route1,sec:route2} is backed by one of twenty Python
+scripts in the archive, each producing a JSON artefact recording its parameters and results. This
+section describes each script's purpose and principal findings; \Cref{app:files} additionally
+lists every script and its output file(s) for reference. All computation is capped, by explicit
+programme discipline (``Do not run $x=10^{10}$''), at $x\le10^9$; this ceiling is stated
+repeatedly and is treated as a hard methodological boundary rather than a resource constraint —
+the archive is explicit that further scans at the same scale would refine constants without
+resolving the open die-conditions.
+
+\subsection{The T(A)/ClassRough family}
+
+Twelve scripts instrument the T(A) investigation of \Cref{subsec:t_a}.
+
+\begin{description}[leftmargin=1.6em]
+  \item[\file{c4\_S\_xscan.py}] The primary $x$-scan of $S(A,x)$ at fixed $A\in\{40,80\}$ across
+        $x=10^5$ to $10^9$ ($1{,}587{,}581$ hard primes at the top scale). Provides the sieve of
+        hard primes and the \lean{ClassRough}-equivalent Boolean predicate reused by most later
+        scripts. \MEASURED{}: $\log S$ is linear in $\ln\ln x$ ($R^2=0.997$ for $x\ge10^6$); the
+        selection constant climbs $\widehat C(80):1.57\to2.23\to2.69$ across $x=10^6,10^8,10^9$.
+  \item[\file{c4\_growing\_A.py}] Growing-$A$ scan at fixed $x=10^9$, $A\le200$. \MEASURED{}: the
+        two central die-condition quantities of \Cref{subsec:gatea} —
+        $\log\widehat C(A)\sim0.104\log^2A$ on $A\ge40$ ($R^2=0.998$), and $\mathrm{cond}(a)\to1$
+        past $a=80$ (mean $0.993$ on $a=161$--$200$).
+  \item[\file{c4\_growing\_box\_probe.py}] An earlier, coarser probe of the same
+        quasi-independence question in both the $d=1$-growing-$A$ and $2$-dimensional
+        $(a,d)$-growing-box directions, predating and superseded in detail by the two scripts
+        above.
+  \item[\file{c4\_two\_shift\_probe.py}] Pairwise independence: $\rho_{ab}/(\rho_a\rho_b)$ for
+        $1\le a<b\le A\le120$. \MEASURED{}: consistently $1.000\pm0.05$ — the empirical basis for
+        the programme's repeated methodological point that pair-level statistics are the
+        ``wrong moment'' for T(A), since the full $A$-fold intersection can drift while all
+        pairs stay independent.
+  \item[\file{c4\_euler\_factor.py}] The prime-aligned local Euler factor $C_{\mathrm{euler}}(A)$
+        of \Cref{subsec:gatea}, computed over primes $q\le10^7$. \MEASURED{}: flat at
+        $\approx0.91$ (the $1/q$-normalised column) from $A=40$ to $A=200$, with an exhaustive
+        residue-collision check finding \emph{zero} collisions for $A\le200$.
+  \item[\file{c4\_composite\_layer.py}] The genuine-extra composite Euler product
+        $\Pi_{\mathrm{gen}}(a,\sqrt x)$ (composite aligned divisors with no aligned prime
+        factor), isolating the ``$2.7$--$3.0\times$ totient mismatch'' between the prime-aligned
+        and full \lean{ClassRough} marginals. \MEASURED{}: matches the empirical ratio
+        $\rho_a^{\mathrm{CR}}/\rho_a^{\mathrm{prime}}$ to within $3\%$ at $A=40$ across
+        $x=10^6,10^8,10^9$.
+  \item[\file{c4\_certificates.py}] The certificate-converse and shared-certificate ``dummy
+        covering'' tests of \Cref{subsec:t_a}. \MEASURED{}: converse holds for only $84.6\%$ of
+        survivors at $x=10^6$, $A\le40$ (exact at $\omega=1$, falling to $35\%$ at $\omega=4$);
+        certificates inherited from divisors of $a$ cover only $\approx73\%$ of later survivors,
+        ruling out shared-certificate inheritance as the explanation for
+        $\mathrm{cond}(a)\to1$.
+  \item[\file{c4\_defect\_layer.py}] Exact enumeration (or Monte Carlo beyond a size cutoff) of
+        the combinatorial defect between $\mathrm{ClassRough}$ and the certificate union,
+        confirming that the two coincide exactly on $a\in\{1,2,3,6\}$ (the elementary
+        $2$-group locus $\lambda(4a)\mid2$) and diverge starting at $a=4$, matching
+        \Cref{subsec:t_a}.
+  \item[\file{c4\_c2\_symbols.py}] The C2 cross-moduli Jacobi-symbol correlation test of
+        \Cref{subsec:gs}, at $x=10^9$, $A\le80$, $564$ survivors. \MEASURED{}: correlations
+        consistent with independence; wrong sign to explain $\widehat C>1$.
+  \item[\file{c4\_surface\_fit.py}] Fits the two-dimensional surface $\widehat C(A,x)$ jointly in
+        $A$ and $x$ from the JSON outputs of the scripts above, isolating the $x$-slope deficit
+        ($\kappa_{\mathrm{eff}}\approx0.121$ at $A=80$) from the $A$-curvature
+        ($\kappa_{\mathrm{eff}}\approx0.035$ at $x=10^9$) as genuinely different partial
+        derivatives of $\log S$, and tracking $c'(x)$ across $x=10^6,10^8,10^9$
+        ($0.063\to0.076\to0.094$, still rising, with a naive linear extrapolation to $\kappa$
+        landing around $x\sim10^{24}$ — explicitly flagged as \emph{not} a reason to run further
+        large-scale computation).
+  \item[\file{c4\_sieve\_constant.py}] Computes the Selberg constant $C_{\mathrm{sieve}}(A)$ and
+        its Mertens-constant component $B(A)$ of T(A)$^+$ (\Cref{subsec:talane}), cross-checked
+        at cutoffs $Q=10^6$ and $Q=10^7$.
+  \item[\file{c4\_t3\_euler.py}] The four certificate-assignment Euler products specific to T(3)
+        (\Cref{subsec:t3}), each computed to $q\le10^6$, together with the empirical occupancy
+        of the four assignments among $2{,}370$ hard primes at $x=10^6$ (exact match to the
+        kernel theorem's prediction: 656 class-rough on all three slices, 656 in the certificate
+        union).
+\end{description}
+
+\subsection{The E\_power second-moment family}
+\label{subsec:computation-epower}
+\begin{description}[leftmargin=1.6em]
+  \item[\file{e\_power\_suen\_moments.py}] Checks Lemma~SM's implied ratios $R_\Delta,R_\delta$
+        on the Lean covering cells at $A\in\{24,48,80,120,160,200,240\}$ against several hub
+        cutoffs $T$; establishes the schedule $T\approx5\mu$ used in the final theorem.
+  \item[\file{e\_power\_suen\_moments\_large.py}] A two-pass, memory-efficient re-implementation
+        extending the same check to $A\in\{400,800,1200,1600,2000\}$, confirming that
+        $R_\Delta$ settles near $0.13$ and the Suen loss stays under $0.15\mu$ throughout a
+        further order of magnitude in $A$ (\Cref{subsec:epower}).
+\end{description}
+
+\subsection{The T(3)-completion range-check family}
+Four scripts, all deliberately \emph{range checks} rather than covering runs, support the four
+negative results of \Cref{subsec:t3-negative}:
+\begin{description}[leftmargin=1.6em]
+  \item[\file{t2\_zheng\_ranges.py}] Evaluates Zheng's piecewise exponent functions
+        $\mathcal L(\theta)$ on a $181\times181$ grid of the switched divisor-exponent plane,
+        computing the fraction of the plane covered by ordinary Bombieri--Vinogradov, by Zheng's
+        Theorem~1.1, and by neither; also implements the ``uneven leftover'' reroute bookkeeping
+        of \Cref{subsec:t3-negative}(i).
+  \item[\file{t3\_delta\_ranges.py}] Implements the Farey--$k$ incompatibility lemma of
+        \Cref{subsec:t3-negative}(ii) and checks it symbolically across the three named cells
+        (BV wall, uneven, symmetric).
+  \item[\file{t3\_kloosterman\_ranges.py}] Computes the admissible-saving windows of Pascadi,
+        Blomer--Pascadi and MQW as functions of the stall parameter $\delta$, locating the first
+        genuine saving points cited in \Cref{subsec:t3-negative}(iv).
+  \item[\file{t3\_monodromy\_ranges.py}] Checks the FKMS length hypotheses (Theorems~1.3/1.4)
+        against the three named cells, confirming the mismatch tabulated in
+        \Cref{subsec:t3-negative}(iii): the one cell where the inequalities hold cannot carry a
+        prime modulus after switching, and the one cell that can has Type~II lengths too long
+        for either theorem.
+\end{description}
+
+\subsection{Geometric and combinatorial searches}
+\label{subsec:computation-misc}
+\begin{description}[leftmargin=1.6em]
+  \item[\file{s1\_schinzel\_separators.py}] The Schinzel-separator sweep of
+        \Cref{subsec:schinzel}: exhaustive complete search for positive solutions
+        ($x\le3n/m$) and a bounded search (coordinates $\le60$) for mixed-sign witnesses, over
+        all reduced pairs $1<m/n<3$, $n\le40$; reproduces the 86-separator count.
+  \item[\file{c7\_bounded\_coupling\_search.py}] Two bounded computations for candidate C7
+        (\Cref{sec:candidates}): an exhaustive search over degree-$1$ Witness identities with
+        modulus $\le30$ and coefficients $\le4$ (193 identities found, none covering a hard
+        class), and a coupling-mass comparison between the full Type-I covering family and its
+        bounded-$\omega(q)$ sub-slice at $A\le64$, finding no evidence of the mass
+        concentration C7 would need.
+\end{description}
+
+\subsection{Methodological remarks}
+Three features of the computational programme deserve note as part of its overall
+epistemic discipline. First, every script's docstring states explicitly what the computation
+does \emph{not} establish — e.g.\ \file{c4\_S\_xscan.py}'s header notes it neither proves nor
+refutes H\_ES, and \file{s1\_schinzel\_separators.py}'s header notes it does not check
+Brauer--Manin pairings. Second, several scripts are explicitly framed as adjudicating between
+two or more competing predictors for the same quantity (e.g.\ \file{c4\_surface\_fit.py}
+comparing $\log^2A$, $\sum\log n_\chi/a$, $\log Z_{\mathrm{global}}$, and $\sum\log n_\chi$ as
+candidate formulae for $\log\widehat C(A)$, finding $\log^2A$ the best fit by $R^2$ while
+explicitly declining to treat this as more than curve-fitting). Third, the repeated instruction
+``do not run $x=10^{10}$'' recurs verbatim across a dozen documents and script docstrings,
+functioning as an explicit acknowledgement that the open die-conditions of
+\Cref{subsec:t_a,subsec:gatea} cannot be resolved by further computation at reachable scale, and
+that the correct next step is theoretical (Euler-product-level) rather than empirical.
+
+
+\section{Discussion and assessment}
+\label{sec:discussion}
+
+\subsection{What has been achieved}
+
+Judged against its own stated objectives (\Cref{sec:intro}), the programme delivers five
+concrete, independently assessable items. First, a genuine machine-checked reduction: the
+Erd\H{o}s--Straus conjecture is formally reduced, inside the Lean kernel and with an explicit,
+published axiom audit, to a single named analytic proposition
+(\lean{AnalyticSurvivorBound}) together with a finite verified range now standing at
+$n<100{,}000$. This is not a new mathematical fact — the reduction to the six hard classes mod
+$840$ is classical — but its complete, axiom-tracked formalisation, including the covering
+system and the divisor-form duality, is a genuine piece of infrastructure not previously
+available. Second, a real unconditional theorem: Theorem~\ref{thm:epower} improves the 1970
+Vaughan exceptional-set bound from an $\exp(-c(\log x)^{2/3})$ saving to a genuine power saving
+$O(x^{1-\delta})$, via an elementary, fully written (if not machine-checked) second-moment
+argument. Third, a substantial and unusually disciplined formalisation of the Bright--Loughran
+Brauer--Manin theory, including a from-scratch finite verification of the arithmetic heart of
+their Lemma~3.8 and an extensive discharge of the Hilbert reciprocity the ES problem actually
+needs. Fourth, and arguably the programme's most distinctive contribution, a coherent explanation
+— the k-budget invariant — of \emph{why} the classical approaches have stalled, instantiated
+concretely five separate times (the fundamental lemma, the large sieve, Vaughan's exponential
+sums, a circuit-complexity fooling argument, and the four-to-five T(3)-completion look
+investigations), each converging on the same obstruction from a different technical direction,
+with \Cref{subsec:varyingmodulus}'s capstone document giving the clearest single statement of
+why. Fifth, a disciplined external triage (\Cref{sec:prior}): a sibling covering-density effort
+is checked against the programme's own k-budget diagnosis and found to be another instance of it
+rather than an escape, and an external claimed proof is checked directly against the classical
+Mordell obstruction and shown not to establish the covering statement it needs — in both cases
+with the specific point of failure named rather than the claim being dismissed by assertion.
+
+\subsection{What has not been achieved, stated plainly}
+
+The programme is explicit, at every level of its own documentation, that it has not proved the
+conjecture, has not reduced it to a statement the mathematical community regards as tractable,
+and has not discharged either of its two named open interfaces. Three specific limitations are
+worth isolating for a reader assessing the work's significance. First, the k-budget invariant
+itself is explicitly labelled ``conjectural, proof-shaped'' rather than a theorem; it is a
+strong organising heuristic, well corroborated by five independent instantiations, but it is not
+established that \emph{every} conceivable interval-intrinsic method is capped by it. Second, the
+T(A)/T(3) selection-constant question — whether $C(A)$ grows sub-critically against
+$\exp(\kappa\log^2A)$ — remains open with a thin empirical margin ($c'=0.104$ against
+$\kappa=0.139$ at the largest tested scale) and an explicitly acknowledged live risk (``dummy
+covering'', $\mathrm{cond}(a)\to1$) that the programme itself regards as the more pressing
+concern. Third, the geometric route's terminal finding — that every mechanism tried reduces to
+the analytic core — while a genuine and carefully earned negative result, means Route~2 does not
+currently supply an independent path to the conjecture; its value is prospective (an
+effectivity framework for strongly-obstructed log~K3 surfaces) rather than realised.
+
+\subsection{On the methodology}
+
+Two methodological features of the archive merit comment independent of the mathematical
+content. First, the discipline of recording refuted intermediate claims rather than silently
+correcting them (most visibly in the \S4f/\S4h correction of the original, erroneous
+Vaughan-exponent ``barrier'', and in the C5/C5$_1$/C5$_2$ refutation chain) makes the research
+log unusually auditable: a reader can verify not only what is currently claimed but what
+specific error the current claim corrects, and why. Second, the explicit ``Gate A'' discipline
+(\Cref{subsec:gatea}) separating a written, useful record (E\_power) from a machine-checked claim
+against the load-bearing interface is a genuine safeguard against the most common failure mode
+of ambitious computational mathematics programmes — the silent inflation of a genuine partial
+result into an implicit claim of having solved the real problem. Both practices are followed
+consistently throughout the archive and are reflected, where relevant, in the status tags used
+throughout this report.
+
+\subsection{Summary}
+
+In summary: the archive contains no proof of the Erd\H{o}s--Straus conjecture and does not claim
+one. It contains a substantial, carefully audited Lean~4 formalisation of the classical
+reduction and of a non-trivial slice of the Bright--Loughran geometric theory; a new
+unconditional exceptional-set bound stronger than the 55-year-old published record; a precisely
+argued (if not fully proved) explanation of the structural obstruction the conjecture presents to
+every method tried; and four honestly negative results checking specific, currently published
+2025--26 analytic number theory against that obstruction. Considered as a piece of research
+infrastructure and a research log, it is unusually complete and unusually disciplined about the
+distinction between what is proved, what is claimed, what is measured, and what has been tried
+and found not to work.
+
+
+\appendix
+\section{Complete archive file catalogue}
+\label{app:files}
+
+This appendix lists every file in \file{erdos-straus-main} (87 files), grouped by type, with a
+one- or two-line description and a cross-reference to the section of this report discussing it.
+File sizes are as extracted from the archive.
+
+\subsection{Lean source files (13)}
+\begingroup\small
+\begin{longtable}{@{}p{0.28\linewidth}p{0.08\linewidth}p{0.50\linewidth}p{0.08\linewidth}@{}}
+\toprule
+\textbf{File} & \textbf{Lines} & \textbf{Contents} & \textbf{\S} \\
+\midrule
+\endhead
+\file{ErdosStraus.lean} & 3420 & Core reduction, covering system, analytic interfaces,
+  \lean{ClassRough}/certificate theory, elementary $d=1$ Henriot-interface sieve. & \ref{subsec:erdosstraus-lean} \\
+\file{BrightLoughran.lean} & 407 & Serre 2-adic symbol data, finite heart of BL Lemma~3.8,
+  \lean{InvariantData} interface, Theorem~1.2 anatomy, $p=1009$ instances. & \ref{subsec:brightloughran-lean} \\
+\file{ErdosStrausQR.lean} & 170 & Mathlib discharge: \lean{IsPrime}$\leftrightarrow$\lean{Nat.Prime},
+  Yamamoto fingerprint, quadratic reciprocity. & \ref{subsec:erdosstrausqr-lean} \\
+\file{ErdosStrausBLRoute.lean} & 3675 & $\Z$-model, box bound, octant invariant,
+  \lean{TubEpHypothesis}, extensive Hilbert reciprocity discharge. & \ref{subsec:blroute-lean} \\
+\file{ConicFiber.lean} & 194 & Split-fibre identity and exact divisor correspondence, all $n\ge2$. & \ref{subsec:conicfiber} \\
+\file{TwistDescent.lean} & 219 & Real-compatible twist $V_{n,d}$; Gate~2/Gate~3; the C5$_2$ refutation. & \ref{subsec:twistdescent} \\
+\file{SchinzelSep.lean} & 84 & Signed $9/5$ point; ordered no-positive-solution proof. & \ref{subsec:schinzel-lean} \\
+\file{SchinzelDecide.lean} & 268 & Decidable positive-octant solver with soundness/completeness; $9/5$, $13/7$, $4/5$ instances. & \ref{subsec:schinzel-lean} \\
+\file{NoVieta.lean} & 156 & Linearity of the affine equation; uniqueness; no Vieta involution. & \ref{subsec:novieta} \\
+\lean{Leochlon.lean} & 95 & Type-II identity dictionary $(4b-1)(4c-1)=4p\delta+1\to$\lean{ES.IsES}. & \ref{subsec:leochlon} \\
+\lean{Stormer.lean} & 855 & St\o rmer's theorem on consecutive smooth numbers (ported, Apache~2.0, library only). & \ref{subsec:stormer} \\
+\texttt{archive/\allowbreak ErdosStraus-\allowbreak core.lean} & 2073 & Frozen earlier snapshot of the covering file; not a Lake root. & \ref{subsec:legacy} \\
+\texttt{archive/\allowbreak ErdosStraus-\allowbreak mathlib-\allowbreak project.lean} & 2480 & Duplicate of \file{ErdosStraus.lean}. & \ref{subsec:legacy} \\
+\bottomrule
+\end{longtable}
+\endgroup
+\noindent A short \texttt{archive/README.md} (not counted as Lean; see \Cref{subsec:markdown-docs})
+accompanies the two frozen files and states explicitly that they are not Lake roots.
+
+\subsection{Build configuration and licensing (9)}
+\begin{itemize}[leftmargin=1.6em]
+  \item \file{lakefile.toml} --- package \texttt{ErdosStraus}; declares the Mathlib dependency
+        (pinned commit \texttt{1a0ef26d\dots}) and the eleven-file Layer-A/B library root list.
+  \item \file{lean-toolchain} --- pins \texttt{leanprover/lean4:v4.34.0-rc1} (documented as a
+        release candidate, not a moving nightly).
+  \item \file{lake-manifest.json} --- resolved dependency manifest generated by \texttt{lake};
+        \file{CONTRIBUTING.md} directs that it be committed with any toolchain or Mathlib bump.
+  \item \file{.gitignore} --- excludes \texttt{.lake/}, \texttt{.oleans/}, \texttt{*.olean},
+        \texttt{*.zip}, \texttt{\_\_pycache\_\_/}.
+  \item \file{.github/workflows/ci.yml} --- GitHub Actions workflow; runs \texttt{lake exe cache
+        get} and \texttt{lake build} against the pinned Mathlib cache on every push and pull
+        request.
+  \item \file{requirements.txt} --- a single pinned \texttt{numpy} version constraint for the
+        numeric scripts of \Cref{sec:computation}.
+  \item \file{CONTRIBUTING.md} --- pinning policy table, build instructions, and an explicit
+        restatement of scope (no fake theorem, no \texttt{sorry} on the QED line, library files
+        are not progress toward the load-bearing interface).
+  \item \file{LICENSE} --- MIT licence, copyright Riley Betts Ltd, with an explicit carve-out
+        noting that \lean{Stormer.lean} remains Apache~2.0.
+  \item \file{LICENSE-APACHE} --- the Apache License~2.0 text covering \lean{Stormer.lean}
+        alone, copyright Alexander Benjamin Worth Burns and Ravi Bajaj.
+\end{itemize}
+
+\subsection{Markdown documents (22)}
+\label{subsec:markdown-docs}
+\begingroup\small
+\begin{longtable}{@{}p{0.30\linewidth}p{0.58\linewidth}p{0.06\linewidth}@{}}
+\toprule
+\textbf{File} & \textbf{Contents} & \textbf{\S} \\
+\midrule
+\endhead
+\file{README.md} & Repository front matter: layer map, build instructions, axiom audit table,
+  the ``novel results (unverified)'' table, the authorship/role statement, ``what's in Lean'' /
+  ``what this does not claim'' summaries, full bibliography. & \ref{sec:lean} \\
+\texttt{archive/\allowbreak README.md} & Short note: the two frozen Lean files are not Lake roots and
+  should not be imported. & \ref{subsec:legacy} \\
+\texttt{erdos-\allowbreak straus-\allowbreak programme.md} & The programme brief and repository front door: five open
+  geometric questions, a chronological chain of dated postscripts (v0.9--v0.23) recording each
+  investigation's outcome, the authorship statement. & \ref{subsec:whatitis},\ref{subsec:provenance} \\
+\texttt{erdos-\allowbreak straus-\allowbreak novel-\allowbreak structures-\allowbreak plan.md} & The primary research log: eleven initial options
+  considered, the programme (Tracks A/B/C), and sections \S4a--\S4w documenting the k-budget
+  investigation, the Bright--Loughran route, and their synthesis. & \ref{subsec:kbudget},\ref{sec:route2} \\
+\texttt{erdos-\allowbreak straus-\allowbreak road-\allowbreak to-\allowbreak lean-\allowbreak qed.md} & The execution roadmap: roadmap Layer A/B/C, the
+  cardinality-to-QED bridge, the Renewal Lemma, and the target Lean architecture. & \ref{subsec:architecture} \\
+\texttt{erdos-\allowbreak straus-\allowbreak conjecture-\allowbreak spec.md} & The acceptance specification, requirements R1--R8, and
+  the scorecard of \Cref{tab:scorecard}. & \ref{sec:spec} \\
+\texttt{erdos-\allowbreak straus-\allowbreak candidate-\allowbreak conjectures.md} & The full candidate list C1--C11, NV, S1, S1$_1$,
+  with status and primary risk for each. & \ref{sec:candidates} \\
+\file{erdos-straus-T-A.md} & T(A) working note: certificate architecture, defect layer, the two
+  x-scan/growing-A measurements, the local Euler factor, T(A)$^+$, E\_lane. & \ref{subsec:t_a},\ref{subsec:talane} \\
+\file{erdos-straus-T-3.md} & T(3) statement, proof of T(3)$^+$, the three-step lower-bound plan,
+  and the $r_\chi$-to-Kloosterman look (negative result (iv)). & \ref{subsec:t3},\ref{subsec:t3-negative} \\
+\file{erdos-straus-T-2.md} & The Zheng simultaneous-progressions look (negative result (i)). & \ref{subsec:t3-negative} \\
+\texttt{erdos-\allowbreak straus-\allowbreak T-\allowbreak 3-\allowbreak delta.md} & The Heath-Brown $\delta$-method look (negative result (ii)). & \ref{subsec:t3-negative} \\
+\texttt{erdos-\allowbreak straus-\allowbreak T-\allowbreak 3-\allowbreak monodromy.md} & The FKMS joint-monodromy look (negative result (iii)). & \ref{subsec:t3-negative} \\
+\texttt{erdos-\allowbreak straus-\allowbreak varying-\allowbreak modulus-\allowbreak gap.md} & Capstone document: the four (with an informal
+  fifth) T(3)-completion looks classified into one common failure mode. & \ref{subsec:varyingmodulus} \\
+\texttt{zheng-\allowbreak wellfactorable.md} & Technical note on well-factorability of real characters (Zheng
+  Def.~1.1), feeding \file{erdos-straus-T-2.md}. & \ref{subsec:t3-negative} \\
+\texttt{erdos-\allowbreak straus-\allowbreak E-\allowbreak power.md} & Statement and full written proof of Theorem~\ref{thm:epower}
+  (E\_power) and Lemma~SM. & \ref{subsec:epower} \\
+\texttt{erdos-\allowbreak straus-\allowbreak E-\allowbreak partial.md} & Gate~A write-up: what may/may not be claimed toward
+  \lean{AnalyticSurvivorBound}; the schedule-retuning argument of \Cref{subsec:gatea}. & \ref{subsec:gatea} \\
+\texttt{erdos-\allowbreak straus-\allowbreak gs-\allowbreak reformulation.md} & The Granville--Soundararajan restatement of the
+  survivor-density target; the C2 null result. & \ref{subsec:gs} \\
+\texttt{erdos-\allowbreak straus-\allowbreak sieve-\allowbreak desk.md} & The analytic question list. & \ref{subsec:sievedesk} \\
+\texttt{erdos-\allowbreak straus-\allowbreak loughran-\allowbreak orbit.md} & The geometric question list: five numbered open questions
+  in the Bright--Loughran literature. & \ref{subsec:loughran-questions} \\
+\texttt{erdos-\allowbreak straus-\allowbreak prior-\allowbreak archive.md} & Triage of the sibling Track-1 covering-density archive: what
+  was kept as library material and what was left out. & \ref{subsec:prior-archive} \\
+\texttt{erdos-\allowbreak straus-\allowbreak bradford-\allowbreak lemma3.md} & Examination of the Bello-Hern\'andez--Benito--Fern\'andez
+  rigidity lemma and of Bradford 2026 as a claimed proof. & \ref{subsec:bradford} \\
+\texttt{erdos-\allowbreak straus-\allowbreak leochlon.md} & Documentation of the Leochlon Type-II identity dictionary. & \ref{subsec:leochlon} \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\subsection{Python scripts and their JSON outputs (20 scripts, 23 JSON files)}
+\begingroup\small
+\begin{longtable}{@{}p{0.26\linewidth}p{0.46\linewidth}p{0.20\linewidth}p{0.04\linewidth}@{}}
+\toprule
+\textbf{Script} & \textbf{Purpose} & \textbf{Output JSON(s)} & \textbf{\S} \\
+\midrule
+\endhead
+\file{c4\_S\_xscan.py} & $x$-scan of $S(A,x)$ at fixed $A$; hard-prime sieve infrastructure
+  reused throughout. & \file{c4\_S\_xscan\_X100000000.json}, \file{\_X1000000000.json} & \ref{sec:computation} \\
+\file{c4\_growing\_A.py} & Growing-$A$ scan at fixed $x=10^9$; $\mathrm{cond}(a)$ and $\widehat C(A)$. &
+  \file{c4\_growing\_A\_X1000000000\_A200.json} & \ref{sec:computation} \\
+\file{c4\_growing\_box\_probe.py} & Earlier two-directional independence probe. &
+  \file{c4\_growing\_box\_X1000000.json}, \file{\_X10000000.json} & \ref{sec:computation} \\
+\file{c4\_two\_shift\_probe.py} & Pairwise-independence and C2 Jacobi-symbol probe. &
+  \file{c4\_two\_shift\_probe.json} & \ref{sec:computation} \\
+\file{c4\_euler\_factor.py} & Prime-aligned local Euler factor $C_{\mathrm{euler}}(A)$ and
+  residue-collision check. & \file{c4\_euler\_factor\_Q10000000\_A200.json} & \ref{sec:computation} \\
+\file{c4\_composite\_layer.py} & Genuine-extra composite Euler product $\Pi_{\mathrm{gen}}$. &
+  \file{c4\_composite\_layer\_Z50000\_A80.json} & \ref{sec:computation} \\
+\file{c4\_certificates.py} & Certificate converse and shared-certificate dummy-covering tests. &
+  \file{c4\_certificates\_X1000000\_A40.json} & \ref{sec:computation} \\
+\file{c4\_defect\_layer.py} & Exact/Monte-Carlo defect between \lean{ClassRough} and the
+  certificate union. & \file{c4\_defect\_layer\_A12\_W5.json} & \ref{sec:computation} \\
+\file{c4\_c2\_symbols.py} & C2 cross-moduli Jacobi-symbol correlation test. &
+  \file{c4\_c2\_symbols\_X1000000\_A30.json}, \file{\_X100000000\_A80.json}, \file{\_X1000000000\_A80.json} & \ref{sec:computation} \\
+\file{c4\_surface\_fit.py} & Joint $(A,x)$ surface fit of $\widehat C$; predictor comparison. &
+  \file{c4\_surface\_fit.json} & \ref{sec:computation} \\
+\file{c4\_sieve\_constant.py} & Selberg constant $C_{\mathrm{sieve}}(A)$ and $B(A)$ of T(A)$^+$. &
+  \file{c4\_sieve\_constant\_Q1000000\_A200.json}, \file{\_Q10000000\_A200.json} & \ref{sec:computation} \\
+\file{c4\_t3\_euler.py} & T(3)-specific certificate-assignment Euler products and occupancy. &
+  \file{c4\_t3\_euler\_Q1000000.json} & \ref{sec:computation} \\
+\file{e\_power\_suen\_moments.py} & Lemma~SM ratio checks, $A\le240$. &
+  \file{e\_power\_suen\_moments\_A240.json} & \ref{subsec:computation-epower} \\
+\file{e\_power\_suen\_moments\_large.py} & Lemma~SM ratio checks extended to $A\le2000$. &
+  \file{e\_power\_suen\_moments\_A2000.json} & \ref{subsec:computation-epower} \\
+\file{t2\_zheng\_ranges.py} & Zheng $\mathcal L(\theta)$ range check (negative result (i)). &
+  \file{t2\_zheng\_ranges.json} & \ref{subsec:t3-negative} \\
+\file{t3\_delta\_ranges.py} & Farey--$k$ incompatibility check (negative result (ii)). &
+  \file{t3\_delta\_ranges.json} & \ref{subsec:t3-negative} \\
+\file{t3\_kloosterman\_ranges.py} & Pascadi/Blomer--Pascadi/MQW saving-window check (negative result (iv)). &
+  \file{t3\_kloosterman\_ranges.json} & \ref{subsec:t3-negative} \\
+\file{t3\_monodromy\_ranges.py} & FKMS gallant-monodromy length check (negative result (iii)). &
+  \file{t3\_monodromy\_ranges.json} & \ref{subsec:t3-negative} \\
+\file{s1\_schinzel\_separators.py} & Schinzel narrow-band separator sweep. & (no separate JSON; prints results) & \ref{subsec:schinzel} \\
+\file{c7\_bounded\_coupling\_search.py} & C7 identity search and coupling-mass comparison. & (no separate JSON; prints results) & \ref{subsec:computation-misc} \\
+\bottomrule
+\end{longtable}
+\endgroup
+\noindent The count of 23 JSON files above excludes \file{lake-manifest.json}
+(\Cref{app:files}.2), which is a build artefact rather than an experimental output.
+
+
+\section{The axiom audit}
+\label{app:axioms}
+
+\Cref{tab:axioms} reproduces, for reference, the axiom audit table maintained in
+\file{README.md}, obtained by \texttt{\#print axioms} on Lean~4.33.0 for every named theorem on
+the file-map Layer-A kernel-checked spine. \texttt{native\_decide} instances add a generated
+reduction axiom (\texttt{Lean.ofReduceBool}, materialising as
+\texttt{\_.\_native.native\_decide.ax\_1\_1} on 4.33.0) and are listed separately.
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+Theorem & Axioms \\
+\midrule
+\lean{witness\_sound} & \texttt{propext}, \texttt{Quot.sound} \\
+\lean{es\_1009} & \texttt{propext}, \texttt{Quot.sound} \\
+\lean{bl\_thm12\_prime\_anatomy} & \texttt{propext}, \texttt{Quot.sound} \\
+\lean{primes\_below\_100\_covered\_kernel} & none (\texttt{decide}) \\
+\lean{lemma38\_check\_true} & none (\texttt{decide}) \\
+\lean{conditional\_qed\_hard} & \texttt{propext}, \texttt{Quot.sound}, \texttt{Classical.choice} \\
+\lean{lemma32} & \texttt{propext}, \texttt{Quot.sound}, \texttt{Classical.choice} \\
+\lean{ConicFiber.fiber\_identity} & \texttt{propext}, \texttt{Quot.sound} \\
+\lean{ConicFiber.fiber\_to\_divisor} & \texttt{propext}, \texttt{Quot.sound} \\
+\lean{ConicFiber.divisor\_to\_fiber} & \texttt{propext}, \texttt{Quot.sound} \\
+\lean{TwistDescent.descent} & none \\
+\lean{TwistDescent.naive\_cover\_empty} & \texttt{propext}, \texttt{Quot.sound} \\
+\lean{TwistDescent.lift} & \texttt{propext}, \texttt{Quot.sound}, \texttt{Classical.choice} \\
+\lean{TwistDescent.twist\_real\_iff} & \texttt{propext} \\
+\lean{TwistDescent.t\_fiber\_section\_cleared} & \texttt{propext} \\
+\lean{TwistDescent.u1\_fiber\_section\_cleared} & \texttt{propext} \\
+\lean{TwistDescent.u1\_fiber\_twist} & \texttt{propext} \\
+\lean{SchinzelSep.signed\_9\_5} & none \\
+\lean{SchinzelSep.no\_pos\_9\_5} & \texttt{propext}, \texttt{Quot.sound} \\
+\lean{SchinzelDecide.sep\_9\_5} & none (\texttt{decide}) \\
+\lean{SchinzelDecide.sep\_13\_7} & none (\texttt{decide}) \\
+\lean{SchinzelDecide.pos\_4\_5} & none (\texttt{decide}) \\
+\lean{SchinzelDecide.decideCplus\_sound} & \texttt{propext}, \texttt{Quot.sound} \\
+\lean{SchinzelDecide.decideCplus\_complete} & \texttt{propext}, \texttt{Quot.sound} \\
+\lean{SchinzelDecide.no\_pos\_9\_5} & \texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound} \\
+\lean{SchinzelDecide.no\_pos\_13\_7} & \texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound} \\
+\lean{NoVieta.unique\_x} & \texttt{propext}, \texttt{Quot.sound} \\
+\lean{NoVieta.es\_unique\_x} & \texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound} \\
+\bottomrule
+\end{tabular}
+\caption{Axiom audit of the kernel-checked spine (\file{README.md}).}
+\label{tab:axioms}
+\end{table}
+
+\noindent The five \texttt{native\_decide} theorems, each additionally carrying
+\texttt{Lean.ofReduceBool}, are: \lean{primes\_below\_10000\_covered},
+\lean{hard\_primes\_below\_10000\_covered} and \lean{okay\_below\_100000} in
+\file{ErdosStraus.lean}, and \lean{thm12\_instance\_1009},
+\lean{witness\_fingerprint\_1009} in \file{BrightLoughran.lean}.
+
+
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{99}
+\small
+
+\bibitem{Erdos1950} P.~Erd\H{o}s, \emph{Az $1/x_1+\cdots+1/x_n=a/b$ egyenlet eg\'esz sz\'am\'u
+megold\'asair\'ol}, Mat.\ Lapok \textbf{1} (1950), 192--210.
+
+\bibitem{Sierpinski1956} W.~Sierpi\'nski, \emph{Sur les d\'ecompositions de nombres rationnels en
+fractions primaires}, Mathesis \textbf{65} (1956), 16ff.
+
+\bibitem{Schinzel1956} A.~Schinzel, \emph{Sur quelques propri\'et\'es des nombres $3/n$ et $4/n$,
+o\`u $n$ est un nombre impair}, Mathesis \textbf{65} (1956), 219--222.
+
+\bibitem{Nakayama1939} N.~Nakayama, \emph{On the decomposition of a rational number into
+``Stammbr\"uche''}, T\^ohoku Math.\ J. \textbf{46} (1939), 1ff.
+
+\bibitem{Rosati1954} L.~A.~Rosati, \emph{Sull'equazione diofantea $4/n=1/x_1+1/x_2+1/x_3$},
+Boll.\ Un.\ Mat.\ Ital.\ (3) \textbf{9} (1954), 59ff.
+
+\bibitem{Aigner1964} A.~Aigner, \emph{Br\"uche als Summe von Stammbr\"uchen}, J.\ Reine Angew.\
+Math.\ \textbf{214/215} (1964), 174ff.
+
+\bibitem{Yamamoto1965} K.~Yamamoto, \emph{On the Diophantine equation $4/n=1/x+1/y+1/z$}, Mem.\
+Fac.\ Sci.\ Kyushu Univ.\ Ser.\ A \textbf{19} (1965), 37--47.
+
+\bibitem{Mordell1969} L.~J.~Mordell, \emph{Diophantine Equations}, Academic Press, London, 1969,
+Chapter~30.
+
+\bibitem{Schinzel2000} A.~Schinzel, \emph{On sums of three unit fractions with polynomial
+denominators}, Funct.\ Approx.\ Comment.\ Math.\ \textbf{28} (2000), 187--194.
+
+\bibitem{Bloom2022} T.~F.~Bloom, \emph{Egyptian fractions}, arXiv:2210.04496.
+
+\bibitem{Lopez2024} M.~A.~Lopez, \emph{A complete congruence system for the Erd\H{o}s--Straus
+conjecture}, arXiv:2404.01508.
+
+\bibitem{BelloHernandez2026} M.~Bello-Hern\'andez, M.~Benito, E.~Fern\'andez, \emph{A divisor
+parametrization for the Erd\H{o}s--Straus conjecture}, arXiv:2606.10922.
+
+\bigskip\noindent\textbf{Bright--Loughran geometry (Route 2).}
+
+\bibitem{BrightLoughran2020} M.~Bright, D.~Loughran, \emph{Brauer--Manin obstruction for
+Erd\H{o}s--Straus surfaces}, Bull.\ Lond.\ Math.\ Soc.\ \textbf{52} (2020), no.~4, 746--761;
+arXiv:1908.02526.
+
+\bibitem{Serre1973} J.-P.~Serre, \emph{Cours d'arithm\'etique}, PUF, Paris, 1970; English:
+\emph{A Course in Arithmetic}, GTM~7, Springer, 1973.
+
+\bibitem{LangWeil1954} S.~Lang, A.~Weil, \emph{Number of points of varieties in finite fields},
+Amer.\ J.\ Math.\ \textbf{76} (1954), 819--827.
+
+\bibitem{JahnelSchindler2017} J.~Jahnel, D.~Schindler, \emph{On integral points on degree four
+del Pezzo surfaces}, Israel J.\ Math.\ \textbf{222} (2017), 21--62; arXiv:1602.03118.
+
+\bibitem{Harpaz2019} Y.~Harpaz, \emph{Integral points on conic log K3 surfaces}, J.\ Eur.\ Math.\
+Soc.\ \textbf{21} (2019), 627--664; arXiv:1511.04876.
+
+\bibitem{Uppal2023} H.~Uppal, \emph{Integral points on affine surfaces fibered over $\mathbb A^1$},
+arXiv:2307.06638.
+
+\bibitem{CTWittenberg2012} J.-L.~Colliot-Th\'el\`ene, O.~Wittenberg, \emph{Groupe de Brauer et
+points entiers de deux familles de surfaces cubiques affines}, Amer.\ J.\ Math.\ \textbf{134}
+(2012), 1303--1327.
+
+\bibitem{CaoXu2018} Y.~Cao, F.~Xu, \emph{Strong approximation with Brauer--Manin obstruction for
+toric varieties}, Ann.\ Inst.\ Fourier \textbf{68} (2018), 1879--1908.
+
+\bibitem{CTXu2009} J.-L.~Colliot-Th\'el\`ene, F.~Xu, \emph{Brauer--Manin obstruction for integral
+points of homogeneous spaces and representation by integral quadratic forms}, Compos.\ Math.\
+\textbf{145} (2009), 309--363.
+
+\bigskip\noindent\textbf{Markoff comparison.}
+
+\bibitem{BGS2016} J.~Bourgain, A.~Gamburd, P.~Sarnak, \emph{Markoff triples and strong
+approximation}, C.\ R.\ Math.\ Acad.\ Sci.\ Paris \textbf{354} (2016), 131--135;
+arXiv:1505.06411; sequel \emph{Markoff surfaces and strong approximation: 1},
+arXiv:1607.01530.
+
+\bibitem{GhoshSarnak2022} A.~Ghosh, P.~Sarnak, \emph{Integral points on Markoff type cubic
+surfaces}, Invent.\ Math.\ \textbf{229} (2022), 689--749; arXiv:1706.06712.
+
+\bibitem{LoughranMitankin2021} D.~Loughran, V.~Mitankin, \emph{Integral Hasse principle and
+strong approximation for Markoff surfaces}, Int.\ Math.\ Res.\ Not.\ IMRN \textbf{2021}, no.~18,
+14086--14122; arXiv:1807.10223.
+
+\bibitem{CTWX2020} J.-L.~Colliot-Th\'el\`ene, D.~Wei, F.~Xu, \emph{Brauer--Manin obstruction for
+Markoff surfaces}, Ann.\ Sc.\ Norm.\ Super.\ Pisa Cl.\ Sci.\ (5) \textbf{21} (2020), 1257--1313;
+arXiv:1808.01584.
+
+\bibitem{MitankinUhlemann2025} V.~Mitankin, J.~Uhlemann, \emph{Local--global principles for
+semi-integral points on Markoff orbifold pairs}, J.\ Lond.\ Math.\ Soc.\ \textbf{112} (2025),
+no.~6, e70363; arXiv:2411.02629.
+
+\bibitem{Jang2023} S.~Jang, \emph{Tropical dynamics of Markov surfaces}, arXiv:2306.11357.
+
+\bigskip\noindent\textbf{Analytic exceptional set and sieve theory.}
+
+\bibitem{Vaughan1970} R.~C.~Vaughan, \emph{On a problem of Erd\H{o}s, Straus and Schinzel},
+Mathematika \textbf{17} (1970), 193--198.
+
+\bibitem{Suen1990} W.-C.~S.~Suen, \emph{A correlation inequality and a Poisson limit theorem for
+nonoverlapping balanced subgraphs of a random graph}, Random Structures Algorithms \textbf{1}
+(1990), 231--242.
+
+\bibitem{Janson1990} S.~Janson, \emph{Poisson approximation for large deviations}, Random
+Structures Algorithms \textbf{1} (1990), 221--229.
+
+\bibitem{ElsholtzTao2013} C.~Elsholtz, T.~Tao, \emph{Counting the number of solutions to the
+Erd\H{o}s--Straus equation on unit fractions}, J.\ Aust.\ Math.\ Soc.\ \textbf{94} (2013), 50--105.
+
+\bibitem{TaoBlog2011} T.~Tao, \emph{On the number of solutions to $4/p=1/n_1+1/n_2+1/n_3$}, blog
+post, 19 November 2011.
+
+\bibitem{Shiu1980} P.~Shiu, \emph{A Brun--Titchmarsh theorem for multiplicative functions}, J.\
+Reine Angew.\ Math.\ \textbf{313} (1980), 161--170.
+
+\bibitem{Nair1992} M.~Nair, \emph{Multiplicative functions of polynomial values in short
+intervals}, Acta Arith.\ \textbf{62} (1992), 257--269.
+
+\bibitem{NairTenenbaum1998} M.~Nair, G.~Tenenbaum, \emph{Short sums of certain arithmetic
+functions}, Acta Math.\ \textbf{180} (1998), 119--144.
+
+\bibitem{Henriot2012} K.~Henriot, \emph{Nair--Tenenbaum bounds uniform with respect to the
+discriminant}, Math.\ Proc.\ Cambridge Philos.\ Soc.\ \textbf{152} (2012), 405--424; erratum
+\textbf{157} (2014); arXiv:1102.1643.
+
+\bibitem{FIMR2013} J.~B.~Friedlander, H.~Iwaniec, B.~Mazur, K.~Rubin, \emph{The spin of prime
+ideals}, Invent.\ Math.\ \textbf{193} (2013), 697--749.
+
+\bibitem{Maire2018} C.~Maire, \emph{Genus theory and governing fields}, New York J.\ Math.\
+\textbf{24} (2018), 1056--1067.
+
+\bibitem{HalberstamRichert1974} H.~Halberstam, H.-E.~Richert, \emph{Sieve Methods}, Academic
+Press, London, 1974.
+
+\bibitem{OperaDeCribro} J.~Friedlander, H.~Iwaniec, \emph{Opera de Cribro}, AMS Colloquium
+Publications \textbf{57}, 2010.
+
+\bibitem{Norton1976} K.~K.~Norton, \emph{On the number of restricted prime factors of an integer.
+I}, Illinois J.\ Math.\ \textbf{20} (1976), 681--705.
+
+\bibitem{LanguascoZaccagnini2007} A.~Languasco, A.~Zaccagnini, \emph{A note on Mertens' formula
+for arithmetic progressions}, J.\ Number Theory \textbf{127} (2007), 37--46.
+
+\bibitem{GranvilleSoundararajan2003} A.~Granville, K.~Soundararajan, \emph{The distribution of
+values of $L(1,\chi_d)$}, Geom.\ Funct.\ Anal.\ \textbf{13} (2003), 992--1028.
+
+\bibitem{GranvilleSoundararajan2001} A.~Granville, K.~Soundararajan, \emph{Large character sums},
+J.\ Amer.\ Math.\ Soc.\ \textbf{14} (2001), 365--397.
+
+\bibitem{GranvilleSoundararajan2007} A.~Granville, K.~Soundararajan, \emph{Pretentious
+multiplicative functions and an inequality for the zeta-function}, 2007, and subsequent
+pretentiousness papers.
+
+\bibitem{HeathBrown1995} D.~R.~Heath-Brown, \emph{A mean value estimate for real character sums},
+Acta Arith.\ \textbf{72} (1995), 235--275.
+
+\bibitem{Iwaniec1974} H.~Iwaniec, \emph{Primes represented by quadratic polynomials in two
+variables}, Acta Arith.\ \textbf{24} (1973/74), 435--459.
+
+\bibitem{Iwaniec1976} H.~Iwaniec, \emph{The half dimensional sieve}, Acta Arith.\ \textbf{29}
+(1976), 69--95.
+
+\bibitem{BrudernFouvry1994} J.~Br\"udern, \'E.~Fouvry, \emph{Lagrange's four squares theorem with
+almost prime variables}, J.\ Reine Angew.\ Math.\ \textbf{454} (1994), 59--96.
+
+\bibitem{BrudernFouvry1996} J.~Br\"udern, \'E.~Fouvry, \emph{Le crible \`a vecteurs}, Compositio
+Math.\ \textbf{102} (1996), 337--355.
+
+\bibitem{Harman2007} G.~Harman, \emph{Prime-detecting sieves}, LMS Monographs \textbf{33},
+Princeton, 2007.
+
+\bibitem{Linnik1960} Ju.~V.~Linnik, \emph{An asymptotic formula in an additive problem of
+Hardy--Littlewood}, Izv.\ Akad.\ Nauk SSSR Ser.\ Mat.\ \textbf{24} (1960), 629--706.
+
+\bibitem{Hooley1973} C.~Hooley, \emph{On the intervals between numbers that are sums of two
+squares: II}, J.\ Number Theory \textbf{5} (1973), 215--217.
+
+\bibitem{Zheng2025} Z.~Zheng, \emph{Primes in simultaneous arithmetic progressions},
+arXiv:2512.22798.
+
+\bibitem{BombieriFriedlanderIwaniec1986} E.~Bombieri, J.~B.~Friedlander, H.~Iwaniec, \emph{Primes
+in arithmetic progressions to large moduli}, Acta Math.\ \textbf{156} (1986), 203--251.
+
+\bibitem{HeathBrown1978} D.~R.~Heath-Brown, \emph{Hybrid bounds for Dirichlet $L$-functions},
+Invent.\ Math.\ \textbf{47} (1978), 149--170.
+
+\bibitem{GrimmeltMerikoski2024} L.~Grimmelt, J.~Merikoski, \emph{Twisted correlations of the
+divisor function via discrete averages of $\mathrm{SL}_2(\mathbb R)$ Poincar\'e series},
+arXiv:2404.08502.
+
+\bibitem{DeshouillersIwaniec1982} J.-M.~Deshouillers, H.~Iwaniec, \emph{Kloosterman sums and
+Fourier coefficients of cusp forms}, Invent.\ Math.\ \textbf{70} (1982/83), 219--288.
+
+\bibitem{FouvryIwaniec1997} \'E.~Fouvry, H.~Iwaniec, \emph{Gaussian primes}, Acta Arith.\
+\textbf{79} (1997), 249--287.
+
+\bibitem{KowalskiMichelSawin2017} E.~Kowalski, P.~Michel, W.~Sawin, \emph{Bilinear forms with
+Kloosterman sums and applications}, Ann.\ of Math.\ \textbf{186} (2017), 413--500.
+
+\bibitem{BlomerMilicevic2015} V.~Blomer, D.~Mili\'cevi\'c, \emph{The second moment of twisted
+modular $L$-functions}, Geom.\ Funct.\ Anal.\ \textbf{25} (2015), 453--516.
+
+\bibitem{Shkredov2021} I.~D.~Shkredov, \emph{Modular hyperbolas and bilinear forms of Kloosterman
+sums}, J.\ Number Theory \textbf{220} (2021), 182--211.
+
+\bibitem{Pascadi2026} A.~Pascadi, \emph{Non-abelian amplification and bilinear forms with
+Kloosterman sums}, Geom.\ Funct.\ Anal., accepted; arXiv:2511.08445.
+
+\bibitem{MQW2026} D.~Mili\'cevi\'c, Y.~Qin, H.~Wu, \emph{Bilinear forms with Kloosterman sums and
+moments of twisted $L$-functions}, arXiv:2511.07550.
+
+\bibitem{BlomerPascadi2026} V.~Blomer, A.~Pascadi, \emph{Bilinear forms with Kloosterman sums via
+quadratic characters}, arXiv:2607.24311.
+
+\bibitem{NathXie2025} K.~Nath, L.~Xie, \emph{Almost primes and primes that are sums of two
+squares plus one}, arXiv:2501.16723; Acta Arith.\ 2025.
+
+\bibitem{FHRSS2025} E.~Fuchs, C.~Hsu, J.~Rickards, D.~Schindler, K.~E.~Stange, \emph{Primes
+represented by shifted quadratic forms: on primitivity and congruence classes},
+arXiv:2504.20289; Acta Arith.\ \textbf{222} (2026), 371--391.
+
+\bigskip\noindent\textbf{The $\delta$-symbol, two-dimensional Kloosterman sums, and joint
+monodromy (T(3)-completion investigations).}
+
+\bibitem{HeathBrown1996} D.~R.~Heath-Brown, \emph{A new form of the circle method, and its
+application to quadratic forms}, J.\ Reine Angew.\ Math.\ \textbf{481} (1996), 149--206.
+
+\bibitem{DFI} W.~Duke, J.~B.~Friedlander, H.~Iwaniec, \emph{Equidistribution of roots of a
+quadratic congruence to prime moduli}, Ann.\ of Math.\ \textbf{141} (1995), 423--441; and
+\emph{Class group L-functions}, Invent.\ Math.\ \textbf{128} (1997), 23--43 (used in
+\texttt{erdos-\allowbreak straus-\allowbreak T-\allowbreak 3-\allowbreak delta.md} for the two-dimensional analogue).
+
+\bibitem{HeathBrownPierce2017} D.~R.~Heath-Brown, L.~B.~Pierce, \emph{Simultaneous integer values
+of pairs of quadratic forms}, J.\ Reine Angew.\ Math.\ \textbf{727} (2017), 85--143;
+arXiv:1309.6767.
+
+\bibitem{BettinChandee2018} S.~Bettin, V.~Chandee, \emph{Trilinear forms with Kloosterman
+fractions}, Adv.\ Math.\ \textbf{328} (2018), 1234--1262.
+
+\bibitem{Katz1988} N.~M.~Katz, \emph{Gauss Sums, Kloosterman Sums, and Monodromy Groups}, Ann.\
+of Math.\ Studies \textbf{116}, Princeton University Press, 1988.
+
+\bibitem{FKMS2026} \'E.~Fouvry, E.~Kowalski, Ph.~Michel, W.~Sawin, \emph{Bilinear forms with
+trace functions}, arXiv:2511.09459 (v3, 11 August 2026).
+
+\bibitem{FouvryKowalskiMichel2014} \'E.~Fouvry, E.~Kowalski, Ph.~Michel, \emph{Algebraic trace
+functions over the primes}, Duke Math.\ J.\ \textbf{163} (2014), 1683--1736.
+
+\bibitem{FouvryKowalskiMichel2015} \'E.~Fouvry, E.~Kowalski, Ph.~Michel, \emph{A study in sums
+of products}, Philos.\ Trans.\ Roy.\ Soc.\ A \textbf{373} (2015), 20140309.
+
+\bibitem{RicottaRoyer2016} G.~Ricotta, E.~Royer, \emph{Kloosterman paths of prime powers
+moduli}, arXiv:1609.03694.
+
+\bibitem{Kowalski2006} E.~Kowalski, \emph{The large sieve, monodromy, and zeta functions of
+curves}, arXiv:math/0608718 (big symplectic/orthogonal monodromy modulo $\ell$, as both the
+field and a conductor grow).
+
+\bigskip\noindent\textbf{Prior archive and external claims examined (\Cref{sec:prior}).}
+
+\bibitem{Stormer1897} C.~St\o rmer, \emph{Quelques th\'eor\`emes sur l'\'equation de Pell
+$x^2-Dy^2=\pm1$ et leurs applications}, Videnskabsselskabets Skrifter I Math.-Nat.\ Kl.\
+\textbf{2} (1897).
+
+\bibitem{BelloHernandez2010} M.~Bello-Hern\'andez, M.~Benito, E.~Fern\'andez, \emph{On the
+equation $4/p=1/n+1/m+1/k$}, arXiv:1010.2035.
+
+\bibitem{Bradford2026} K.~Bradford, \emph{An elementary proof of the Erd\H{o}s--Straus
+conjecture}, arXiv:2602.11774.
+
+\bibitem{Bradford2021} K.~Bradford, \emph{Integers} \textbf{21} (2021), Paper No.~A24.
+
+\bibitem{BradfordIonascu2015} K.~Bradford, E.~J.~Ionascu, 2015 (as cited in
+\texttt{erdos-\allowbreak straus-\allowbreak bradford-\allowbreak lemma3.md}; full bibliographic
+details not reproduced from the source document).
+
+\bibitem{Bradford2024} K.~Bradford, arXiv:2403.16047.
+
+\bigskip\noindent\textbf{Computation.}
+
+\bibitem{Salez2014} S.~E.~Salez, \emph{The Erd\H{o}s--Straus conjecture: new modular equations
+and checking up to $N=10^{17}$}, arXiv:1406.6307.
+
+\end{thebibliography}
+
+\end{document}
