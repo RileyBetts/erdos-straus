@@ -251,7 +251,7 @@ window. It is not a repair of A2.
   bookkeeping on Part A and dies on \((0,1/2,1/2)\).
 - That \(\chi(d)1_{d\le D}\) is well-factorable of every level.
 - Anything in Lean. Gate A still applies before any
-  compilation, as for E_power.
+  compilation. E_power is a recorded negative, not a compiled count.
 
 **Next.** The two-modulus barrier after switching sits at
 \(\min(\alpha,\beta)>7/36\) with \(\alpha+\beta>1/2\), including the

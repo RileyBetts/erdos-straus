@@ -40,6 +40,7 @@
 % ---------- Status tags ----------
 \newcommand{\LEAN}{\textcolor{proved}{\textsc{[Lean]}}}
 \newcommand{\CLAIMED}{\textcolor{claimed}{\textsc{[Claimed]}}}
+\newcommand{\WITHDRAWN}{\textcolor{negative}{\textsc{[Withdrawn]}}}
 \newcommand{\NEGATIVE}{\textcolor{negative}{\textsc{[Negative result]}}}
 \newcommand{\MEASURED}{\textcolor{claimed}{\textsc{[Measured]}}}
 \newcommand{\file}[1]{\texttt{#1}}
@@ -75,6 +76,20 @@ Erd\H{o}s--Straus programme \\ \small (\texttt{erdos-straus-main}, 21 August 202
 \begin{document}
 \maketitle
 
+\begin{center}
+\fbox{\parbox{0.92\textwidth}{\small\textbf{Status note, 22 August 2026 (later the same day).}
+The E\_power theorem of this v0.2 text
+(\(S_A(x,2x)\ll x^{1-\delta}\) via one-stage hub-conditioned Suen plus
+an \(O(M_T)\) transfer) is \WITHDRAWN{} as a theorem. A two-stage
+replacement at a prime-power or largest-prime residual hub failed both
+revival numbers through \(A=32\). Current record:
+\texttt{erdos-straus-E-power.md}, \texttt{erdos-straus-E-power-decision.md}.
+The combinatorial core in \texttt{EPower.lean} stands. This report is
+otherwise a survey of the archive as of the morning of 22~August.
+Vaughan (1970) remains the published comparison.}}
+\end{center}
+\vspace{1em}
+
 \begin{abstract}
 This report documents the full contents of \file{erdos-straus-main}, the public git archive of
 an extensive computer-assisted research programme directed at the Erd\H{o}s--Straus conjecture.
@@ -84,7 +99,8 @@ that reduces the conjecture to a single unproved analytic interface, proves a ra
 elementary and Brauer--Manin-theoretic facts about the associated affine surfaces, and certifies
 a finite verified range. Second, a sequence of analytic-number-theoretic partial results and
 honestly labelled negative findings on a covering-density reformulation of the conjecture,
-culminating in an unconditional exceptional-set bound stronger than Vaughan's 1970 theorem, and
+including a later-withdrawn one-stage covering-box claim (see the dated
+notice below), and
 a capstone diagnosis of why four independent completion attempts share a single obstruction.
 Third, a geometric investigation of the Bright--Loughran Brauer--Manin approach, which is shown
 to reduce, together with every other geometric mechanism considered, to the same analytic core.
@@ -365,7 +381,7 @@ the documentation and must not be conflated (the archive itself flags this risk 
   \item[File-map layers (\file{README.md}).] \emph{Layer A} is the bare-Lean core —
         \file{ErdosStraus.lean}, \file{BrightLoughran.lean}, \file{ConicFiber.lean},
         \file{TwistDescent.lean}, \file{SchinzelSep.lean}, \file{SchinzelDecide.lean},
-        \file{NoVieta.lean} — compiling under Lean~$\ge 4.33.0$ with \emph{no imports at all},
+        \file{NoVieta.lean}, \file{EPower.lean} — compiling under Lean~$\ge 4.33.0$ with \emph{no imports at all},
         checkable with the bare \texttt{lean} binary and no \texttt{lake}/Mathlib dependency.
         \emph{Layer B} is \file{ErdosStrausQR.lean}, \file{ErdosStrausBLRoute.lean}, and the two
         library-only additions of this revision, \lean{Leochlon.lean} and \lean{Stormer.lean}
@@ -1374,14 +1390,14 @@ $\log A$ worth of sieve mass, against the full covering box's $\log^2A$. It is p
 provable, effective ``floor'' the aligned-prime sieve alone can deliver — a useful calibration
 point rather than a record.
 
-\subsection{E\_power: an unconditional exceptional-set bound beating Vaughan}
+\subsection{E\_power: a withdrawn covering-box claim}
 \label{subsec:epower}
 
-The programme's single strongest unconditional analytic result concerns the \emph{full}
+The intended strongest unconditional analytic result concerned the \emph{full}
 covering box on \emph{all} integers (not only hard primes) — recall from \Cref{subsec:erdosstraus-lean}
 that Lean's \lean{Covered}/\lean{Survivor} predicate on the full $(a,c,d)$ box is a
-\emph{superset} of the true ES exceptional set, so an upper bound here is automatically an upper
-bound there.
+\emph{superset} of the true ES exceptional set, so an upper bound here would automatically be an upper
+bound there. The claim below is \WITHDRAWN{}.
 
 \begin{lemma}[Lemma SM, second moments, \CLAIMED{} with a written proof]
 \label{lem:sm}
@@ -1410,7 +1426,7 @@ Lean covering cells at $A$ from $24$ up to $2000$ (\file{e\_power\_suen\_moments
 $R_\Delta=T\sum_{\ell>T}\mu_\ell^2/\mu^2$ settles at $\approx0.13$ and the Suen loss
 $\Delta e^{2\delta}/\mu$ stays below $0.15$ throughout this two-order-of-magnitude range.
 
-\begin{theorem}[E\_power, \CLAIMED]
+\begin{theorem}[E\_power, \WITHDRAWN]
 \label{thm:epower}
 There exist effective constants $c,\delta,X_0>0$ such that for all $x\ge X_0$ and
 $A=\exp(c\sqrt{\log x})$,
@@ -1421,18 +1437,18 @@ where $S_A(x,2x)$ is the number of $n\in[x,2x)$ surviving the level-$A$ covering
 Consequently the number of $n\in[x,2x)$ for which $4/n$ is \emph{not} a sum of three unit
 fractions is $\ll x^{1-\delta}$.
 \end{theorem}
-This is proved by combining Lemma~SM's second-moment input with Suen's inequality (giving
-density $u(A)\le\exp(-(1-O(\eta))\mu(A))$) and a ``Lemma Transfer'' step: at
-$A=\exp(c\sqrt{\log x})$, the hub modulus $M_T=\prod_{p\le T}p$ has size $x^{\alpha/\eta+o(1)}$
+This statement, as argued in the 21~August write-up, combined Lemma~SM's second-moment input
+with Suen's inequality (giving density $u(A)\le\exp(-(1-O(\eta))\mu(A))$) and a
+``Lemma Transfer'' step: at $A=\exp(c\sqrt{\log x})$, the hub modulus
+$M_T=\prod_{p\le T}p$ has size $x^{\alpha/\eta+o(1)}$
 (with $\alpha=\kappa_{\mathrm{cov}}c^2$), and for $c$ small enough that $\alpha/\eta<1/2$ the
-main term dominates the discrepancy over residues modulo $M_T$, giving the stated power saving.
-Explicitly, $\delta=(1-O(\eta))\kappa_{\mathrm{cov}}c^2$ for the admissible range of $(c,\eta)$;
-the numerical value of $\delta$ is not the content, effectivity and positivity are. The honest
-comparison recorded throughout the archive: Theorem~\ref{thm:epower} \emph{strictly improves}
-Vaughan's 1970 exponential-saving bound $\ll x\exp(-c(\log x)^{2/3})$ to a genuine power saving,
-on the same object (all integers $n\le x$, not merely hard primes) — this is, on the programme's
-own account, the single strongest unconditional new mathematical statement to come out of the
-archive.
+main term was claimed to dominate the discrepancy over residues modulo $M_T$.
+The argument is \WITHDRAWN{}: primorial conditioning does not preserve $\sum 1/q$,
+$\sum_{\ell>T}\mu_\ell^2$ is not Suen's fibre $\Delta$, and $O(M_T)$ is not a
+discrepancy bound. A 22~August two-stage replacement (hub exponential + fibre Suen)
+failed both revival numbers through $A=32$
+(\texttt{erdos-straus-E-power-decision.md}). Do not read Theorem~\ref{thm:epower}
+as an improvement on Vaughan (1970). Vaughan remains the published comparison.
 
 \subsection{Gate A: the discipline separating a written record from a formalised claim}
 \label{subsec:gatea}
@@ -1454,7 +1470,7 @@ $x=10^9$, $\mathrm{cond}(a)\to1$ past $a=80$, mean $0.993$ on $a=161$--$200$ —
 essentially all of the extra covering width beyond $A\approx80$ contributes what the archive
 calls \emph{dummy covering mass}, not genuine additional constraint); and running further
 large-scale computation beyond $x=10^9$. This discipline is the explicit mechanism by which the
-archive prevents a genuine, useful, unconditional record (Theorem~\ref{thm:epower}) from being
+archive prevents a withdrawn covering-box claim (Theorem~\ref{thm:epower}) from being
 silently over-claimed as progress toward the load-bearing interface.
 
 \subsection{The Granville--Soundararajan reformulation}
@@ -2212,10 +2228,10 @@ published axiom audit, to a single named analytic proposition
 $n<100{,}000$. This is not a new mathematical fact — the reduction to the six hard classes mod
 $840$ is classical — but its complete, axiom-tracked formalisation, including the covering
 system and the divisor-form duality, is a genuine piece of infrastructure not previously
-available. Second, a real unconditional theorem: Theorem~\ref{thm:epower} improves the 1970
-Vaughan exceptional-set bound from an $\exp(-c(\log x)^{2/3})$ saving to a genuine power saving
-$O(x^{1-\delta})$, via an elementary, fully written (if not machine-checked) second-moment
-argument. Third, a substantial and unusually disciplined formalisation of the Bright--Loughran
+available. Second, a recorded negative at the covering box: Theorem~\ref{thm:epower} was
+claimed as a power saving $O(x^{1-\delta})$ improving Vaughan (1970), and is \WITHDRAWN{}
+(one-stage CDL and the two-stage hub replacement both fail; see the dated notice).
+Third, a substantial and unusually disciplined formalisation of the Bright--Loughran
 Brauer--Manin theory, including a from-scratch finite verification of the arithmetic heart of
 their Lemma~3.8 and an extensive discharge of the Hilbert reciprocity the ES problem actually
 needs. Fourth, and arguably the programme's most distinctive contribution, a coherent explanation
@@ -2305,6 +2321,7 @@ File sizes are as extracted from the archive.
 \file{SchinzelSep.lean} & 84 & Signed $9/5$ point; ordered no-positive-solution proof. & \ref{subsec:schinzel-lean} \\
 \file{SchinzelDecide.lean} & 268 & Decidable positive-octant solver with soundness/completeness; $9/5$, $13/7$, $4/5$ instances. & \ref{subsec:schinzel-lean} \\
 \file{NoVieta.lean} & 156 & Linearity of the affine equation; uniqueness; no Vieta involution. & \ref{subsec:novieta} \\
+\file{EPower.lean} & 3323 & Combinatorial covering core (hub $q=s\ell$, fibre $1/\ell$, pair mass, Janson I counting). H1/H2 uninhabited; two-stage density a recorded negative. & \ref{subsec:epower} \\
 \lean{Leochlon.lean} & 95 & Type-II identity dictionary $(4b-1)(4c-1)=4p\delta+1\to$\lean{ES.IsES}. & \ref{subsec:leochlon} \\
 \lean{Stormer.lean} & 855 & St\o rmer's theorem on consecutive smooth numbers (ported, Apache~2.0, library only). & \ref{subsec:stormer} \\
 \texttt{archive/\allowbreak ErdosStraus-\allowbreak core.lean} & 2073 & Frozen earlier snapshot of the covering file; not a Lake root. & \ref{subsec:legacy} \\
@@ -2375,8 +2392,8 @@ accompanies the two frozen files and states explicitly that they are not Lake ro
   fifth) T(3)-completion looks classified into one common failure mode. & \ref{subsec:varyingmodulus} \\
 \texttt{zheng-\allowbreak wellfactorable.md} & Technical note on well-factorability of real characters (Zheng
   Def.~1.1), feeding \file{erdos-straus-T-2.md}. & \ref{subsec:t3-negative} \\
-\texttt{erdos-\allowbreak straus-\allowbreak E-\allowbreak power.md} & Statement and full written proof of Theorem~\ref{thm:epower}
-  (E\_power) and Lemma~SM. & \ref{subsec:epower} \\
+\texttt{erdos-\allowbreak straus-\allowbreak E-\allowbreak power.md} & Withdrawn one-stage write-up of Theorem~\ref{thm:epower};
+  combinatorial core and recorded negative. See also \texttt{erdos-straus-E-power-decision.md}. & \ref{subsec:epower} \\
 \texttt{erdos-\allowbreak straus-\allowbreak E-\allowbreak partial.md} & Gate~A write-up: what may/may not be claimed toward
   \lean{AnalyticSurvivorBound}; the schedule-retuning argument of \Cref{subsec:gatea}. & \ref{subsec:gatea} \\
 \texttt{erdos-\allowbreak straus-\allowbreak gs-\allowbreak reformulation.md} & The Granville--Soundararajan restatement of the

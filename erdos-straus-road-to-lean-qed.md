@@ -127,9 +127,10 @@ via a two-stage covering argument (hub exponential + residual fibre
 bound) and a separate density-to-count transfer. The 21 August
 one-stage claim is **withdrawn** (`erdos-straus-E-power.md`,
 22 Aug 2026): primorial conditioning does not preserve
-\(\sum 1/q\), and \(O(M_T)\) is not a discrepancy bound. Immediate
-target: a Lean-verified finite product-space density theorem
-(`EPower.lean`). That does not prove ES and is not yet an improvement
+\(\sum 1/q\), and \(O(M_T)\) is not a discrepancy bound. The
+two-stage replacement failed the revival table through \(A=32\)
+(`erdos-straus-E-power-decision.md`). Combinatorial core in
+`EPower.lean`. That does not prove ES and is not an improvement
 on Vaughan (1970). **Review gate A: do not treat the withdrawn
 write-up as a theorem.** Do not compile a power-saving count as
 `AnalyticSurvivorBound`.
@@ -229,12 +230,12 @@ theorem's axiom audit is published alongside it, whichever lane is used.
 - **Step 2** — *Statement-first discipline:* write the weakest Lean theorem
   whose conclusion eliminates all large survivors — **before proving it** —
   so the analysis cannot drift toward unnecessarily general results.
-- **Step 3** — Complete the power-saving theorem (§6). **Not done.**
-  The 21 August one-stage write-up is withdrawn
-  (`erdos-straus-E-power.md`, 22 Aug 2026). Live target: two-stage
-  finite covering density in `EPower.lean`, then a separate
-  density-to-count transfer. Write-up also:
-  `erdos-straus-E-partial.md`.
+- **Step 3** — Complete the power-saving theorem (§6). **Recorded
+  negative at the measured hubs.** The 21 August one-stage write-up
+  is withdrawn (`erdos-straus-E-power.md`, 22 Aug 2026). The
+  two-stage replacement failed through \(A=32\)
+  (`erdos-straus-E-power-decision.md`). Combinatorial core in
+  `EPower.lean`. Write-up also: `erdos-straus-E-partial.md`.
   Gate A **does not pass** a power-saving count into Lean: it is not
   `AnalyticSurvivorBound`. Dummy covering
   (\(\mathrm{cond}\equiv 1\)) stops a retuned QED schedule. Do not

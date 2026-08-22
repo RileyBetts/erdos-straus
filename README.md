@@ -13,6 +13,9 @@
 > public archive is
 > **[erdos-straus-programme-report-v0.2.pdf](erdos-straus-programme-report-v0.2.pdf)**.
 > LaTeX source: [`erdos-straus-programme-report-v0.2.tex`](erdos-straus-programme-report-v0.2.tex).
+> The v0.2 PDF's E_power theorem is **withdrawn**: one-stage CDL and
+> two-stage hub density failed through \(A=32\). Current record:
+> `erdos-straus-E-power.md`, `erdos-straus-E-power-decision.md`.
 
 ## Novel results (unverified)
 
@@ -54,7 +57,7 @@ record of human coauthorship of the mathematics.
 A layered formalization of covering-landing and the Bright–Loughran
 geometry around the conjecture lives below. Programme notes (same
 directory as this file):
-`erdos-straus-programme.md` (v0.23 programme brief; geometry is theory-building, not QED),
+`erdos-straus-programme.md` (v0.24 programme brief; E_power recorded negative; geometry is theory-building, not QED),
 `erdos-straus-gs-reformulation.md` (analytic-lane dictionary: G–S /
 Heath-Brown; no new theorems),
 `erdos-straus-novel-structures-plan.md` (research record, §4v joint-lane freeze),
@@ -86,8 +89,8 @@ by distinct mechanisms at the same varying-modulus correlation; not
 T(3) progress),
 `erdos-straus-sieve-desk.md` (analytic worklist: T(A)\(^+\) /
 \(C_{\mathrm{sieve}}(A)\); E_lane; E_power; T(3) completion; do not densify covering),
-`erdos-straus-E-partial.md` (Gate A: E_power is the intended paper;
-one-stage claim withdrawn; still not `AnalyticSurvivorBound`),
+`erdos-straus-E-partial.md` (Gate A: E_power is a recorded negative;
+still not `AnalyticSurvivorBound`),
 `erdos-straus-E-power.md` / `erdos-straus-E-power-decision.md`
 (22 Aug 2026: one-stage CDL withdrawn; prime-power-hub H1/H2 density
 withdrawn; revival 1 failed; recorded negative; combinatorial core in
@@ -107,10 +110,11 @@ forbids finite-parameter Type I/II catalogues),
 `TwistDescent.lean`, `SchinzelSep.lean`, `SchinzelDecide.lean`,
 `NoVieta.lean`, `EPower.lean` (combinatorial cores: hub \(q=s\ell\)
 with \(\gcd(s,\ell)=1\), fibre \(1/\ell\), exact \(\mu_\rho,\Delta_\rho,\delta_\rho\),
-two-stage count identity, H1\(\times\)H2 combination algebra, coprime
-two-event Suen, one-log slice, transfer at a genuine period; H1/H2
-exponentials, two-log mass, finite density, and small-period transfer
-remain named hypotheses) — bare Lean,
+two-stage count identity, H1\(\times\)H2 combination algebra,
+empty-graph Suen, sequential Janson I counting, one-log slice,
+transfer at a genuine period; H1/H2 exponentials, two-log mass,
+finite density, and small-period transfer remain named uninhabited
+hypotheses; two-stage hub density is a recorded negative) — bare Lean,
 Lean ≥ 4.33.0, no imports; axioms: `propext`, `Quot.sound`, plus
 `Lean.ofReduceBool` for the `native_decide` instances (see
 [audit](#audit-layer-a-axioms)).

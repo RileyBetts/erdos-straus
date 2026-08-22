@@ -1,21 +1,24 @@
 <!-- Copyright (c) 2026 Riley Betts Ltd. SPDX-License-Identifier: MIT -->
-# E_power — two-stage covering density (repaired programme)
+# E_power — recorded negative at a two-stage hub
 
 **Riley Betts Erdős–Straus programme, 22 August 2026.**
 Roadmap §6; plan §§4e, 4h, 4k. Companion to `erdos-straus-E-partial.md`
-(Gate A), `EPower.lean`, `e_power_fibre_moments.py`. This file
+(Gate A), `erdos-straus-E-power-decision.md`, `EPower.lean`,
+`e_power_fibre_moments.py`. This file
 **does not prove** the Erdős–Straus conjecture, does not empty the box,
 and does not discharge `AnalyticSurvivorBound`.
 
 > **Status (22 Aug 2026).** The 21 August one-stage write-up is
 > **withdrawn as a theorem**. The 22 August replacement target —
 > inhabit H1/H2 at the prime-power hub and obtain
-> `FiniteProductDensityBound` — is **withdrawn as the next Lean
-> object** (`erdos-straus-E-power-decision.md`). Growing \(T\) does
-> not make \(-\log P/k^2\) and Titu\(/k^2\) both two-log. The
-> combinatorial core in `EPower.lean` stands. Immediate work is a
-> different split on paper, or a recorded negative, not inhabiting
-> H1/H2.
+> `FiniteProductDensityBound` — is **withdrawn**. Growing \(T\) does
+> not make \(-\log P/k^2\) and Titu\(/k^2\) both two-log. Revival
+> attempt 1 (largest-prime residual) failed both revival numbers
+> through \(A=32\). This is a **recorded negative** for two-stage
+> density at a smooth/cofactor hub on the measured range
+> (`erdos-straus-E-power-decision.md`). The combinatorial core in
+> `EPower.lean` stands. Do not inhabit H1/H2. Do not start a second
+> split without a written reason both numbers would pass.
 
 E_lane (`erdos-straus-T-A.md`) is the \(d=1\) ClassRough floor, below
 Vaughan. This note is the **full covering box**: integers in \([x,2x]\)
@@ -202,18 +205,20 @@ positive coefficient is enough for a power saving.
 
 ---
 
-## Immediate Lean target: finite density
+## Withdrawn Lean target: finite density
 
-The first kernel-checked target is **not** \(S_A(x,2x)\ll x^{1-\delta}\).
-It is a finite product-space theorem
+The first kernel-checked target was **not** \(S_A(x,2x)\ll x^{1-\delta}\).
+It was a finite product-space theorem
 \[
 u(A)
 \;\le\;
 \exp\bigl(-\gamma(\log A)^2\bigr)
 \]
 for some explicit \(\gamma>0\), independently of interval transfer.
-If that compiles, the probabilistic core is secure and the remaining
-gap is a sharply defined analytic bridge.
+That target is **withdrawn** after the revival table failed
+(`erdos-straus-E-power-decision.md`). If a later split compiled it,
+the remaining gap would still be a separate analytic bridge. Do not
+inhabit H1/H2 at the hubs already measured.
 
 Covering-mass growth is a separate theorem: after deduplication,
 \[
@@ -279,7 +284,7 @@ Layer A, `lean EPower.lean`, no `sorry`. What compiles:
 | Finite density assembly | H1\(\times\)H2 combination: `finite_density_combine` and `finite_product_density_of`. Integer form of \(u(A)\le 2^{-\gamma k^2}\) on \(\mathbb{Z}/H\times\mathbb{Z}/L\) | `HubExponentialHypothesis`, `FibreSuenHypothesis`, `FiniteProductDensityBound` themselves |
 | Transfer | Residue class: \(\le L/M+1\). Union of \(\lvert R\rvert\) classes: \(\le \lvert R\rvert(L/M+1)\). If \(\lvert R\rvert\le M\), \(\le L+M\) (`transfer_at_period`) | `PeriodSmallEnough`: a period \(M=o(x^{1-\delta})\). Transfer is **after** finite density |
 
-`e_power_core_holds` is the combinatorial core. The replacement target is `FiniteProductDensityBound`: it follows from H1 and H2 by `finite_product_density_of`, and is **not** inhabited. Transfer is not an input. Finite density \(u(A)\le\exp(-\gamma(\log A)^2)\) and \(S_A\ll x^{1-\delta}\) remain open. Do not read `ExceptionalPowerSaving` as those statements.
+`e_power_core_holds` is the combinatorial core. `FiniteProductDensityBound` follows from H1 and H2 by `finite_product_density_of` and is **not** inhabited. The revival table withdrew inhabiting those hypotheses at the measured hubs. Transfer is not an input. Finite density \(u(A)\le\exp(-\gamma(\log A)^2)\) and \(S_A\ll x^{1-\delta}\) remain open. Do not read `ExceptionalPowerSaving` as those statements.
 
 ---
 
@@ -537,14 +542,16 @@ from the surrogate tables.
 4. Define exact \(\mu_\rho,\Delta_\rho,\delta_\rho\) (Python; not Lean).
 5. Extend the numerical experiments to search for uniform fibre
    inequalities (`e_power_fibre_moments.py`).
-6. Prove a finite specialised Suen (or a cylinder correlation
-   inequality) in Lean. Independent one-modulus count is done;
-   fibre \(\Delta_\rho\) is not.
-7. Prove the finite two-stage density theorem.
-8. Prove explicit covering-mass growth after deduplication
-   (termwise \(1/q\ge 1/(4acd)\) is done; two-log \(\kappa\) is not).
+6. Specialised Suen / Harris: **stopped.** Independent one-modulus
+   count is done; do not inhabit H2 from it.
+7. Finite two-stage density: **withdrawn** as the next Lean object
+   (`erdos-straus-E-power-decision.md`).
+8. Covering-mass growth after deduplication: termwise
+   \(1/q\ge 1/(4acd)\) is done; two-log \(\kappa\) is uninhabited
+   and is not a substitute for density.
 9. Density-to-count transfer: AP seed \(L/M+1\) is done; residual
-   moduli are not.
+   moduli are not. Do not start transfer without a genuine finite
+   density.
 10. Assemble `e_power_of` only after every dependency is
     kernel-checked or an explicit external hypothesis. The current
     `e_power_core_holds` is the combinatorial core, not the
@@ -563,11 +570,11 @@ H1/H2. Not the exceptional-set count.
 - It is not a compiled improvement on Vaughan.
 - Lemma SM is not Suen on the fibres.
 
-**Dies if** H1 or H2 fail uniformly, or if after deduplication
-\(\mu(A)=o((\log A)^2)\), or if the transfer cannot be proved at any
-positive \(\delta\). Also dies if no specialised correlation
-inequality applies and a general Suen cannot be formalised with the
-exact fibre quantities.
+**Died, on the measured range, as two-stage density.** H1 and H2
+fail the revival table at the prime-power hub and at the
+largest-prime residual split through \(A=32\). Unconditional
+deduplicated mass still tracks toward \(H_5/4\); that is not
+density. Transfer was never reached.
 
 **Next.** Revival attempt 1 (largest-prime residual) failed both
 numbers through \(A=32\). Stop. See `erdos-straus-E-power-decision.md`.

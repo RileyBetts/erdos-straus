@@ -50,19 +50,21 @@ x\exp\bigl(-c'\sqrt{\log x}\,\log\log x\bigr),
 \]
 effective constants, one FL lemma. Sits below Vaughan
 \(\exp(-c(\log x)^{2/3})\) because the \(d=1\) lane carries \(\log A\)
-mass against the full box's \(\log^2 A\). E_power is that full-box
-bound, claimed in `erdos-straus-E-power.md`. This paragraph is the
-\(d=1\) floor, not that theorem.
+mass against the full box's \(\log^2 A\). E_power was the intended
+full-box bound; both the one-stage claim and the two-stage hub
+density are now a **recorded negative**
+(`erdos-straus-E-power.md`, `erdos-straus-E-power-decision.md`).
+This paragraph is the \(d=1\) floor, not that theorem.
 
-**Layer 0 (E_power, repaired programme).** The 21 August claim
+**Layer 0 (E_power, recorded negative).** The 21 August claim
 \(S_A(x,2x)\ll x^{1-\delta}\) via one-stage hub-conditioned Suen plus
 an \(O(M_T)\) transfer is **withdrawn**
-(`erdos-straus-E-power.md`, 22 Aug 2026). The surviving programme is a
-two-stage finite covering-density theorem and a separate
-density-to-count transfer. Lemma SM remains a surrogate-mass estimate,
-checked through \(A=2000\) (`e_power_suen_moments_large.py`); it is
-not Suen's fibre \(\Delta\). This layer still sits below the k-budget
-ceiling. It does not empty the box and is not
+(`erdos-straus-E-power.md`, 22 Aug 2026). The 22 August two-stage
+replacement (H1/H2 at a smooth/cofactor hub) failed the revival
+table through \(A=32\). Combinatorial cores stand in `EPower.lean`.
+Lemma SM remains a surrogate-mass estimate, checked through
+\(A=2000\) (`e_power_suen_moments_large.py`); it is not Suen's fibre
+\(\Delta\). This layer does not empty the box and is not
 `AnalyticSurvivorBound`. Dummy covering does not apply to this object
 (covering cells on integers still cut).
 
@@ -97,8 +99,9 @@ reciprocity super-multiplicativity is a measured null, like C7.
 
 ## Gate A
 
-Roadmap Step 3: E_power is written (`erdos-straus-E-power.md`). Gate A
-forbids compiling that theorem as QED; it is a paper, not Lean.
+Roadmap Step 3: E_power is a recorded negative
+(`erdos-straus-E-power.md`, `erdos-straus-E-power-decision.md`).
+Gate A still forbids compiling a power-saving count as QED.
 The analytic interface in Lean is
 
 ```lean
@@ -124,12 +127,12 @@ decision of what may be formalised *toward* that interface.
   \(\Gamma(\beta+1)e^{\gamma\beta}=\exp(o(\log^2 A))\) a theorem and
   expected \(B(A)=O(\log A)\). **E_lane** is the \(d=1\) floor
   \(x\exp(-c'\sqrt{\log x}\,\log\log x)\), below Vaughan. **E_power**
-  is the covering-box count \(S_A\ll x^{1-\delta}\)
-  (`erdos-straus-E-power.md`), below the k-budget, above Vaughan. Dummy
-  covering remains the live kill of a retuned QED schedule.
-- Layer 0 as that E_power paper, explicitly not QED, explicitly not
-  `AnalyticSurvivorBound`. Gate A is now a written theorem against the
-  sieve literature; it still forbids compiling it as QED progress.
+  is a recorded negative for \(S_A\ll x^{1-\delta}\) at a two-stage
+  hub (`erdos-straus-E-power.md`, `erdos-straus-E-power-decision.md`).
+  Dummy covering remains the live kill of a retuned QED schedule.
+- Layer 0 as that E_power record, explicitly not QED, explicitly not
+  `AnalyticSurvivorBound`. Gate A still forbids compiling a
+  power-saving count as QED progress.
 - The C2 null and the G–S dictionary
   (`erdos-straus-gs-reformulation.md`) as a dictionary, not as extra
   independent characters.
@@ -209,11 +212,12 @@ fixed \(A\); E_lane
 \(x\exp(-c'\sqrt{\log x}\,\log\log x)\) as the \(d=1\) floor, below
 Vaughan, effective constants. T(3)\(^+\) is the \(A=3\) case.
 
-**May claim (on paper, E_power).** \(S_A(x,2x)\ll x^{1-\delta}\) at
-\(A=\exp(c\sqrt{\log x})\), effective constants
-(`erdos-straus-E-power.md`). This is §4k item 1 / roadmap §6, and is
-not `AnalyticSurvivorBound`. It beats Vaughan; it does not empty the
-box.
+**May not claim (on paper, E_power).** \(S_A(x,2x)\ll x^{1-\delta}\)
+at a two-stage hub. The 21 August one-stage write-up and the
+22 August H1/H2 replacement are withdrawn
+(`erdos-straus-E-power.md`, `erdos-straus-E-power-decision.md`).
+The combinatorial core in `EPower.lean` may be cited as Layer A.
+This is not `AnalyticSurvivorBound` and does not beat Vaughan.
 
 **May not claim.** Zero large hard survivors; a retuned schedule that
 empties the box; extra independent characters from reciprocity; that
@@ -248,9 +252,9 @@ progress. Escape 1 (weaker \(c_-\) / almost-certificates) remains the paper's
 outlook if that framework does not exist. The three-step plan and both
 escapes stay in that note.
 T(A)\(^+\) is written: Selberg upper half survives; E_lane is the
-\(d=1\) floor, below Vaughan; E_power is the covering-box count, above
-Vaughan. \(\mathrm{cond}\equiv 1\) remains the live kill of a QED
-ClassRough schedule. Shared-certificate
+\(d=1\) floor, below Vaughan; E_power is a recorded negative, not a
+covering-box count above Vaughan. \(\mathrm{cond}\equiv 1\) remains
+the live kill of a QED ClassRough schedule. Shared-certificate
 inheritance does not explain that tail (`c4_certificates.py`). Do not
 simulate a third decade of \(x\). Do not densify covering.
 
@@ -260,7 +264,7 @@ simulate a third decade of \(x\). Do not densify covering.
 
 - It does not prove T(A) as a two-sided bracket, E_partial as a
   zero-survivor theorem, or H_ES. E_lane is the \(d=1\) floor. E_power
-  is a Vaughan-beating exceptional set and is not a QED.
+  is a recorded negative at a two-stage hub and is not a QED.
 - It does not change Lean. Gate A forbids compiling Layer 0 as
   progress toward `erdos_straus_of_interface`.
 - It does not reopen geometry as a proof path (plan §4v).

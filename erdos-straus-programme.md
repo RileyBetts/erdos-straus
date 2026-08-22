@@ -27,16 +27,15 @@ as existence of a positive-octant integral point.
 **Postscript (v0.24).** The 21 August one-stage E_power claim is
 withdrawn (`erdos-straus-E-power.md`). Conditioning on a primorial
 does not preserve \(\sum 1/q\); \(\sum_{\ell>T}\mu_\ell^2\) is not
-Suen's \(\Delta\); \(O(M_T)\) is not a discrepancy bound. The
-programme is a two-stage finite covering-density theorem (hub
-exponential + residual fibre Suen) plus a separate density-to-count
-transfer. Lean combinatorial cores in `EPower.lean` (`lean EPower.lean`:
-hub \(q=s\ell\) with \(\gcd(s,\ell)=1\), fibre \(1/\ell\), exact
-\(\mu_\rho,\Delta_\rho,\delta_\rho\), two-stage count identity,
-`finite_product_density_of` assembling H1\(\times\)H2). H1/H2
-exponentials, two-log mass, `FiniteProductDensityBound`, and
+Suen's \(\Delta\); \(O(M_T)\) is not a discrepancy bound. That replacement target is itself withdrawn by the
+decision postscript below. Lean combinatorial cores in `EPower.lean`
+(`lean EPower.lean`: hub \(q=s\ell\) with \(\gcd(s,\ell)=1\), fibre
+\(1/\ell\), exact \(\mu_\rho,\Delta_\rho,\delta_\rho\), two-stage
+count identity, `finite_product_density_of` assembling H1\(\times\)H2).
+H1/H2 exponentials, two-log mass, `FiniteProductDensityBound`, and
 `PeriodSmallEnough` are named uninhabited hypotheses. Fibre numerics:
-`e_power_fibre_moments.py`, `e_power_residual_primes.py`.
+`e_power_fibre_moments.py`, `e_power_residual_primes.py`,
+`e_power_lp_split.py`.
 **Postscript (decision, 22 Aug).** Inhabiting H1/H2 at the prime-power
 hub is withdrawn as the next Lean object
 (`erdos-straus-E-power-decision.md`). Growing \(T\) does not make both
@@ -342,8 +341,10 @@ repository can absorb an explicit \(X_0\); it cannot absorb
 
 Start here, then:
 
-1. Analytic: `erdos-straus-E-power.md` (Gate A's paper: \(S_A\ll x^{1-\delta}\);
-   second-moment check \(A=24\to 240\)).
+1. Analytic: `erdos-straus-E-power.md` / `erdos-straus-E-power-decision.md`
+   (Gate A's intended paper: one-stage and two-stage hub density
+   withdrawn; recorded negative through \(A=32\); combinatorial core
+   in `EPower.lean`).
    `erdos-straus-T-A.md` (T(A) working note, including the
    certificate measurements).    `erdos-straus-E-partial.md` (Gate A).
    `erdos-straus-sieve-desk.md` is the vector-sieve question list
